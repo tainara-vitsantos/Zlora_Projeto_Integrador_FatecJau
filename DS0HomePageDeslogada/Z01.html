@@ -1,0 +1,1426 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Zlora - Gestão e Agendamento para Beleza e Estética</title>
+    <meta name="author" content="Zlora Gestão e Agendamento Online">
+    <meta name="keywords" content="Zlora, Salão de Beleza Gestão, Agendamento Online, Clínica de Estética, Barbearia, Lash Designer">
+    <meta name="description" content="Sistema de Gestão e Agendamento Online para negócios da área da beleza e estética.">
+    <meta name="robots" content="index,follow">
+
+    <link rel="dns-prefetch" href="//fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="css/boostrap.css"/>
+    <link href="css/style.css" rel="stylesheet">
+    <link href="https://use.fontawesome.com/releases/v5.0.6/css/all.css" rel="stylesheet">
+    <link href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css" rel="stylesheet">
+
+    <style>
+        /* ===== IDENTIDADE VISUAL ZLORA — ROXO VIBRANTE ===== */
+        :root {
+            /* Paleta oficial */
+            --zlora-primary:   #6F3CE7; /* Roxo principal */
+            --zlora-dark:      #24173C; /* Roxo escuro */
+            --zlora-lilac:     #EDE7FF; /* Lilás claro */
+            --zlora-bg:        #F6F4FF; /* Fundo */
+            --zlora-white:     #FFFFFF; /* Branco */
+
+            /* Derivados */
+            --zlora-primary-dark: #5A2BC7; /* Hover do roxo */
+            --zlora-primary-light: #8B5CF0; /* Roxo mais claro p/ gradientes */
+            --zlora-text:      #24173C;
+            --zlora-text-soft: #6B5B8C; /* Roxo acinzentado */
+            --zlora-border:    #E0D7FF;
+
+            /* Aliases */
+            --primary:   var(--zlora-primary);
+            --dark:      var(--zlora-dark);
+            --background: var(--zlora-bg);
+        }
+
+        /* ----- BASE ----- */
+        * { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+
+        body {
+            background-color: var(--zlora-bg);
+            color: var(--zlora-text);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-weight: 400;
+            line-height: 1.6;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--zlora-dark);
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        a { color: var(--zlora-primary); transition: color .25s ease; }
+        a:hover { color: var(--zlora-primary-dark); text-decoration: none; }
+
+        .brand-font {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+        }
+
+        .text-primary   { color: var(--zlora-primary) !important; }
+        .text-gray      { color: var(--zlora-text-soft) !important; }
+        .text-white     { color: #fff !important; }
+
+        /* ----- BOTÕES ----- */
+        .btn-primary {
+            border-radius: 10px;
+            background: var(--zlora-primary);
+            box-shadow: 0 10px 24px rgba(111, 60, 231, 0.35);
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            padding: .75rem 2rem;
+            border: 0;
+            color: #fff;
+            transition: all .25s ease;
+            letter-spacing: .01em;
+        }
+        .btn-primary:hover {
+            background: var(--zlora-primary-dark);
+            box-shadow: 0 14px 32px rgba(111, 60, 231, 0.5);
+            color: #fff;
+            transform: translateY(-2px);
+        }
+
+        .btn-header {
+            border-radius: 10px;
+            background: var(--zlora-primary);
+            box-shadow: 0 10px 28px rgba(111, 60, 231, 0.45);
+            font-size: 14px;
+            font-weight: 700;
+            color: #fff;
+            margin: .5rem;
+            padding: .9rem 2rem;
+            line-height: 1.5;
+            border: none;
+            transition: all .25s ease;
+            letter-spacing: .05em;
+            text-transform: uppercase;
+        }
+        .btn-header:hover {
+            background: var(--zlora-primary-dark);
+            color: #fff !important;
+            box-shadow: 0 16px 36px rgba(111, 60, 231, 0.6);
+            transform: translateY(-3px);
+        }
+
+        .btn-light {
+            border-radius: 10px;
+            background: #fff;
+            box-shadow: 0 10px 28px rgba(0, 0, 0, 0.15);
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--zlora-primary);
+            margin: .5rem;
+            padding: .9rem 2rem;
+            line-height: 1.5;
+            border: 2px solid #fff;
+            transition: all .25s ease;
+            letter-spacing: .05em;
+            text-transform: uppercase;
+        }
+        .btn-light:hover {
+            background: var(--zlora-lilac);
+            color: var(--zlora-primary);
+            border-color: var(--zlora-lilac);
+            transform: translateY(-3px);
+            box-shadow: 0 16px 32px rgba(237, 231, 255, 0.5);
+        }
+
+        .btn-cadastro {
+            border-radius: 8px;
+            background: var(--zlora-primary);
+            border: none;
+            color: #fff !important;
+            font-weight: 700;
+            padding: .55rem 1.4rem !important;
+            transition: all .25s ease;
+            font-size: 13px;
+            letter-spacing: .05em;
+            box-shadow: 0 6px 18px rgba(111, 60, 231, 0.35);
+        }
+        .btn-cadastro:hover {
+            background: var(--zlora-primary-dark);
+            color: #fff !important;
+            box-shadow: 0 10px 24px rgba(111, 60, 231, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .btn-price {
+            border-radius: 10px;
+            background-color: #fff;
+            color: var(--zlora-text);
+            text-align: center;
+            font-weight: 700;
+            padding: .7rem 2.4rem;
+            border: 2px solid var(--zlora-border);
+            transition: all .25s ease;
+            font-size: 13px;
+            letter-spacing: .05em;
+        }
+        .btn-price:hover,
+        .btn-price.active {
+            background: var(--zlora-primary);
+            color: #fff;
+            border-color: var(--zlora-primary);
+            box-shadow: 0 12px 28px rgba(111, 60, 231, 0.45);
+            transform: translateY(-2px);
+        }
+        .btn-price p { margin: .3rem 0 0; color: var(--zlora-text-soft); font-weight: 500; }
+        .btn-price:hover p, .btn-price.active p { color: rgba(255,255,255,.9); }
+
+        .btn-type-customer {
+            border-radius: 14px;
+            background-color: #fff;
+            color: var(--zlora-text);
+            text-align: center;
+            min-width: 280px;
+            box-shadow: 0 8px 24px rgba(111, 60, 231, 0.1);
+            font-weight: 700;
+            font-size: 13px;
+            letter-spacing: .05em;
+            padding: 1.5rem 1.5rem;
+            border: 2px solid var(--zlora-border);
+            transition: all .25s ease;
+            line-height: 1.5;
+        }
+        .btn-type-customer:hover,
+        .btn-type-customer.active {
+            background: var(--zlora-primary);
+            color: #fff;
+            border-color: var(--zlora-primary);
+            transform: translateY(-4px);
+            box-shadow: 0 16px 36px rgba(111, 60, 231, 0.45);
+        }
+
+        /* ----- NAVBAR ----- */
+        .nav-menu {
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            box-shadow: 0 2px 16px rgba(36, 23, 60, 0.06);
+            transition: all .3s ease;
+        }
+        .nav-menu.is-scrolling {
+            background: var(--zlora-dark);
+            box-shadow: 0 5px 30px rgba(36, 23, 60, 0.35);
+        }
+        .navbar-nav .nav-link {
+            color: var(--zlora-text) !important;
+            font-weight: 600;
+            font-size: 13px;
+            letter-spacing: .06em;
+            padding: .6rem 1rem !important;
+            transition: color .2s ease;
+            text-transform: uppercase;
+        }
+        .nav-menu.is-scrolling .navbar-nav .nav-link {
+            color: rgba(255,255,255,.85) !important;
+        }
+        .navbar-nav .nav-link:hover,
+        .navbar-nav .nav-link.active {
+            color: var(--zlora-primary) !important;
+        }
+        .nav-menu.is-scrolling .navbar-nav .nav-link:hover,
+        .nav-menu.is-scrolling .navbar-nav .nav-link.active {
+            color: var(--zlora-lilac) !important;
+        }
+        .navbar-toggler { border-color: var(--zlora-border); }
+        .nav-menu.is-scrolling .navbar-toggler { border-color: rgba(255,255,255,.3); }
+
+        /* ----- HERO ----- */
+        .bg-header {
+            background:
+                radial-gradient(circle at 15% 25%, rgba(139, 92, 240, 0.4) 0%, transparent 55%),
+                radial-gradient(circle at 85% 75%, rgba(111, 60, 231, 0.6) 0%, transparent 60%),
+                linear-gradient(135deg, #24173C 0%, #3A1F6B 50%, #6F3CE7 100%);
+            padding: 180px 0 120px;
+            position: relative;
+            overflow: hidden;
+        }
+        .bg-header::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image:
+                radial-gradient(circle at 20% 30%, rgba(237, 231, 255, 0.15) 0%, transparent 35%),
+                radial-gradient(circle at 80% 70%, rgba(139, 92, 240, 0.2) 0%, transparent 40%);
+            pointer-events: none;
+        }
+        .header h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 5rem;
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: -0.04em;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #FFFFFF 0%, #EDE7FF 60%, #8B5CF0 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 4px 24px rgba(139, 92, 240, 0.35));
+        }
+        .header .tagline {
+            font-size: 1.3rem;
+            color: rgba(255,255,255,.92);
+            font-weight: 400;
+            max-width: 640px;
+            margin: 0 auto 2.5rem;
+            text-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+        }
+        .header .text-white { color: rgba(255,255,255,.85) !important; font-weight: 500; }
+
+        /* ----- SEÇÕES ----- */
+        .section { padding: 100px 0; }
+        .section-title { margin-bottom: 70px; text-align: center; }
+        .section-title h3 {
+            font-size: 2.6rem;
+            font-weight: 800;
+            color: var(--zlora-dark);
+            margin-bottom: .75rem;
+            letter-spacing: -0.03em;
+        }
+        .section-title h3 span {
+            color: var(--zlora-primary);
+        }
+        .section-title small {
+            font-size: 1.05rem;
+            color: var(--zlora-text-soft);
+            display: block;
+            font-weight: 400;
+        }
+
+        .light-bg { background-color: var(--zlora-lilac); }
+
+        /* ----- CARDS OBJETIVO ----- */
+        .card.border-primary {
+            border: 1px solid var(--zlora-border) !important;
+            border-radius: 18px;
+            background: #fff;
+            transition: all .35s cubic-bezier(.2,.8,.2,1);
+            box-shadow: 0 4px 20px rgba(36, 23, 60, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+        .card.border-primary::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 4px;
+            background: linear-gradient(90deg, var(--zlora-primary) 0%, var(--zlora-primary-light) 100%);
+            opacity: 0;
+            transition: opacity .35s ease;
+        }
+        .card.border-primary:hover::before { opacity: 1; }
+        .card.border-primary:hover {
+            transform: translateY(-8px);
+            border-color: transparent !important;
+            box-shadow: 0 20px 48px rgba(111, 60, 231, 0.22);
+        }
+        .card.border-primary .card-title {
+            color: var(--zlora-dark);
+            font-size: 1.15rem;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+        }
+        .card.border-primary .card-text {
+            color: var(--zlora-text-soft);
+            font-size: .93rem;
+            line-height: 1.6;
+        }
+        .gradient-fill:before {
+            color: var(--zlora-primary);
+        }
+
+        /* ----- FEATURES ----- */
+        .feature-wrapper { padding: 80px 0; }
+        .feature-bg {
+            background: #fff;
+            border: 1px solid var(--zlora-border) !important;
+            text-decoration: none !important;
+            transition: all .3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .feature-bg.white { background: var(--zlora-lilac); }
+        .feature-inner { padding: 42px 16px; }
+        .icon-box {
+            font-size: 44px;
+            margin-bottom: 18px;
+            color: var(--zlora-primary);
+            transition: all .3s ease;
+            display: inline-block;
+        }
+        .feature-content h4 {
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: .06em;
+            text-transform: uppercase;
+            margin: 10px 0;
+            color: var(--zlora-dark);
+            transition: color .3s ease;
+            line-height: 1.4;
+        }
+        .feature-details {
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--zlora-primary);
+            text-transform: uppercase;
+            letter-spacing: .1em;
+            margin: 8px 0 0;
+        }
+        .feature-bg:hover {
+            background: var(--zlora-primary) !important;
+            transform: translateY(-6px);
+            border-color: transparent !important;
+            box-shadow: 0 18px 40px rgba(111, 60, 231, 0.4);
+        }
+        .feature-bg:hover .feature-content h4,
+        .feature-bg:hover .feature-details,
+        .feature-bg:hover .fa,
+        .feature-bg:hover .ion,
+        .feature-bg:hover .icon-box {
+            color: #fff !important;
+        }
+
+        /* ----- PASSOS ----- */
+        .ui-steps { padding: 0; }
+        .ui-steps li.media { padding: 26px 0; align-items: center; }
+        .ui-steps li:not(:last-child) { border-bottom: 1px solid var(--zlora-border); }
+        .circle-icon {
+            box-shadow: 0 10px 24px rgba(111, 60, 231, 0.25);
+            width: 76px; height: 76px;
+            border-radius: 50%;
+            background: var(--zlora-primary);
+            color: #fff;
+            font-size: 30px;
+            font-weight: 800;
+            text-align: center;
+            line-height: 76px;
+            transition: all .3s ease;
+            flex-shrink: 0;
+            font-family: 'Outfit', sans-serif;
+        }
+        .ui-steps li:hover .circle-icon {
+            transform: scale(1.12) rotate(-5deg);
+            background: var(--zlora-dark);
+            box-shadow: 0 16px 36px rgba(36, 23, 60, 0.4);
+        }
+        .ui-steps h5 {
+            color: var(--zlora-dark);
+            font-weight: 700;
+            font-size: 1.15rem;
+            margin-bottom: .35rem;
+        }
+        .ui-steps label { display: block; font-size: .93rem; line-height: 1.6; }
+
+        /* ----- PREÇOS ----- */
+        .card.pricing {
+            border: 1px solid var(--zlora-border);
+            border-radius: 18px;
+            background: #fff;
+            transition: all .35s cubic-bezier(.2,.8,.2,1);
+            overflow: hidden;
+            position: relative;
+        }
+        .card.pricing.popular {
+            border: 2px solid transparent;
+            background:
+                linear-gradient(#fff, #fff) padding-box,
+                linear-gradient(135deg, var(--zlora-primary) 0%, var(--zlora-primary-light) 100%) border-box;
+            box-shadow: 0 14px 40px rgba(111, 60, 231, 0.18);
+        }
+        .card.pricing.popular:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 24px 56px rgba(111, 60, 231, 0.4);
+        }
+        .card-head { padding: 36px 20px 20px; text-align: center; }
+        .card-head small {
+            display: block;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            margin-bottom: 14px;
+            color: var(--zlora-primary);
+        }
+        .card-head .price {
+            display: block;
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: var(--zlora-dark);
+            line-height: 1.05;
+            letter-spacing: -0.03em;
+        }
+        .card-head .price sub { font-size: .9rem; font-weight: 600; vertical-align: baseline; }
+        .card-head .price-old { color: var(--zlora-text-soft); font-size: .85rem; }
+        .card-head del { text-decoration: line-through; opacity: .55; }
+        .list-group-item {
+            background: transparent;
+            border-color: var(--zlora-border);
+            color: var(--zlora-text-soft);
+            font-size: .9rem;
+            text-align: center;
+            padding: .9rem 1rem;
+            font-weight: 500;
+        }
+        .card-body { padding: 20px; }
+
+        /* ----- RIBBON ----- */
+        .ribbon-content { position: absolute; top: 0; right: 0; z-index: 2; }
+        .ribbon.base {
+            background: var(--zlora-dark);
+            color: #fff;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: .08em;
+            padding: 7px 16px;
+            border-bottom-left-radius: 12px;
+            box-shadow: 0 4px 12px rgba(36, 23, 60, 0.35);
+        }
+
+        /* ----- FORMULÁRIO ----- */
+        .form-control {
+            border-radius: 10px;
+            border: 2px solid var(--zlora-border);
+            background: #fff;
+            color: var(--zlora-text);
+            font-size: .95rem;
+            padding: .8rem 1rem;
+            height: auto;
+            transition: all .2s ease;
+            font-weight: 500;
+        }
+        .form-control:focus {
+            border-color: var(--zlora-primary);
+            box-shadow: 0 0 0 4px rgba(111, 60, 231, 0.15);
+            background: #fff;
+            color: var(--zlora-text);
+        }
+        .form-control:disabled { background: var(--zlora-lilac); border-color: var(--zlora-border); }
+        .form-group label {
+            font-size: .82rem;
+            font-weight: 700;
+            color: var(--zlora-dark);
+            letter-spacing: .03em;
+            margin-bottom: .4rem;
+            text-transform: uppercase;
+        }
+        .text-barber2 { color: var(--zlora-primary) !important; font-weight: 600; }
+        .text-barber2:hover { color: var(--zlora-primary-dark) !important; }
+
+        /* ----- FAQ ----- */
+        #faq h4 {
+            font-size: 1.08rem;
+            font-weight: 700;
+            color: var(--zlora-dark);
+            letter-spacing: -0.01em;
+        }
+        #faq p.light-font {
+            color: var(--zlora-text-soft);
+            font-weight: 400;
+            font-size: .95rem;
+            line-height: 1.65;
+        }
+
+        /* ----- CTA ----- */
+        .bg-gradient {
+            background:
+                radial-gradient(circle at 20% 30%, rgba(139, 92, 240, 0.3) 0%, transparent 55%),
+                radial-gradient(circle at 80% 70%, rgba(111, 60, 231, 0.4) 0%, transparent 60%),
+                linear-gradient(135deg, var(--zlora-dark) 0%, #3A1F6B 50%, var(--zlora-primary) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        .call-to-action { text-align: center; padding: 40px 0; position: relative; z-index: 1; }
+        .call-to-action h2 {
+            color: #fff;
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.6rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            letter-spacing: -0.03em;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+        .call-to-action p {
+            color: rgba(255,255,255,.92);
+            font-size: 1.1rem;
+            max-width: 640px;
+            margin: 0 auto 2rem;
+        }
+
+        /* ----- FOOTER ----- */
+        .menu-footer { list-style: none; padding: 0; margin: 0; }
+        .menu-footer-title {
+            font-weight: 800 !important;
+            color: var(--zlora-dark) !important;
+            padding-bottom: 14px;
+            font-size: .95rem;
+            letter-spacing: .03em;
+            text-transform: uppercase;
+        }
+        .menu-footer-item { padding: 6px 0; }
+        .menu-footer-item a {
+            color: var(--zlora-text-soft);
+            font-size: .93rem;
+            transition: color .2s ease;
+            font-weight: 500;
+        }
+        .menu-footer-item a:hover { color: var(--zlora-primary); }
+
+        #contact p, #contact a { font-size: .93rem; color: var(--zlora-text-soft); }
+        #contact a { color: var(--zlora-primary); font-weight: 600; }
+
+        .social-icons a {
+            background: var(--zlora-primary);
+            box-shadow: 0 6px 18px rgba(111, 60, 231, 0.3);
+            width: 46px; height: 46px;
+            display: inline-block;
+            text-align: center;
+            line-height: 46px;
+            margin: 0 .25rem;
+            border-radius: 12px;
+            color: #fff;
+            transition: all .25s ease;
+        }
+        .social-icons a:hover {
+            text-decoration: none;
+            background: var(--zlora-dark);
+            color: #fff;
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(36, 23, 60, 0.5);
+        }
+
+        footer p { color: var(--zlora-text-soft); }
+        footer a { color: var(--zlora-primary); font-weight: 700; }
+
+        /* ----- WHATSAPP ----- */
+        .whatsapp-button {
+            position: fixed;
+            bottom: 24px; right: 24px;
+            background: #25d366;
+            border: none;
+            border-radius: 50%;
+            width: 60px; height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 24px rgba(37, 211, 102, .5);
+            cursor: pointer;
+            z-index: 9999;
+            transition: transform .2s ease, box-shadow .3s;
+            text-decoration: none;
+        }
+        .whatsapp-button:hover {
+            transform: scale(1.12) rotate(8deg);
+            box-shadow: 0 12px 32px rgba(37, 211, 102, .7);
+        }
+        .whatsapp-icon { width: 30px; height: 30px; fill: white; }
+
+        /* ----- VIDEO ----- */
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            border-radius: 20px;
+            box-shadow: 0 24px 60px rgba(36, 23, 60, 0.3);
+        }
+        .video-container iframe {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            border: 0;
+        }
+
+        /* ----- MODULOS ----- */
+        .modulos { list-style: none; padding: 0; }
+        .modulos li {
+            background: #fff;
+            border-left: 4px solid var(--zlora-primary);
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 16px rgba(36, 23, 60, 0.06);
+            font-size: .95rem;
+            line-height: 1.65;
+            transition: all .25s ease;
+        }
+        .modulos li:hover {
+            transform: translateX(4px);
+            box-shadow: 0 8px 24px rgba(111, 60, 231, 0.15);
+        }
+        .modulos li.webadmin { border-left-color: var(--zlora-primary); }
+        .modulos li.mobile   { border-left-color: var(--zlora-primary-light); }
+        .modulos b { color: var(--zlora-dark); font-weight: 700; }
+
+        /* ----- RESPONSIVO ----- */
+        @media (max-width: 991px) {
+            .header h1 { font-size: 3.2rem; }
+            .header .tagline { font-size: 1.1rem; }
+            .section { padding: 70px 0; }
+            .section-title h3 { font-size: 2rem; }
+            .card-deck { flex-direction: column; }
+            .card-deck .card { margin-bottom: 20px; }
+            .btn-type-customer { min-width: 100%; margin: .4rem 0 !important; }
+            .ui-steps li.media { padding: 20px 0; }
+            .call-to-action h2 { font-size: 1.9rem; }
+        }
+        @media (max-width: 576px) {
+            .header h1 { font-size: 2.5rem; }
+            .bg-header { padding: 140px 0 80px; }
+            .btn-header, .btn-primary, .btn-light { font-size: 12px; padding: .75rem 1.4rem; }
+            .circle-icon { width: 60px; height: 60px; line-height: 60px; font-size: 24px; }
+            .section-title h3 { font-size: 1.7rem; }
+        }
+    </style>
+</head>
+
+<body data-spy="scroll" data-target="#navbar" data-offset="30">
+
+    <!-- NAVBAR -->
+    <div class="nav-menu fixed-top">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <nav class="navbar navbar-expand-lg">
+                        <a class="navbar-brand brand-font" href="#" style="color: var(--zlora-primary); font-size: 1.7rem;">
+                            Zlora
+                        </a>
+                        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                        <div class="collapse navbar-collapse" id="navbar">
+                            <ul class="navbar-nav ml-auto">
+                                <li class="nav-item"><a class="nav-link active" href="#home">HOME</a></li>
+                                <li class="nav-item"><a class="nav-link" href="#sobre">SOBRE</a></li>
+                                <li class="nav-item"><a class="nav-link" href="#funcoes">FUNCIONALIDADES</a></li>
+                                <li class="nav-item"><a class="nav-link" href="#precos">PREÇOS</a></li>
+                                <li class="nav-item"><a href="#cadastro" class="nav-link btn-cadastro">TESTE GRÁTIS</a></li>
+                                <li class="nav-item"><a class="nav-link" href="#">BLOG</a></li>
+                                <li class="nav-item"><a class="nav-link" href="#">ACESSAR</a></li>
+                            </ul>
+                        </div>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- HERO -->
+    <header class="header bg-header" id="home">
+        <div class="container text-center position-relative" style="z-index: 1;">
+            <h1 class="brand-font">Zlora</h1>
+            <p class="tagline">Tecnologia e gestão para o sucesso do seu negócio de beleza e estética.</p>
+            <p class="mt-4">
+                <a href="#cadastro" class="btn btn-header">INICIE ESSA EXPERIÊNCIA</a>
+            </p>
+            <p class="mt-5 text-white">Baixe o aplicativo nas Stores</p>
+            <div class="d-flex justify-content-center flex-wrap">
+                <a href="https://apps.apple.com/us/app/appbarber-pro-profissionais/id1602535418" target="_blank" class="m-2">
+                    <img src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/pt-br?size=250x83&amp;releaseDate=1642204800" alt="AppStore" style="width: 190px; border-radius: 10px;">
+                </a>
+                <a href="https://play.google.com/store/apps/details?id=br.com.starapp.appbarberpro" target="_blank" class="m-2">
+                    <img width="190" height="82" src="200x87xgoogle-play-badge.png.pagespeed.ic.h983Va1SjV.webp" alt="GooglePlay" style="border-radius: 10px;">
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- SOBRE -->
+    <div class="section" id="sobre">
+        <div class="container">
+            <div class="section-title">
+                <h3>Sobre a <span>Zlora</span></h3>
+                <small>Uma plataforma completa para gestão do seu negócio de beleza</small>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <p>A Zlora é uma plataforma web completa para o gerenciamento de salões de beleza, barbearias, clínicas de estética e lash designers. Nosso sistema permite agendamentos online, organização da agenda e otimização de todos os processos do seu estabelecimento.</p>
+
+                    <p>O sistema é dividido em dois módulos principais:</p>
+
+                    <ul class="modulos">
+                        <li class="webadmin"><b>Módulo WebAdmin:</b> Onde você pode fazer toda a gestão do estabelecimento, com controle de profissionais, histórico de clientes, controle de comissões, gestão de estoque e relatórios financeiros completos. O sistema é armazenado em nuvem, proporcionando acesso seguro a qualquer hora e local.</li>
+                        <li class="mobile"><b>Módulo Aplicativo:</b> Acessível tanto pelo profissional (para acompanhar sua agenda e comissões) quanto pelo cliente (para realizar agendamentos, receber notificações e promoções), facilitando a comunicação e aproximando o estabelecimento do seu cliente.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="row mt-5">
+                <div class="col-md-12 my-3 text-center">
+                    <h3>Nosso Objetivo</h3>
+                </div>
+                <div class="col-12 col-lg-4 mb-4">
+                    <div class="card border-primary h-100">
+                        <div class="card-body">
+                            <div class="media">
+                                <span class="ti-calendar text-primary ti-3x mr-3" style="font-size: 44px;"></span>
+                                <div class="media-body">
+                                    <h4 class="card-title">Otimizar seu Tempo</h4>
+                                    <p class="card-text">Organize sua agenda e estimule mais agendamentos através do aplicativo, evitando conflitos de horário.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-4 mb-4">
+                    <div class="card border-primary h-100">
+                        <div class="card-body">
+                            <div class="media">
+                                <span class="ti-face-smile text-primary ti-3x mr-3" style="font-size: 44px;"></span>
+                                <div class="media-body">
+                                    <h4 class="card-title">Fidelizar seu Cliente</h4>
+                                    <p class="card-text">Fidelize através do Agendamento Online, Programa de Fidelidade, Envio de Promoções e Mensagens de Retorno automáticas.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-4 mb-4">
+                    <div class="card border-primary h-100">
+                        <div class="card-body">
+                            <div class="media">
+                                <span class="ti-bar-chart text-primary ti-3x mr-3" style="font-size: 44px;"></span>
+                                <div class="media-body">
+                                    <h4 class="card-title">Aumentar seu Faturamento</h4>
+                                    <p class="card-text">Aumente seu movimento e tenha um maior faturamento com relatórios gerenciais e controle de comissões.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FUNCIONALIDADES -->
+    <div class="section light-bg" id="funcoes">
+        <div class="container">
+            <div class="section-title">
+                <h3>Funcionalidades da <span>Zlora</span></h3>
+                <small>Tudo o que seu negócio precisa em um só lugar</small>
+            </div>
+
+            <div class="row no-gutters">
+                <a class="col-lg-3 col-sm-6 col-xs-12 border feature-bg" href="#">
+                    <div class="feature-inner text-center">
+                        <div class="icon-box"><i class="ion ion-ios-people"></i></div>
+                        <div class="feature-content"><h4>Cadastro de Clientes</h4></div>
+                        <div><small class="feature-details">RF01</small></div>
+                    </div>
+                </a>
+                <a class="col-lg-3 col-sm-6 col-xs-12 white border feature-bg" href="#">
+                    <div class="feature-inner text-center">
+                        <div class="icon-box"><i class="fa fa-user-tie"></i></div>
+                        <div class="feature-content"><h4>Cadastro de Profissionais</h4></div>
+                        <div><small class="feature-details">RF02</small></div>
+                    </div>
+                </a>
+                <a class="col-lg-3 col-sm-6 col-xs-12 feature-bg border" href="#">
+                    <div class="feature-inner text-center">
+                        <div class="icon-box"><i class="fa fa-concierge-bell"></i></div>
+                        <div class="feature-content"><h4>Cadastro de Serviços</h4></div>
+                        <div><small class="feature-details">RF03</small></div>
+                    </div>
+                </a>
+                <a class="col-lg-3 col-sm-6 col-xs-12 white border feature-bg" href="#">
+                    <div class="feature-inner text-center">
+                        <div class="icon-box"><i class="ion ion-calendar"></i></div>
+                        <div class="feature-content"><h4>Gerenciamento de Agendamentos</h4></div>
+                        <div><small class="feature-details">RF04</small></div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="row no-gutters">
+                <a class="col-lg-3 col-sm-6 col-xs-12 white feature-bg" href="#">
+                    <div class="feature-inner text-center">
+                        <div class="icon-box"><i class="fa fa-clock"></i></div>
+                        <div class="feature-content"><h4>Controle de Horários</h4></div>
+                        <div><small class="feature-details">RF05</small></div>
+                    </div>
+                </a>
+                <a class="col-lg-3 col-sm-6 col-xs-12 feature-bg" href="#">
+                    <div class="feature-inner text-center">
+                        <div class="icon-box"><i class="ion ion-clipboard"></i></div>
+                        <div class="feature-content"><h4>Histórico de Atendimentos</h4></div>
+                        <div><small class="feature-details">RF06</small></div>
+                    </div>
+                </a>
+                <a class="col-lg-3 col-sm-6 col-xs-12 white feature-bg" href="#">
+                    <div class="feature-inner text-center">
+                        <div class="icon-box"><i class="fa fa-hand-holding-usd"></i></div>
+                        <div class="feature-content"><h4>Controle de Comissões</h4></div>
+                        <div><small class="feature-details">RF07</small></div>
+                    </div>
+                </a>
+                <a class="col-lg-3 col-sm-6 col-xs-12 feature-bg" href="#">
+                    <div class="feature-inner text-center">
+                        <div class="icon-box"><i class="fa fa-chart-pie"></i></div>
+                        <div class="feature-content"><h4>Dashboard</h4></div>
+                        <div><small class="feature-details">RF08</small></div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="row no-gutters">
+                <a class="col-lg-3 col-sm-6 col-xs-12 feature-bg" href="#">
+                    <div class="feature-inner text-center">
+                        <div class="icon-box"><i class="ion ion-document-text"></i></div>
+                        <div class="feature-content"><h4>Relatórios</h4></div>
+                        <div><small class="feature-details">RF09</small></div>
+                    </div>
+                </a>
+                <a class="col-lg-3 col-sm-6 col-xs-12 white feature-bg" href="#">
+                    <div class="feature-inner text-center">
+                        <div class="icon-box"><i class="fa fa-search"></i></div>
+                        <div class="feature-content"><h4>Pesquisa e Filtros</h4></div>
+                        <div><small class="feature-details">RF10</small></div>
+                    </div>
+                </a>
+                <a class="col-lg-3 col-sm-6 col-xs-12 feature-bg" href="#">
+                    <div class="feature-inner text-center">
+                        <div class="icon-box"><i class="fa fa-lock"></i></div>
+                        <div class="feature-content"><h4>Autenticação</h4></div>
+                        <div><small class="feature-details">RF11</small></div>
+                    </div>
+                </a>
+                <a class="col-lg-3 col-sm-6 col-xs-12 white feature-bg" href="#">
+                    <div class="feature-inner text-center">
+                        <div class="icon-box"><i class="fa fa-users-cog"></i></div>
+                        <div class="feature-content"><h4>Gerenciamento de Usuários</h4></div>
+                        <div><small class="feature-details">RF12</small></div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="row no-gutters">
+                <a class="col-lg-3 col-sm-6 col-xs-12 white feature-bg" href="#">
+                    <div class="feature-inner text-center">
+                        <div class="icon-box"><i class="fa fa-info-circle"></i></div>
+                        <div class="feature-content"><h4>Status dos Agendamentos</h4></div>
+                        <div><small class="feature-details">RF13</small></div>
+                    </div>
+                </a>
+                <a class="col-lg-3 col-sm-6 col-xs-12 feature-bg" href="#">
+                    <div class="feature-inner text-center">
+                        <div class="icon-box"><i class="fa fa-star"></i></div>
+                        <div class="feature-content"><h4>Serviços Mais Solicitados</h4></div>
+                        <div><small class="feature-details">RF14</small></div>
+                    </div>
+                </a>
+                <a class="col-lg-3 col-sm-6 col-xs-12 white feature-bg" href="#">
+                    <div class="feature-inner text-center">
+                        <div class="icon-box"><i class="fa fa-clock"></i></div>
+                        <div class="feature-content"><h4>Horários de Maior Demanda</h4></div>
+                        <div><small class="feature-details">RF15</small></div>
+                    </div>
+                </a>
+                <a class="col-lg-3 col-sm-6 col-xs-12 feature-bg" href="#">
+                    <div class="feature-inner text-center">
+                        <div class="icon-box"><i class="fa fa-shield-alt"></i></div>
+                        <div class="feature-content"><h4>Segurança e Privacidade</h4></div>
+                        <div><small class="feature-details">RNF04, RNF06</small></div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="container mt-5 text-center">
+                <a href="#" class="btn btn-header">VEJA TODAS AS FUNCIONALIDADES</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- PASSOS -->
+    <div class="section" id="passos">
+        <div class="container">
+            <div class="section-title">
+                <h3>Como <span>começar</span></h3>
+                <small>Três passos simples para transformar sua gestão</small>
+            </div>
+            <div class="row">
+                <div class="col-md-6 my-4 d-flex align-items-center justify-content-center">
+                    <ul class="list-unstyled ui-steps">
+                        <li class="media">
+                            <div class="circle-icon mr-4">1</div>
+                            <div class="media-body">
+                                <h5>Faça o Cadastro</h5>
+                                <label class="text-gray">Cadastre-se na Zlora, informando os dados básicos do seu estabelecimento. É rápido e fácil.</label>
+                            </div>
+                        </li>
+                        <li class="media">
+                            <div class="circle-icon mr-4">2</div>
+                            <div class="media-body">
+                                <h5>Preencha o Passo a Passo inicial</h5>
+                                <label class="text-gray">Informe os cadastros essenciais: serviços, profissionais e jornada de trabalho.</label>
+                            </div>
+                        </li>
+                        <li class="media">
+                            <div class="circle-icon mr-4">3</div>
+                            <div class="media-body">
+                                <h5>Teste grátis por 30 dias</h5>
+                                <label class="text-gray">Usufrua de todas as funcionalidades do sistema por 30 dias gratuitamente, sem compromisso.</label>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-md-6 d-flex align-items-center justify-content-center">
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Cdefs%3E%3ClinearGradient id='g1' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%236F3CE7'/%3E%3Cstop offset='100%25' style='stop-color:%238B5CF0'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='400' height='300' rx='20' fill='%23EDE7FF'/%3E%3Crect x='40' y='40' width='320' height='50' rx='12' fill='url(%23g1)' opacity='0.9'/%3E%3Crect x='40' y='110' width='320' height='30' rx='8' fill='url(%23g1)' opacity='0.5'/%3E%3Crect x='40' y='160' width='200' height='30' rx='8' fill='url(%23g1)' opacity='0.35'/%3E%3Crect x='40' y='210' width='280' height='30' rx='8' fill='url(%23g1)' opacity='0.2'/%3E%3C/svg%3E" alt="Passo a passo Zlora" class="img-fluid d-none d-lg-block d-xl-block">
+                </div>
+            </div>
+            <div class="container mt-4 text-center">
+                <a href="#cadastro" class="btn btn-header">CLIQUE AQUI E CADASTRE-SE AGORA</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- VIDEO -->
+    <div class="section pt-0" id="case-appbarber">
+        <div class="container">
+            <div class="video-container">
+                <iframe src="https://www.youtube.com/embed/5Sn1lMUvg4U?rel=0" allowfullscreen></iframe>
+            </div>
+        </div>
+    </div>
+
+    <!-- PREÇOS -->
+    <div class="section light-bg" id="precos">
+        <div class="container">
+            <div class="section-title">
+                <h3>Planos e <span>Preços</span></h3>
+                <small>Escolha o plano ideal para o seu negócio</small>
+            </div>
+
+            <div class="container mt-4 mb-5 d-flex align-items-center justify-content-center">
+                <div class="btn-group flex-wrap justify-content-center" data-toggle="buttons">
+                    <label class="btn btn-price active m-1" id="anual">
+                        <input type="radio" name="price-plan" autocomplete="off" checked> ANUAL
+                        <p><small>30% de desconto</small></p>
+                    </label>
+                    <label class="btn btn-price m-1" id="semestral">
+                        <input type="radio" name="price-plan" autocomplete="off"> SEMESTRAL
+                        <p><small>15% de desconto</small></p>
+                    </label>
+                    <label class="btn btn-price m-1" id="mensal">
+                        <input type="radio" name="price-plan" autocomplete="off"> MENSAL
+                        <p><small>&nbsp;</small></p>
+                    </label>
+                </div>
+            </div>
+
+            <div class="card-deck" id="card-anual">
+                <div class="card pricing popular">
+                    <div class="ribbon-content"><div class="ribbon base"><span>30% OFF</span></div></div>
+                    <div class="card-head">
+                        <small>1 Profissional</small>
+                        <span class="price"><sub>R$</sub> 55,90<sub>/mês</sub></span>
+                        <del><span class="price-old">R$ 79,90/mês</span></del>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">Valor Total: R$ 670,80</li>
+                    </ul>
+                    <div class="card-body">
+                        <button class="btn btn-primary btn-block">Em até 12x s/ juros</button>
+                    </div>
+                </div>
+                <div class="card pricing popular">
+                    <div class="ribbon-content"><div class="ribbon base"><span>30% OFF</span></div></div>
+                    <div class="card-head">
+                        <small>2 a 5 Profissionais</small>
+                        <span class="price"><sub>R$</sub> 76,90<sub>/mês</sub></span>
+                        <del><span class="price-old">R$ 109,90/mês</span></del>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">Valor Total: R$ 922,80</li>
+                    </ul>
+                    <div class="card-body">
+                        <button class="btn btn-primary btn-block">Em até 12x s/ juros</button>
+                    </div>
+                </div>
+                <div class="card pricing popular">
+                    <div class="ribbon-content"><div class="ribbon base"><span>30% OFF</span></div></div>
+                    <div class="card-head">
+                        <small>6 a 15 Profissionais</small>
+                        <span class="price"><sub>R$</sub> 115,15<sub>/mês</sub></span>
+                        <del><span class="price-old">R$ 164,50/mês</span></del>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">Valor Total: R$ 1.381,80</li>
+                    </ul>
+                    <div class="card-body">
+                        <button class="btn btn-primary btn-block">Em até 12x s/ juros</button>
+                    </div>
+                </div>
+                <div class="card pricing popular">
+                    <div class="ribbon-content"><div class="ribbon base"><span>30% OFF</span></div></div>
+                    <div class="card-head">
+                        <small>+15 Profissionais</small>
+                        <span class="price"><sub>R$</sub> 153,90<sub>/mês</sub></span>
+                        <del><span class="price-old">R$ 219,90/mês</span></del>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">Valor Total: R$ 1.846,80</li>
+                    </ul>
+                    <div class="card-body">
+                        <button class="btn btn-primary btn-block">Em até 12x s/ juros</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-deck" id="card-semestral" style="display:none;">
+                <div class="card pricing popular">
+                    <div class="ribbon-content"><div class="ribbon base"><span>15% OFF</span></div></div>
+                    <div class="card-head">
+                        <small>1 Profissional</small>
+                        <span class="price"><sub>R$</sub> 67,80<sub>/mês</sub></span>
+                        <del><span class="price-old">R$ 79,90/mês</span></del>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">Valor Total: R$ 406,80</li>
+                    </ul>
+                    <div class="card-body">
+                        <button class="btn btn-primary btn-block">Em até 6x s/ juros</button>
+                    </div>
+                </div>
+                <div class="card pricing popular">
+                    <div class="ribbon-content"><div class="ribbon base"><span>15% OFF</span></div></div>
+                    <div class="card-head">
+                        <small>2 a 5 Profissionais</small>
+                        <span class="price"><sub>R$</sub> 93,30<sub>/mês</sub></span>
+                        <del><span class="price-old">R$ 109,90/mês</span></del>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">Valor Total: R$ 559,80</li>
+                    </ul>
+                    <div class="card-body">
+                        <button class="btn btn-primary btn-block">Em até 6x s/ juros</button>
+                    </div>
+                </div>
+                <div class="card pricing popular">
+                    <div class="ribbon-content"><div class="ribbon base"><span>15% OFF</span></div></div>
+                    <div class="card-head">
+                        <small>6 a 15 Profissionais</small>
+                        <span class="price"><sub>R$</sub> 139,80<sub>/mês</sub></span>
+                        <del><span class="price-old">R$ 164,50/mês</span></del>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">Valor Total: R$ 838,80</li>
+                    </ul>
+                    <div class="card-body">
+                        <button class="btn btn-primary btn-block">Em até 6x s/ juros</button>
+                    </div>
+                </div>
+                <div class="card pricing popular">
+                    <div class="ribbon-content"><div class="ribbon base"><span>15% OFF</span></div></div>
+                    <div class="card-head">
+                        <small>+15 Profissionais</small>
+                        <span class="price"><sub>R$</sub> 186,80<sub>/mês</sub></span>
+                        <del><span class="price-old">R$ 219,90/mês</span></del>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">Valor Total: R$ 1.120,80</li>
+                    </ul>
+                    <div class="card-body">
+                        <button class="btn btn-primary btn-block">Em até 6x s/ juros</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-deck" id="card-mensal" style="display:none;">
+                <div class="card pricing popular">
+                    <div class="card-head">
+                        <small>1 Profissional</small>
+                        <span class="price"><sub>R$</sub> 79,90<sub>/mês</sub></span>
+                    </div>
+                    <div class="card-body">
+                        <button class="btn btn-primary btn-block">Assinar Mensal</button>
+                    </div>
+                </div>
+                <div class="card pricing popular">
+                    <div class="card-head">
+                        <small>2 a 5 Profissionais</small>
+                        <span class="price"><sub>R$</sub> 109,90<sub>/mês</sub></span>
+                    </div>
+                    <div class="card-body">
+                        <button class="btn btn-primary btn-block">Assinar Mensal</button>
+                    </div>
+                </div>
+                <div class="card pricing popular">
+                    <div class="card-head">
+                        <small>6 a 15 Profissionais</small>
+                        <span class="price"><sub>R$</sub> 164,50<sub>/mês</sub></span>
+                    </div>
+                    <div class="card-body">
+                        <button class="btn btn-primary btn-block">Assinar Mensal</button>
+                    </div>
+                </div>
+                <div class="card pricing popular">
+                    <div class="card-head">
+                        <small>+15 Profissionais</small>
+                        <span class="price"><sub>R$</sub> 219,90<sub>/mês</sub></span>
+                    </div>
+                    <div class="card-body">
+                        <button class="btn btn-primary btn-block">Assinar Mensal</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CADASTRO -->
+    <div class="section" id="cadastro">
+        <div class="container">
+            <div class="section-title">
+                <h3>Selecione a opção e <span>Cadastre-se!</span></h3>
+                <small>Experimente todas as funcionalidades grátis por 30 dias, sem compromisso.</small>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-lg-9 col-md-12">
+                    <form id="formCadastro">
+                        <div class="container mb-5 d-flex align-items-center justify-content-center">
+                            <div class="btn-group flex-wrap justify-content-center" data-toggle="buttons">
+                                <label class="btn btn-type-customer m-2" id="tenhoBarbearia">
+                                    <input type="radio" name="type-customer" autocomplete="off">
+                                    TENHO UM NEGÓCIO <br>
+                                    <span style="font-weight: 400; opacity: .85; font-size: 11px;">SALÃO / BARBEARIA / CLÍNICA</span>
+                                </label>
+                                <label class="btn btn-type-customer m-2" id="souCliente">
+                                    <input type="radio" name="type-customer" autocomplete="off">
+                                    SOU CLIENTE <br>
+                                    <span style="font-weight: 400; opacity: .85; font-size: 11px;">DE ESTABELECIMENTO</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="row" id="card-estabelecimento" style="display: none;">
+                            <div class="col-lg-12 col-md-12">
+                                <div class="form-group">
+                                    <label for="nome">Nome do Estabelecimento*</label>
+                                    <input type="text" name="nome" class="form-control" id="nome" placeholder="Nome do Estabelecimento" disabled required />
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-12">
+                                <div class="form-group">
+                                    <label>Nome do contato*</label>
+                                    <input type="text" class="form-control" name="nomecontato" id="nomecontato" placeholder="Ex: João Silva" disabled required />
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-12">
+                                <div class="form-group">
+                                    <label>Celular do Contato*</label>
+                                    <input type="text" name="telefone" class="form-control" id="telefone" placeholder="(00) 00000-0000" disabled required>
+                                    <input type="hidden" id="dialCode" name="dialCode">
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-12">
+                                <div class="form-group">
+                                    <label>E-mail Para Acesso*</label>
+                                    <input type="email" class="form-control" name="email" id="email" placeholder="seu@email.com" disabled required>
+                                    <small class="text-info" style="display:none;" id="suggest-email"></small>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-12">
+                                <div class="form-group">
+                                    <label>Senha <small style="font-weight: 400; text-transform: none;">(Mínimo 6 caracteres)*</small></label>
+                                    <input type="password" class="form-control" name="senha" id="senha" placeholder="Senha" minlength="6" maxlength="15" disabled required>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-12">
+                                <div class="form-group">
+                                    <p>
+                                        <input type="checkbox" id="conduso" name="conduso" disabled required>
+                                        <label for="conduso" style="font-weight: 400; text-transform: none; font-size: .9rem;">Li e aceito o <a href="#" target="_blank" class="text-barber2">Termo de Condição de Uso.</a></label>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="text-center mt-4" id="div-button-cadastro" style="display: none;">
+                            <button class="btn btn-primary btn-lg" type="submit" id="btnCadastrar" disabled>CADASTRAR</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FAQ -->
+    <div class="section pt-0" id="faq">
+        <div class="container">
+            <div class="section-title">
+                <h3>Perguntas <span>Frequentes</span></h3>
+                <small>Tire suas dúvidas sobre a Zlora</small>
+            </div>
+            <div class="row pt-4">
+                <div class="col-md-6">
+                    <h4 class="mb-2">Não possuo CNPJ. Posso utilizar a Zlora?</h4>
+                    <p class="light-font mb-5">Sim. A Zlora pode ser utilizada tanto por Pessoa Jurídica quanto Pessoa Física.</p>
+                    <h4 class="mb-2">O período gratuito possui alguma limitação das funcionalidades?</h4>
+                    <p class="light-font mb-5">Não. Durante o período de teste você pode utilizar o sistema com todas as funcionalidades.</p>
+                    <h4 class="mb-2">Meus profissionais tem acesso ao sistema?</h4>
+                    <p class="light-font mb-5">Sim. Podem ter acesso ao módulo web e aplicativo, podendo ter restrições de acesso definidas pelo gestor.</p>
+                </div>
+                <div class="col-md-6">
+                    <h4 class="mb-2">Posso alterar meu plano futuramente?</h4>
+                    <p class="light-font mb-5">Na contratação do plano mensal, você pode fazer a alteração do seu plano a cada vencimento da fatura.</p>
+                    <h4 class="mb-2">O cliente precisa pagar para baixar o aplicativo?</h4>
+                    <p class="light-font mb-5">Não. O download do aplicativo Zlora é gratuito e está disponível para iOS e Android.</p>
+                    <h4 class="mb-2">Consigo exportar minha base de dados?</h4>
+                    <p class="light-font mb-5">Sim. Entre em contato conosco pelo chat on-line que informamos como proceder.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="section bg-gradient">
+        <div class="container">
+            <div class="call-to-action">
+                <h2 class="brand-font">Transforme a gestão do seu negócio com a Zlora</h2>
+                <p>Sistema completo para salões de beleza, barbearias, clínicas de estética e lash designers.</p>
+                <div class="my-4">
+                    <a href="#cadastro" class="btn btn-light">Começar Agora</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="py-5" id="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 text-center text-lg-left mb-4 mb-lg-0">
+                    <ul class="menu-footer">
+                        <li class="menu-footer-title">Ajuda</li>
+                        <li class="menu-footer-item"><a href="#">Central de Ajuda</a></li>
+                        <li class="menu-footer-item"><a href="#">Funcionalidades</a></li>
+                        <li class="menu-footer-item"><a href="mailto:contato@zlora.com.br">Contato</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-4 text-center text-lg-left mb-4 mb-lg-0">
+                    <ul class="menu-footer">
+                        <li class="menu-footer-title">Interesse</li>
+                        <li class="menu-footer-item"><a href="#">Módulo Fiscal</a></li>
+                        <li class="menu-footer-item"><a href="#">Aplicativo Próprio</a></li>
+                        <li class="menu-footer-item"><a href="#">Revenda</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-4 text-center text-lg-left">
+                    <ul class="menu-footer">
+                        <li class="menu-footer-title">Conteúdo</li>
+                        <li class="menu-footer-item"><a href="#">WebSerie</a></li>
+                        <li class="menu-footer-item"><a href="#">Blog</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="light-bg py-5" id="contact">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-3 text-center text-lg-left mb-4 mb-lg-0">
+                    <span class="brand-font" style="color: var(--zlora-primary); font-size: 1.9rem;">Zlora</span>
+                </div>
+                <div class="col-lg-5 text-center text-lg-left mb-4 mb-lg-0">
+                    <p class="mb-2"><span class="ti-location-pin mr-2"></span> Av. Principal, 1000 - Sala 101, Centro. São Paulo/SP | Brasil</p>
+                    <div class="d-block d-sm-inline-block">
+                        <p class="mb-2">
+                            <span class="ti-email mr-2"></span> <a class="mr-4" href="mailto:contato@zlora.com.br">contato@zlora.com.br</a>
+                        </p>
+                    </div>
+                    <div class="d-block d-sm-inline-block">
+                        <p class="mb-0">
+                            <span class="fab fa-whatsapp mr-2" style="color: #25d366;"></span>+55 (11) 99999-9999
+                        </p>
+                    </div>
+                </div>
+                <div class="col-lg-4 text-center text-lg-right">
+                    <div class="social-icons">
+                        <a target="_blank" href="#"><span class="fab fa-facebook-f"></span></a>
+                        <a target="_blank" href="#"><span class="fab fa-youtube"></span></a>
+                        <a target="_blank" href="#"><span class="fab fa-instagram"></span></a>
+                        <a target="_blank" href="#"><span class="fab fa-twitter"></span></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="my-5 text-center">
+        <p class="mb-2"><small>© 2026. TODOS OS DIREITOS RESERVADOS. <a href="#">Zlora SISTEMAS</a></small></p>
+    </footer>
+
+    <!-- WHATSAPP -->
+    <a class="whatsapp-button" href="#" target="_blank" title="Fale conosco no WhatsApp">
+        <svg class="whatsapp-icon" viewBox="0 0 32 32">
+            <path d="M16.001 2.667c-7.352 0-13.333 5.981-13.333 13.333 0 2.35.618 4.646 1.786 6.676l-1.868 6.83 7.013-1.841c1.953 1.034 4.152 1.58 6.402 1.58 7.352 0 13.333-5.981 13.333-13.333S23.353 2.667 16.001 2.667zm0 24.933c-2.002 0-3.956-.518-5.678-1.502l-.407-.235-4.163 1.093 1.107-4.059-.265-.418c-1.096-1.73-1.675-3.729-1.675-5.79 0-6.078 4.956-11.033 11.033-11.033 6.078 0 11.033 4.956 11.033 11.033s-4.955 11.033-11.033 11.033zm6.048-8.322c-.331-.166-1.962-.968-2.266-1.078-.305-.111-.528-.166-.751.166-.222.332-.861 1.078-1.056 1.3-.194.222-.389.25-.72.083-.332-.166-1.398-.516-2.665-1.646-.984-.877-1.646-1.962-1.84-2.294-.194-.332-.021-.512.146-.677.15-.149.333-.388.499-.582.166-.194.222-.332.333-.554.111-.222.056-.416-.028-.582-.083-.166-.751-1.81-1.027-2.485-.27-.649-.544-.561-.751-.57l-.639-.011c-.222 0-.582.083-.888.388-.305.305-1.167 1.139-1.167 2.777s1.194 3.222 1.361 3.444c.166.222 2.351 3.588 5.698 5.026.798.344 1.42.55 1.905.705.8.255 1.528.219 2.104.133.643-.096 1.962-.8 2.239-1.571.277-.772.277-1.432.194-1.571-.083-.139-.305-.222-.637-.388z"/>
+        </svg>
+    </a>
+
+    <script src="js/jquery-3.2.1.min.js"></script>
+    <script src="js/bootstrap.bundle.min.js"></script>
+    <script src="js/jquery.mask.min.js"></script>
+    <script>
+        // Alternância de planos
+        $('#anual').on('click', function() {
+            $('#card-anual').show(); $('#card-semestral').hide(); $('#card-mensal').hide();
+        });
+        $('#semestral').on('click', function() {
+            $('#card-anual').hide(); $('#card-semestral').show(); $('#card-mensal').hide();
+        });
+        $('#mensal').on('click', function() {
+            $('#card-anual').hide(); $('#card-semestral').hide(); $('#card-mensal').show();
+        });
+
+        // Alternância de tipo de cadastro
+        $('#tenhoBarbearia').on('click', function() {
+            $('#card-estabelecimento').show();
+            $('#div-button-cadastro').show();
+            $('#card-estabelecimento input').prop('disabled', false);
+            $('#btnCadastrar').prop('disabled', false);
+            $('#conduso').prop('disabled', false);
+        });
+        $('#souCliente').on('click', function() {
+            $('#card-estabelecimento').hide();
+            $('#div-button-cadastro').hide();
+            $('#card-estabelecimento input').prop('disabled', true);
+            $('#btnCadastrar').prop('disabled', true);
+        });
+
+        // Máscara
+        $('#telefone').mask('(00) 00000-0000');
+
+        // Navbar scroll
+        $(window).on('scroll', function() {
+            if ($(this).scrollTop() > 50) {
+                $('.nav-menu').addClass('is-scrolling');
+            } else {
+                $('.nav-menu').removeClass('is-scrolling');
+            }
+        });
+
+        // Smooth scroll
+        $('a[href^="#"]').on('click', function(e) {
+            var target = $(this.hash);
+            if (target.length) {
+                e.preventDefault();
+                $('html, body').animate({ scrollTop: target.offset().top - 70 }, 600);
+            }
+        });
+    </script>
+</body>
+</html>
