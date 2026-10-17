@@ -1,11 +1,17 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // <-- Importação nova
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import SectionTitle from '../ui/SectionTitle';
 import { cadastroSchema } from '../../schemas/cadastroSchema';
+import { useAuth } from '../../contexts/AuthContext'; // <-- Importação nova
 
 export default function Cadastro() {
   const [tipo, setTipo] = useState('negocio');
+  const [erroServidor, setErroServidor] = useState(''); // Erro vindo da "API"
+  
+  const { register: registerUser } = useAuth(); // Apelidado para não confundir com o register do form
+  const navigate = useNavigate();
 
   const {
     register,
@@ -14,10 +20,15 @@ export default function Cadastro() {
   } = useForm({ resolver: zodResolver(cadastroSchema) });
 
   const onSubmit = async (data) => {
-    // TODO: trocar por chamada real
-    console.info('[Zlora] Cadastro:', data);
-    await new Promise((r) => setTimeout(r, 500));
-    alert('Envio desativado: integração com o servidor ainda não configurada.');
+    try {
+      setErroServidor('');
+      // Chama a função mock do Contexto
+      await registerUser(data);
+      // Redireciona para o Dashboard
+      navigate('/dashboard');
+    } catch (err) {
+      setErroServidor(err.message);
+    }
   };
 
   return (
@@ -39,9 +50,7 @@ export default function Cadastro() {
               >
                 <button
                   type="button"
-                  className={`btn btn-type-customer ${
-                    tipo === 'negocio' ? 'active' : ''
-                  }`}
+                  className={`btn btn-type-customer ${tipo === 'negocio' ? 'active' : ''}`}
                   aria-pressed={tipo === 'negocio'}
                   onClick={() => setTipo('negocio')}
                 >
@@ -50,9 +59,7 @@ export default function Cadastro() {
                 </button>
                 <button
                   type="button"
-                  className={`btn btn-type-customer ${
-                    tipo === 'cliente' ? 'active' : ''
-                  }`}
+                  className={`btn btn-type-customer ${tipo === 'cliente' ? 'active' : ''}`}
                   aria-pressed={tipo === 'cliente'}
                   onClick={() => setTipo('cliente')}
                 >
@@ -68,6 +75,14 @@ export default function Cadastro() {
               </div>
             ) : (
               <form onSubmit={handleSubmit(onSubmit)} noValidate>
+                
+                {/* Aviso de erro vindo da API */}
+                {erroServidor && (
+                  <div className="alert alert-info" style={{ background: '#FEE2E2', color: '#991B1B', borderLeftColor: '#DC2626' }}>
+                    {erroServidor}
+                  </div>
+                )}
+
                 <div className="row">
                   <div className="col-lg-12">
                     <div className="form-group">
@@ -205,11 +220,10 @@ export default function Cadastro() {
                     className="btn btn-primary btn-lg"
                     disabled={isSubmitting}
                   >
-                    {isSubmitting ? 'Enviando...' : 'Cadastrar'}
+                    {isSubmitting ? 'Criando conta...' : 'Cadastrar'}
                   </button>
                   <p className="form-note mt-3">
-                    Integração com o servidor ainda não configurada. Ao enviar, os
-                    dados não serão gravados.
+                    Ao se cadastrar, você será redirecionado para o seu painel.
                   </p>
                 </div>
               </form>

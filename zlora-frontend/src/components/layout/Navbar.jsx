@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom'; // <-- Importação nova
 import { useScrolled } from '../../hooks/useScrolled';
 import { useSmoothScroll } from '../../hooks/useSmoothScroll';
 import { useActiveSection } from '../../hooks/useActiveSection';
@@ -19,8 +20,10 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
   const scrollTo = useSmoothScroll();
   const active = useActiveSection(SECTION_IDS);
+  
+  const navigate = useNavigate();      // Hook para navegar entre páginas
+  const location = useLocation();      // Hook para saber em qual página estamos
 
-  // Fecha o menu mobile ao redimensionar para desktop
   useEffect(() => {
     const onResize = () => {
       if (window.innerWidth >= 992 && open) setOpen(false);
@@ -29,15 +32,27 @@ export default function Navbar() {
     return () => window.removeEventListener('resize', onResize);
   }, [open]);
 
-  // Trava o scroll do body com menu mobile aberto
   useEffect(() => {
     document.body.style.overflow = open ? 'hidden' : '';
     return () => { document.body.style.overflow = ''; };
   }, [open]);
 
+  // Função que lida com o clique nos links de rolagem
   const handleNav = (e, id) => {
-    scrollTo(e, id);
+    e.preventDefault();
     setOpen(false);
+
+    if (location.pathname !== '/') {
+      // Se não estiver na Home, vai para a Home e depois rola
+      navigate('/');
+      setTimeout(() => {
+        const el = document.getElementById(id);
+        if (el) window.scrollTo({ top: el.offsetTop - 70, behavior: 'smooth' });
+      }, 100);
+    } else {
+      // Se já estiver na Home, só rola suavemente
+      scrollTo(e, id);
+    }
   };
 
   return (
@@ -47,9 +62,11 @@ export default function Navbar() {
     >
       <div className="container">
         <nav className="navbar" aria-label="Navegação principal">
+          
+          {/* Ao clicar no logo, volta para a Home */}
           <a
             className="navbar-brand"
-            href="#home"
+            href="/"
             onClick={(e) => handleNav(e, 'home')}
             aria-label="Zlora — ir para o início"
           >
@@ -67,15 +84,12 @@ export default function Navbar() {
             <span className="navbar-toggler-icon" />
           </button>
 
-          <div
-            className={`collapse navbar-collapse ${open ? 'show' : ''}`}
-            id="menuPrincipal"
-          >
+          <div className={`collapse navbar-collapse ${open ? 'show' : ''}`} id="menuPrincipal">
             <ul className="navbar-nav">
               {LINKS.map(({ id, label }) => (
                 <li className="nav-item" key={id}>
                   <a
-                    className={`nav-link ${active === id ? 'active' : ''}`}
+                    className={`nav-link ${active === id && location.pathname === '/' ? 'active' : ''}`}
                     href={`#${id}`}
                     onClick={(e) => handleNav(e, id)}
                   >
@@ -86,21 +100,21 @@ export default function Navbar() {
             </ul>
 
             <div className="navbar-actions">
-              <a
-                href="#acessar"
+              {/* O botão Acessar agora navega para a rota /login */}
+              <button
+                onClick={() => { setOpen(false); navigate('/login'); }}
                 className="btn btn-nav-ghost"
-                data-todo
-                onClick={(e) => e.preventDefault()}
               >
                 Acessar
-              </a>
-              <a
-                href="#cadastro"
+              </button>
+              
+              {/* O botão Teste grátis agora navega para a rota /cadastro */}
+              <button
+                onClick={() => { setOpen(false); navigate('/cadastro'); }}
                 className="btn btn-nav-cta"
-                onClick={(e) => handleNav(e, 'cadastro')}
               >
                 Teste grátis
-              </a>
+              </button>
             </div>
           </div>
         </nav>

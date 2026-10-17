@@ -1541,6 +1541,29 @@ a.contact-line:hover { color: var(--zlora-primary); }
     .footer-bottom { flex-direction: column; text-align: center; }
     .footer-legal { justify-content: center; }
 }
+
+/* ============ ANIMAÇÃO REVEAL ON SCROLL ============ */
+.reveal {
+    opacity: 0;
+    transform: translateY(40px); /* Começa 40px mais para baixo */
+    transition: opacity 0.8s cubic-bezier(0.2, 0.8, 0.2, 1), 
+                transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+    will-change: opacity, transform;
+}
+
+.reveal.is-visible {
+    opacity: 1;
+    transform: translateY(0); /* Sobe para a posição original */
+}
+
+/* Respeita usuários que preferem menos movimento */
+@media (prefers-reduced-motion: reduce) {
+    .reveal {
+        opacity: 1;
+        transform: none;
+        transition: none;
+    }
+}
 /* ============ WHATSAPP ============ */
 .whatsapp-button {
     position: fixed;

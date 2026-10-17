@@ -1,0 +1,1 @@
+export default function Servicos() { return <h2>Serviços em construção...</h2>; }

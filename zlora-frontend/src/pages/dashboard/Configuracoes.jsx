@@ -1,0 +1,1 @@
+export default function Configuracoes() { return <h2>Configurações em construção...</h2>; }

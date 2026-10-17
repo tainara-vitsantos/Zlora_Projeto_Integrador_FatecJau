@@ -1,0 +1,1 @@
+export default function Financeiro() { return <h2>Financeiro em construção...</h2>; }

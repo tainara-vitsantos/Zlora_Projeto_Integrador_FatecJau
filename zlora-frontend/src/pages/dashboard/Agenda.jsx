@@ -1,0 +1,1 @@
+export default function Agenda() { return <h2>Agenda em construção...</h2>; }
