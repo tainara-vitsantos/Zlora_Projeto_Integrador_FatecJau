@@ -1,0 +1,54 @@
+/* ============================================================
+   ZLORA — Design tokens
+   ============================================================ */
+:root {
+    /* Brand */
+    --zlora-primary:        #6F3CE7;
+    --zlora-primary-dark:   #5A2BC7;
+    --zlora-primary-light:  #8B5CF0;
+    --zlora-primary-soft:   #F0EAFF;
+    --zlora-dark:           #1B1130;
+    --zlora-ink:            #24173C;
+    --zlora-lilac:          #EDE7FF;
+    --zlora-bg:             #FAF9FF;
+    --zlora-bg-alt:         #F4F0FF;
+    --zlora-white:          #FFFFFF;
+
+    /* Text */
+    --zlora-text:           #24173C;
+    --zlora-text-soft:      #6B5B8C;
+    --zlora-text-muted:     #9B8DB5;
+
+    /* Borders */
+    --zlora-border:         #E6DEFF;
+    --zlora-border-strong:  #D6C8FF;
+
+    /* Radius */
+    --radius-sm: 10px;
+    --radius-md: 14px;
+    --radius-lg: 20px;
+    --radius-xl: 28px;
+    --radius-pill: 999px;
+
+    /* Shadows — layered para mais profundidade */
+    --shadow-xs: 0 1px 2px rgba(36, 23, 60, .04);
+    --shadow-sm: 0 2px 8px rgba(36, 23, 60, .05), 0 1px 2px rgba(36, 23, 60, .04);
+    --shadow-md: 0 8px 24px rgba(36, 23, 60, .08), 0 2px 6px rgba(36, 23, 60, .04);
+    --shadow-lg: 0 20px 48px rgba(36, 23, 60, .12), 0 8px 16px rgba(36, 23, 60, .06);
+    --shadow-primary-sm: 0 4px 12px rgba(111, 60, 231, .18);
+    --shadow-primary-md: 0 12px 28px rgba(111, 60, 231, .28);
+    --shadow-primary-lg: 0 24px 56px rgba(111, 60, 231, .35);
+
+    /* Motion */
+    --transition-fast: .15s ease;
+    --transition: .25s cubic-bezier(.2, .8, .2, 1);
+    --transition-slow: .4s cubic-bezier(.2, .8, .2, 1);
+
+    /* Typography */
+    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-display: 'Outfit', 'Inter', sans-serif;
+
+    /* Layout */
+    --container-max: 1200px;
+    --section-y: clamp(64px, 9vw, 120px);
+}
