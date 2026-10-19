@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>@ViewData["Title"] — Zlora</title>
+    <link rel="stylesheet" href="~/DS0HomePageDeslogada/css/boostrap.css">
+    <link rel="stylesheet" href="~/DS0HomePageDeslogada/css/zlora.css">
+    <link rel="stylesheet" href="~/css/contas.css">
+</head>
+<body class="contas-body">
+    <nav class="contas-nav" aria-label="Navegação principal">
+        <a asp-controller="Home" asp-action="Index" class="brand-font">Zlora</a>
+        <div>
+        @if (User.Identity?.IsAuthenticated == true) {
+            <a asp-controller="Home" asp-action="Painel">Minha conta</a>
+            @if (User.IsInRole(Perfis.Administrador)) { <a asp-controller="Usuarios" asp-action="Index">Usuários</a> }
+            <form asp-controller="Contas" asp-action="Logout" method="post"><button class="link-button">Sair</button></form>
+        } else { <a asp-controller="Contas" asp-action="Login">Acessar</a> }
+        </div>
+    </nav>
+    <main>
+        @if (TempData["Mensagem"] is string mensagem) { <div class="notice" role="status">@mensagem</div> }
+        @RenderBody()
+    </main>
+    <script src="~/js/contas.js"></script>
+</body>
+</html>

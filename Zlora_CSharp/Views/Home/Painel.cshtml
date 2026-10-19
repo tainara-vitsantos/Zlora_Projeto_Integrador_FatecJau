@@ -1,0 +1,9 @@
+@inject Microsoft.AspNetCore.Identity.UserManager<ApplicationUser> Users
+@{ ViewData["Title"] = "Minha conta"; var usuario = await Users.GetUserAsync(User); var perfis = await Users.GetRolesAsync(usuario!); }
+<section class="content-card">
+    <h1>Bem-vindo(a), @usuario!.Nome!</h1>
+    <p>@usuario.Email</p><p>Perfil: <strong>@string.Join(", ", perfis)</strong></p>
+    @if (User.IsInRole(Perfis.Administrador)) {
+        <p>Gerencie os usuários e os perfis do seu estabelecimento.</p><a class="btn btn-primary" asp-controller="Usuarios" asp-action="Index">Gerenciar usuários</a>
+    }
+</section>
