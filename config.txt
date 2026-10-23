@@ -1,2 +1,11 @@
 git config --global user.name "Tainara Santos"
 git config --global user.email "tainaravit.santos28@gmail.com"
+
+$bytes = New-Object byte[] 32
+$rng = [System.Security.Cryptography.RandomNumberGenerator]::Create()
+$rng.GetBytes($bytes)
+$rng.Dispose()
+[Convert]::ToBase64String($bytes)
+
+http://localhost:5000/swagger
+
