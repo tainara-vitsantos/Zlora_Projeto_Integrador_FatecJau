@@ -6,6 +6,7 @@ using MongoDB.Driver;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Globalization; // Necessário para remover acentos
 using Zlora.Data;
 using Zlora.Models;
 
@@ -27,7 +28,7 @@ namespace Zlora.Controllers
         }
 
         // ==========================================
-        // 1. CADASTRO DE NEGÓCIO (O que já existia)
+        // 1. CADASTRO DE NEGÓCIO
         // ==========================================
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] CadastroUsuario dados)
@@ -50,10 +51,29 @@ namespace Zlora.Controllers
             };
             usuario.SenhaHash = _passwordHasher.HashPassword(usuario, dados.Senha);
 
+            // ==========================================
+            // LÓGICA DE GERAR O SLUG AQUI (DENTRO DO MÉTODO)
+            // ==========================================
+            // 1. Pega o nome, tira acentos, troca espaços por hífen e deixa minúsculo
+            var slugBase = new string(dados.Nome.Normalize(NormalizationForm.FormD)
+                .Where(c => CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark)
+                .ToArray()).ToLower().Replace(" ", "-").Trim();
+
+            // 2. Verifica se já existe um salão com esse link. Se sim, adiciona número (ex: studio-bella-1)
+            var slug = slugBase;
+            int contador = 1;
+            while (await _context.Empresas.Find(e => e.Slug == slug).AnyAsync())
+            {
+                slug = $"{slugBase}-{contador}";
+                contador++;
+            }
+
+            // 3. Cria a empresa salvando o Slug
             var empresa = new Empresa
             {
                 Id = ObjectId.GenerateNewId().ToString(),
                 NomeFantasia = dados.Nome.Trim(),
+                Slug = slug, // <-- AQUI ESTÁ O SEGREDO!
                 ProprietarioUsuarioId = usuario.Id,
                 Status = "ativa",
                 CriadoEm = DateTime.UtcNow,
@@ -94,14 +114,13 @@ namespace Zlora.Controllers
         }
 
         // ==========================================
-        // 2. CADASTRO DE CLIENTE FINAL (Novo)
+        // 2. CADASTRO DE CLIENTE FINAL
         // ==========================================
         [HttpPost("register-cliente")]
         public async Task<IActionResult> RegisterCliente([FromBody] ClienteRegisterDto dados)
         {
             if (!ModelState.IsValid) return ValidationProblem(ModelState);
 
-            // Uso do ?? string.Empty para garantir que não vai dar null reference
             var email = (dados.Email ?? string.Empty).Trim().ToLowerInvariant();
             if (await _context.Usuarios.Find(u => u.Email == email).AnyAsync())
                 return Conflict(new { mensagem = "Este e-mail já está cadastrado." });
@@ -119,14 +138,13 @@ namespace Zlora.Controllers
             
             usuario.SenhaHash = _passwordHasher.HashPassword(usuario, dados.Senha ?? string.Empty);
 
-            // Cliente final não cria Empresa, apenas o Usuário.
             await _context.Usuarios.InsertOneAsync(usuario);
 
             return Ok(new { mensagem = "Conta de cliente criada com sucesso. Faça login para continuar." });
         }
 
         // ==========================================
-        // 3. LOGIN (Ajustado para Negócio e Cliente)
+        // 3. LOGIN
         // ==========================================
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginUsuario dados)
@@ -141,16 +159,13 @@ namespace Zlora.Controllers
             if (verificacao == PasswordVerificationResult.Failed)
                 return Unauthorized(new { mensagem = "E-mail ou senha inválidos." });
 
-            // Procura vínculo com empresa (para saber se é dono de salão)
             var membro = await _context.MembrosEmpresa.Find(m => m.UsuarioId == usuario.Id && m.Status == "ativo").FirstOrDefaultAsync();
             
-            // SE NÃO TIVER VÍNCULO COM EMPRESA, É UM CLIENTE FINAL.
             if (membro == null)
             {
                 return Ok(CriarResposta(usuario, null, "cliente"));
             }
 
-            // Se tiver, é dono de salão/funcionário.
             var empresa = await _context.Empresas.Find(e => e.Id == membro.EmpresaId && e.Status == "ativa").FirstOrDefaultAsync();
             if (empresa == null) return Unauthorized(new { mensagem = "A empresa vinculada à conta não está ativa." });
 
@@ -158,7 +173,7 @@ namespace Zlora.Controllers
         }
 
         // ==========================================
-        // 4. GERADOR DE TOKEN (Ajustado para aceitar Empresa Nula)
+        // 4. GERADOR DE TOKEN
         // ==========================================
         private object CriarResposta(Usuario usuario, Empresa? empresa, string papel)
         {
@@ -171,7 +186,6 @@ namespace Zlora.Controllers
                 new(ClaimTypes.Role, papel)
             };
 
-            // Se o usuário for um cliente (sem empresa), não adicionamos o claim empresa_id
             if (empresa != null)
             {
                 claims.Add(new Claim("empresa_id", empresa.Id!));
@@ -189,9 +203,10 @@ namespace Zlora.Controllers
                 { 
                     id = usuario.Id, 
                     nome = usuario.Nome, 
-                    estabelecimento = empresa?.NomeFantasia, // Vai ser null se for cliente
+                    estabelecimento = empresa?.NomeFantasia,
                     email = usuario.Email, 
-                    empresaId = empresa?.Id, // Vai ser null se for cliente
+                    slug = empresa?.Slug,
+                    empresaId = empresa?.Id,
                     papel 
                 }
             };
@@ -199,9 +214,9 @@ namespace Zlora.Controllers
     }
 
     // ==========================================
-    // 5. DTOs (Adicione no final do arquivo ou em uma pasta Models)
+    // 5. DTOs
     // ==========================================
-        public class ClienteRegisterDto
+    public class ClienteRegisterDto
     {
         public string Nome { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;

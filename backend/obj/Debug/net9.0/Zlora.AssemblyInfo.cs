@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Zlora")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4f1ee5a962786f7be9e51ba906317498df2eb44c")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+05e1d31b7f4640772ffb51ca7c97821adda4bb05")]
 [assembly: System.Reflection.AssemblyProductAttribute("Zlora")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Zlora")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

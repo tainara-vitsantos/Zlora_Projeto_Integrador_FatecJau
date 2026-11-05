@@ -25,5 +25,25 @@ namespace Zlora.Models
         public DateTime CriadoEm { get; set; } = DateTime.UtcNow;
         [BsonElement("alterado_em")]
         public DateTime AlteradoEm { get; set; } = DateTime.UtcNow;
+
+        // No seu Model de Empresa
+        [BsonElement("slug")]
+        public string Slug { get; set; } = ""; // Ex: "studio-bella"
+
+        // Adicione dentro da classe Empresa.cs
+        [BsonElement("cor_primaria")]
+        public string CorPrimaria { get; set; } = "#6F3CE7"; // Roxo padrão Zlora
+
+        [BsonElement("logo_url")]
+        public string LogoUrl { get; set; } = "";
+
+        [BsonElement("foto_capa_url")]
+        public string FotoCapaUrl { get; set; } = "";
+
+        [BsonElement("instagram")]
+        public string Instagram { get; set; } = "";
+
+        [BsonElement("endereco")]
+        public string Endereco { get; set; } = "";
     }
 }

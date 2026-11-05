@@ -2,9 +2,11 @@ import { Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 
+// Páginas Públicas
 import Home from './pages/Home';
 import Login from './pages/Login';
 import CadastroPage from './pages/CadastroPage';
+import PublicSalon from './pages/PublicSalon'; // <-- Nova página pública do salão
 
 // Admin (Salão)
 import DashboardLayout from './components/layout/DashboardLayout';
@@ -15,7 +17,7 @@ import Servicos from './pages/dashboard/Servicos';
 import Financeiro from './pages/dashboard/Financeiro';
 import Configuracoes from './pages/dashboard/Configuracoes';
 
-// Cliente Final
+// Cliente Final (Logado)
 import ClientLayout from './components/layout/ClientLayout';
 import MeusAgendamentos from './pages/cliente/MeusAgendamentos';
 import Perfil from './pages/cliente/Perfil';
@@ -24,6 +26,7 @@ export default function App() {
   return (
     <AuthProvider>
       <Routes>
+        {/* ROTAS PÚBLICAS DO SISTEMA */}
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/cadastro" element={<CadastroPage />} />
@@ -45,7 +48,7 @@ export default function App() {
           <Route path="config" element={<Configuracoes />} />
         </Route>
 
-        {/* ROTAS DO CLIENTE (Só Cliente acessa) */}
+        {/* ROTAS DO CLIENTE FINAL (Só Cliente logado acessa) */}
         <Route 
           path="/cliente" 
           element={
@@ -57,6 +60,11 @@ export default function App() {
           <Route path="dashboard" element={<MeusAgendamentos />} />
           <Route path="perfil" element={<Perfil />} />
         </Route>
+
+        {/* ROTA PÚBLICA DO SALÃO (O link que o dono manda pro cliente) */}
+        {/* Deve ficar por último para não conflitar com as rotas acima */}
+        <Route path="/:slug" element={<PublicSalon />} />
+        
       </Routes>
     </AuthProvider>
   );
