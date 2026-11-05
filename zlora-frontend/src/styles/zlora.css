@@ -840,22 +840,6 @@
 .mockup-row.short { width: 60%; }
 .mockup-row.accent { background: rgba(196, 168, 255, .35); }
 
-/* ============ VÍDEO ============ */
-.video-container {
-    position: relative;
-    padding-bottom: 56.25%;
-    height: 0;
-    overflow: hidden;
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-lg);
-    border: 1px solid var(--zlora-border);
-}
-.video-container iframe {
-    position: absolute;
-    inset: 0;
-    width: 100%; height: 100%;
-    border: 0;
-}
 
 /* ============ PREÇOS ============ */
 .price-switch {

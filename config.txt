@@ -9,3 +9,6 @@ $rng.Dispose()
 
 http://localhost:5000/swagger
 
+
+[Convert]::ToBase64String((1..32 | ForEach-Object { Get-Random -Maximum 256 }))
+

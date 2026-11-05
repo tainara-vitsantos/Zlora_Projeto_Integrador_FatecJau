@@ -24,9 +24,24 @@ export default function Login() {
   const onSubmit = async (data) => {
     try {
       setErroGeral('');
-      await login(data.email, data.senha);
-      navigate('/dashboard'); // Redireciona para a área logada
+      
+      const usuarioLogado = await login(data.email, data.senha);
+      
+      // 🔍 RAIO-X AQUI
+      console.log("=== RAIO-X DO LOGIN ===");
+      console.log("O que o C# devolveu:", usuarioLogado);
+      console.log("Qual é o papel?", usuarioLogado.papel);
+      
+      if (usuarioLogado.papel === 'cliente') {
+        console.log("Redirecionando para área do CLIENTE...");
+        navigate('/cliente/dashboard'); 
+      } else {
+        console.log("Redirecionando para área do ADMIN...");
+        navigate('/dashboard');         
+      }
+      
     } catch (err) {
+      console.error("Erro no login:", err);
       setErroGeral(err.message);
     }
   };
@@ -79,12 +94,7 @@ export default function Login() {
         <div className="text-center" style={{ marginTop: '24px', fontSize: '14px' }}>
           <Link to="/" style={{ color: 'var(--zlora-text-soft)' }}>← Voltar para a Home</Link>
         </div>
-
-        {/* Dica para o Dev */}
-        <div style={{ marginTop: '24px', padding: '12px', background: 'var(--zlora-primary-soft)', borderRadius: '8px', fontSize: '12px', color: 'var(--zlora-primary)' }}>
-          <strong>Dica de Teste (Mock):</strong><br/>
-          Digite qualquer e-mail válido e a senha <strong>123456</strong>.
-        </div>
+        
       </div>
     </div>
   );

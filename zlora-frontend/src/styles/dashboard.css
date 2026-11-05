@@ -239,6 +239,115 @@
     font-weight: 500;
 }
 
+/* ============ TABELAS ============ */
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.table-container {
+    background: #fff;
+    border: 1px solid var(--zlora-border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+}
+
+.dash-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.dash-table th {
+    background: var(--zlora-bg-alt);
+    padding: 16px 24px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--zlora-text-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid var(--zlora-border);
+}
+
+.dash-table td {
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--zlora-border);
+    font-size: 14px;
+    color: var(--zlora-dark);
+}
+
+.dash-table tr:last-child td {
+    border-bottom: 0;
+}
+
+.dash-table tr:hover {
+    background: var(--zlora-bg);
+}
+
+/* ============ BOTÕES DE AÇÃO ============ */
+.btn-icon {
+    background: transparent;
+    border: 0;
+    color: var(--zlora-text-soft);
+    cursor: pointer;
+    padding: 8px;
+    border-radius: var(--radius-sm);
+    transition: all var(--transition);
+}
+
+.btn-icon:hover {
+    background: #FEE2E2;
+    color: #DC2626;
+}
+
+/* ============ MODAL ============ */
+.modal-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(36, 23, 60, 0.6);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+.modal-content {
+    background: #fff;
+    border-radius: var(--radius-lg);
+    width: 100%;
+    max-width: 500px;
+    padding: 32px;
+    box-shadow: var(--shadow-lg);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.modal-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--zlora-dark);
+    margin: 0;
+}
+
+.btn-close {
+    background: transparent;
+    border: 0;
+    font-size: 24px;
+    color: var(--zlora-text-soft);
+    cursor: pointer;
+}
+
+.btn-close:hover { color: var(--zlora-dark); }
+
 /* Responsivo Sidebar */
 @media (max-width: 991px) {
     .sidebar { transform: translateX(-100%); }

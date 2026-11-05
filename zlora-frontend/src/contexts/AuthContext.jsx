@@ -2,14 +2,12 @@ import { createContext, useContext, useState, useEffect } from 'react';
 
 const AuthContext = createContext({});
 
-// Configuração da URL da API (usa .env se existir, ou cai no localhost)
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Ao iniciar, recupera o usuário e o token salvos
   useEffect(() => {
     const storedUser = localStorage.getItem('@Zlora:user');
     const storedToken = localStorage.getItem('@Zlora:token');
@@ -21,7 +19,7 @@ export function AuthProvider({ children }) {
   }, []);
 
   // ============================================
-  // LOGIN REAL (integrado ao C#)
+  // LOGIN
   // ============================================
   const login = async (email, senha) => {
     try {
@@ -34,23 +32,23 @@ export function AuthProvider({ children }) {
       const data = await response.json();
 
       if (!response.ok) {
-        // O back pode retornar { message: "..." } ou { mensagem: "..." }
         throw new Error(data.message || data.mensagem || 'E-mail ou senha incorretos.');
       }
 
-      // O back retorna { token, usuario }
       const usuarioLogado = {
-        nome: data.usuario.nome, // No login, o nome do contato vem como 'nome'
+        nome: data.usuario.nome,
         email: data.usuario.email,
         estabelecimento: data.usuario.estabelecimento,
         papel: data.usuario.papel,
+        id: data.usuario.id,
+        empresaId: data.usuario.empresaId,
       };
 
       setUser(usuarioLogado);
       localStorage.setItem('@Zlora:user', JSON.stringify(usuarioLogado));
       localStorage.setItem('@Zlora:token', data.token);
 
-      return { sucesso: true };
+      return usuarioLogado; // <--- CORRIGIDO AQUI
 
     } catch (erro) {
       console.error('Erro no login:', erro);
@@ -59,7 +57,7 @@ export function AuthProvider({ children }) {
   };
 
   // ============================================
-  // CADASTRO REAL (integrado ao C#)
+  // CADASTRO
   // ============================================
   const register = async (dadosFormulario) => {
     try {
@@ -67,8 +65,8 @@ export function AuthProvider({ children }) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          nome: dadosFormulario.nome,               // Nome do estabelecimento
-          nomecontato: dadosFormulario.nomecontato, // Nome do contato
+          nome: dadosFormulario.nome,
+          nomecontato: dadosFormulario.nomecontato,
           telefone: dadosFormulario.telefone,
           email: dadosFormulario.email,
           senha: dadosFormulario.senha,
@@ -82,10 +80,8 @@ export function AuthProvider({ children }) {
         throw new Error(data.message || data.mensagem || 'Não foi possível realizar o cadastro.');
       }
 
-      // O back retorna { token, usuario }
-      // (Exatamente como vimos no Swagger!)
       const usuarioLogado = {
-        nome: data.usuario.nome, // No retorno, o nome do contato vem como 'nome'
+        nome: data.usuario.nome,
         email: data.usuario.email,
         estabelecimento: data.usuario.estabelecimento,
         papel: data.usuario.papel,
@@ -93,12 +89,11 @@ export function AuthProvider({ children }) {
         empresaId: data.usuario.empresaId,
       };
 
-      // Já loga o usuário automaticamente após o cadastro
       setUser(usuarioLogado);
       localStorage.setItem('@Zlora:user', JSON.stringify(usuarioLogado));
       localStorage.setItem('@Zlora:token', data.token);
 
-      return { sucesso: true };
+      return usuarioLogado;
 
     } catch (erro) {
       console.error('Erro no cadastro:', erro);
@@ -106,9 +101,6 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // ============================================
-  // LOGOUT
-  // ============================================
   const logout = () => {
     setUser(null);
     localStorage.removeItem('@Zlora:user');
