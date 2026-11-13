@@ -8,15 +8,16 @@ export default function Clientes() {
   const [busca, setBusca] = useState('');
   
   const [isModalOpen, setIsModalOpen] = useState(false);
-  // Adicionei os campos exatos do seu Model C#
-  const [novoCliente, setNovoCliente] = useState({ Nome: '', Email: '', Telefone: '', Cpf: '' });
+  // Adicionamos o Status aqui
+  const [novoCliente, setNovoCliente] = useState({ Nome: '', Email: '', Telefone: '', Cpf: '', Status: 'ativo' });
   const [salvando, setSalvando] = useState(false);
 
   const carregarClientes = async () => {
     try {
       setCarregando(true);
       const data = await api.request('/api/clientes');
-      setClientes(data);
+      // Garante que é uma lista
+      setClientes(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error("Erro ao buscar clientes:", error);
     } finally {
@@ -28,26 +29,27 @@ export default function Clientes() {
     carregarClientes();
   }, []);
 
-  // Filtro ajustado para ler 'Nome' e 'Email' maiúsculos
   const clientesFiltrados = clientes.filter(c => 
     (c.Nome && c.Nome.toLowerCase().includes(busca.toLowerCase())) || 
-    (c.Email && c.Email.toLowerCase().includes(busca.toLowerCase()))
+    (c.nome && c.nome.toLowerCase().includes(busca.toLowerCase()))
   );
 
   const handleSalvar = async (e) => {
     e.preventDefault();
     try {
       setSalvando(true);
-      // Envia os dados com as iniciais maiúsculas que o C# espera
+      console.log("Enviando para o C#:", novoCliente); // Raio-X
+      
       await api.request('/api/clientes', {
         method: 'POST',
         body: JSON.stringify(novoCliente)
       });
+      
       setIsModalOpen(false);
-      setNovoCliente({ Nome: '', Email: '', Telefone: '', Cpf: '' });
+      setNovoCliente({ Nome: '', Email: '', Telefone: '', Cpf: '', Status: 'ativo' });
       carregarClientes(); 
     } catch (error) {
-      alert("Erro ao cadastrar cliente: " + error.message);
+      alert("Erro ao cadastrar cliente: \n" + error.message);
     } finally {
       setSalvando(false);
     }
@@ -109,22 +111,29 @@ export default function Clientes() {
               </tr>
             </thead>
             <tbody>
-              {clientesFiltrados.map(cliente => (
-                <tr key={cliente.Id || cliente.id}>
-                  <td style={{ fontWeight: 600 }}>{cliente.Nome || cliente.nome}</td>
-                  <td>{cliente.Email || cliente.email || '-'}</td>
-                  <td>{cliente.Telefone || cliente.telefone || '-'}</td>
-                  <td style={{ textAlign: 'right' }}>
-                    <button 
-                      className="btn-icon" 
-                      onClick={() => handleExcluir(cliente.Id || cliente.id)}
-                      title="Excluir"
-                    >
-                      <FiTrash2 />
-                    </button>
-                  </td>
-                </tr>
-              ))}
+              {clientesFiltrados.map(cliente => {
+                const id = cliente.Id || cliente.id;
+                const nome = cliente.Nome || cliente.nome;
+                const email = cliente.Email || cliente.email;
+                const telefone = cliente.Telefone || cliente.telefone;
+
+                return (
+                  <tr key={id}>
+                    <td style={{ fontWeight: 600 }}>{nome}</td>
+                    <td>{email || '-'}</td>
+                    <td>{telefone || '-'}</td>
+                    <td style={{ textAlign: 'right' }}>
+                      <button 
+                        className="btn-icon" 
+                        onClick={() => handleExcluir(id)}
+                        title="Excluir"
+                      >
+                        <FiTrash2 />
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         )}
@@ -142,9 +151,7 @@ export default function Clientes() {
               <div className="form-group">
                 <label>Nome Completo *</label>
                 <input 
-                  type="text" 
-                  className="form-control" 
-                  required
+                  type="text" className="form-control" required
                   value={novoCliente.Nome}
                   onChange={e => setNovoCliente({...novoCliente, Nome: e.target.value})}
                 />
@@ -152,8 +159,7 @@ export default function Clientes() {
               <div className="form-group">
                 <label>CPF</label>
                 <input 
-                  type="text" 
-                  className="form-control" 
+                  type="text" className="form-control" 
                   value={novoCliente.Cpf}
                   onChange={e => setNovoCliente({...novoCliente, Cpf: e.target.value})}
                 />
@@ -161,8 +167,7 @@ export default function Clientes() {
               <div className="form-group">
                 <label>E-mail</label>
                 <input 
-                  type="email" 
-                  className="form-control" 
+                  type="email" className="form-control" 
                   value={novoCliente.Email}
                   onChange={e => setNovoCliente({...novoCliente, Email: e.target.value})}
                 />
@@ -170,8 +175,7 @@ export default function Clientes() {
               <div className="form-group">
                 <label>Telefone / Celular</label>
                 <input 
-                  type="text" 
-                  className="form-control" 
+                  type="text" className="form-control" 
                   value={novoCliente.Telefone}
                   onChange={e => setNovoCliente({...novoCliente, Telefone: e.target.value})}
                 />

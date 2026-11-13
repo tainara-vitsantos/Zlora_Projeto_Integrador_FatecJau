@@ -99,6 +99,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseStaticFiles(); // Permite acessar as imagens salvas
+
 // Eu mantenho a ordem para que CORS e autenticação sejam aplicados antes de chegar aos Controllers.
 app.UseCors("FrontendZlora");
 app.UseAuthentication();

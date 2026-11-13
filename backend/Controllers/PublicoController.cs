@@ -25,7 +25,17 @@ namespace Zlora.Controllers
 
             return Ok(new
             {
-                empresa = new { id = empresa.Id, nome = empresa.NomeFantasia, slug = empresa.Slug },
+                // ADICIONAMOS OS CAMPOS DE PERSONALIZAÇÃO AQUI
+                empresa = new { 
+                    id = empresa.Id, 
+                    nome = empresa.NomeFantasia, 
+                    slug = empresa.Slug,
+                    corPrimaria = empresa.CorPrimaria,
+                    logoUrl = empresa.LogoUrl,
+                    fotoCapaUrl = empresa.FotoCapaUrl,
+                    instagram = empresa.Instagram,
+                    endereco = empresa.Endereco
+                },
                 servicos
             });
         }

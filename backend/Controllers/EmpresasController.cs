@@ -29,7 +29,6 @@ namespace Zlora.Controllers
             var empresa = await _context.Empresas.Find(e => e.Id == EmpresaId).FirstOrDefaultAsync();
             if (empresa == null) return NotFound();
 
-            // Retornamos apenas o que o React precisa para a tela de configurações
             return Ok(new
             {
                 corPrimaria = empresa.CorPrimaria,
@@ -41,7 +40,7 @@ namespace Zlora.Controllers
         }
 
         // ==========================================
-        // SALVAR AS CONFIGURAÇÕES
+        // SALVAR AS CONFIGURAÇÕES (CORES, TEXTOS)
         // ==========================================
         [HttpPut("configuracoes")]
         public async Task<IActionResult> UpdateConfiguracoes([FromBody] AtualizarConfiguracoesDto dados)
@@ -60,10 +59,53 @@ namespace Zlora.Controllers
             empresa.Endereco = dados.Endereco ?? "";
             empresa.AlteradoEm = DateTime.UtcNow;
 
-            // Substitui no banco de dados
             await _context.Empresas.ReplaceOneAsync(e => e.Id == EmpresaId, empresa);
 
             return Ok(new { mensagem = "Configurações atualizadas com sucesso." });
+        }
+
+        // ==========================================
+        // FAZER UPLOAD DE IMAGEM (LOGO OU CAPA)
+        // ==========================================
+        [HttpPost("upload")]
+        public async Task<IActionResult> UploadImagem(IFormFile arquivo)
+        {
+            if (arquivo == null || arquivo.Length == 0)
+                return BadRequest(new { mensagem = "Nenhuma imagem enviada." });
+
+            // 1. Validação de segurança: Só aceita imagens
+            var extensoesPermitidas = new[] { ".jpg", ".jpeg", ".png", ".webp" };
+            var extensao = Path.GetExtension(arquivo.FileName).ToLowerInvariant();
+            
+            if (!extensoesPermitidas.Contains(extensao))
+                return BadRequest(new { mensagem = "Formato inválido. Envie JPG, PNG ou WEBP." });
+
+            // 2. Limite de tamanho (5MB)
+            if (arquivo.Length > 5 * 1024 * 1024)
+                return BadRequest(new { mensagem = "A imagem deve ter no máximo 5MB." });
+
+            // 3. Define a pasta onde a imagem será salva (wwwroot/uploads)
+            var pastaUploads = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+            
+            // Cria a pasta se ela não existir
+            if (!Directory.Exists(pastaUploads))
+                Directory.CreateDirectory(pastaUploads);
+
+            // 4. Gera um nome único para o arquivo (evita arquivos com o mesmo nome)
+            var nomeArquivo = Guid.NewGuid().ToString() + extensao;
+            var caminhoCompleto = Path.Combine(pastaUploads, nomeArquivo);
+
+            // 5. Salva o arquivo fisicamente no servidor
+            using (var stream = new FileStream(caminhoCompleto, FileMode.Create))
+            {
+                await arquivo.CopyToAsync(stream);
+            }
+
+            // 6. Retorna a URL pública da imagem para o React
+            var urlBase = $"{Request.Scheme}://{Request.Host}";
+            var urlImagem = $"{urlBase}/uploads/{nomeArquivo}";
+
+            return Ok(new { url = urlImagem });
         }
     }
 
