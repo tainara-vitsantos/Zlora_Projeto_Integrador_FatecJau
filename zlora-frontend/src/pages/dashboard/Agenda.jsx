@@ -1,37 +1,41 @@
 import { useState, useEffect } from 'react';
-import { FiPlus, FiUser, FiScissors, FiX, FiXCircle } from 'react-icons/fi';
+import { FiPlus, FiUser, FiScissors, FiX, FiXCircle, FiBriefcase } from 'react-icons/fi';
 import { api } from '../../services/api';
 
 export default function Agenda() {
   const [agendamentos, setAgendamentos] = useState([]);
   const [clientes, setClientes] = useState([]);
   const [servicos, setServicos] = useState([]);
+  const [profissionais, setProfissionais] = useState([]); // <-- NOVO ESTADO
   const [carregando, setCarregando] = useState(true);
   
   // Modal
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [salvando, setSalvando] = useState(false);
   
-  // O form agora só tem o Início, o Fim será calculado
+  // O form agora tem o profissionalId
   const [formData, setFormData] = useState({
     clienteId: '',
     servicoId: '',
+    profissionalId: '', // <-- NOVO CAMPO
     dataHoraInicio: ''
   });
 
   const carregarDados = async () => {
     try {
       setCarregando(true);
-      const [agendamentosData, clientesData, servicosData] = await Promise.all([
+      // Adicionamos a busca de profissionais aqui
+      const [agendamentosData, clientesData, servicosData, profissionaisData] = await Promise.all([
         api.request('/api/agendamentos'),
         api.request('/api/clientes'),
-        api.request('/api/servicos')
+        api.request('/api/servicos'),
+        api.request('/api/profissionais')
       ]);
       
-      // O C# já manda ordenado pelo DataHoraInicio
       setAgendamentos(agendamentosData);
       setClientes(clientesData);
       setServicos(servicosData);
+      setProfissionais(profissionaisData);
     } catch (error) {
       console.error("Erro ao buscar dados:", error);
     } finally {
@@ -61,6 +65,7 @@ export default function Agenda() {
       const payload = {
         clienteId: formData.clienteId,
         servicoId: formData.servicoId,
+        profissionalId: formData.profissionalId, // <-- ENVIANDO O PROFISSIONAL
         dataHoraInicio: dataInicio.toISOString(),
         dataHoraFim: dataFim.toISOString()
       };
@@ -71,10 +76,9 @@ export default function Agenda() {
       });
 
       setIsModalOpen(false);
-      setFormData({ clienteId: '', servicoId: '', dataHoraInicio: '' });
+      setFormData({ clienteId: '', servicoId: '', profissionalId: '', dataHoraInicio: '' });
       carregarDados(); 
     } catch (error) {
-      // O C# retorna status 409 (Conflict) se o horário estiver ocupado
       alert("Aviso: " + (error.message || "Erro ao agendar. Verifique o horário."));
     } finally {
       setSalvando(false);
@@ -104,6 +108,9 @@ export default function Agenda() {
 
   const getClienteNome = (id) => clientes.find(c => (c.id || c.Id) === id)?.nome || clientes.find(c => (c.id || c.Id) === id)?.Nome || 'Desconhecido';
   const getServicoNome = (id) => servicos.find(s => (s.id || s.Id) === id)?.nome || servicos.find(s => (s.id || s.Id) === id)?.Nome || 'Desconhecido';
+  
+  // NOVA FUNÇÃO AUXILIAR
+  const getProfissionalNome = (id) => profissionais.find(p => (p.id || p.Id) === id)?.nome || profissionais.find(p => (p.id || p.Id) === id)?.Nome || 'Não definido';
 
   return (
     <div>
@@ -127,10 +134,10 @@ export default function Agenda() {
         ) : (
           <div className="agenda-list">
             {agendamentos.map(agendamento => {
-              // Lendo exatamente os campos que o seu C# devolve (camelCase do ASP.NET)
               const id = agendamento.id || agendamento.Id;
               const idCli = agendamento.clienteId || agendamento.ClienteId;
               const idServ = agendamento.servicoId || agendamento.ServicoId;
+              const idProf = agendamento.profissionalId || agendamento.ProfissionalId; // <-- LENDO PROFISSIONAL
               const dataInicio = agendamento.dataHoraInicio || agendamento.DataHoraInicio;
               const status = (agendamento.status || agendamento.Status || 'agendado').toLowerCase();
 
@@ -148,8 +155,13 @@ export default function Agenda() {
                       <FiUser style={{ fontSize: '14px', marginRight: '6px' }} /> 
                       {getClienteNome(idCli)}
                     </h3>
-                    <p className="agenda-service">
-                      <FiScissors /> {getServicoNome(idServ)}
+                    <p className="agenda-service" style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginTop: '6px' }}>
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <FiScissors /> {getServicoNome(idServ)}
+                      </span>
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--zlora-primary)', fontWeight: '500' }}>
+                        <FiBriefcase /> {getProfissionalNome(idProf)}
+                      </span>
                     </p>
                   </div>
 
@@ -211,6 +223,23 @@ export default function Agenda() {
                     <option key={s.id || s.Id} value={s.id || s.Id}>
                       {s.nome || s.Nome} ({s.duracaoMinutos || s.DuracaoMinutos} min)
                     </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* NOVO CAMPO: PROFISSIONAL */}
+              <div className="form-group">
+                <label>Profissional *</label>
+                <select 
+                  className="form-control" required
+                  value={formData.profissionalId}
+                  onChange={e => setFormData({...formData, profissionalId: e.target.value})}
+                >
+                  <option value="">Selecione o profissional...</option>
+                  {profissionais
+                    .filter(p => (p.status || p.Status) === 'ativo') // Só mostra os ativos
+                    .map(p => (
+                      <option key={p.id || p.Id} value={p.id || p.Id}>{p.nome || p.Nome}</option>
                   ))}
                 </select>
               </div>

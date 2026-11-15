@@ -6,7 +6,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import CadastroPage from './pages/CadastroPage';
-import PublicSalon from './pages/PublicSalon'; // <-- Nova página pública do salão
+import PublicSalon from './pages/PublicSalon';
 
 // Admin (Salão)
 import DashboardLayout from './components/layout/DashboardLayout';
@@ -14,6 +14,7 @@ import VisaoGeral from './pages/dashboard/VisaoGeral';
 import Agenda from './pages/dashboard/Agenda';
 import Clientes from './pages/dashboard/Clientes';
 import Servicos from './pages/dashboard/Servicos';
+import Profissionais from './pages/dashboard/Profissionais'; // <-- NOVA IMPORTAÇÃO
 import Financeiro from './pages/dashboard/Financeiro';
 import Configuracoes from './pages/dashboard/Configuracoes';
 
@@ -44,6 +45,7 @@ export default function App() {
           <Route path="agenda" element={<Agenda />} />
           <Route path="clientes" element={<Clientes />} />
           <Route path="servicos" element={<Servicos />} />
+          <Route path="profissionais" element={<Profissionais />} /> {/* <-- NOVA ROTA */}
           <Route path="financeiro" element={<Financeiro />} />
           <Route path="config" element={<Configuracoes />} />
         </Route>
@@ -61,10 +63,8 @@ export default function App() {
           <Route path="perfil" element={<Perfil />} />
         </Route>
 
-        {/* ROTA PÚBLICA DO SALÃO (O link que o dono manda pro cliente) */}
-        {/* Deve ficar por último para não conflitar com as rotas acima */}
+        {/* ROTA PÚBLICA DO SALÃO */}
         <Route path="/:slug" element={<PublicSalon />} />
-        
       </Routes>
     </AuthProvider>
   );

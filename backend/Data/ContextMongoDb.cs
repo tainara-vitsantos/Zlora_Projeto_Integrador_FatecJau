@@ -29,5 +29,8 @@ namespace Zlora.Data
         public IMongoCollection<Cliente> Clientes => _database.GetCollection<Cliente>("clientes");
         public IMongoCollection<Servico> Servicos => _database.GetCollection<Servico>("servicos");
         public IMongoCollection<Agendamento> Agendamentos => _database.GetCollection<Agendamento>("agendamentos");
+        
+        // A NOVA COLEÇÃO DE PROFISSIONAIS AQUI:
+        public IMongoCollection<Profissional> Profissionais => _database.GetCollection<Profissional>("profissionais");
     }
-}
+}   

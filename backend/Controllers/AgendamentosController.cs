@@ -20,6 +20,10 @@ namespace Zlora.Controllers
         // Eu obtenho a empresa do token para isolar os agendamentos de cada estabelecimento.
         private string? EmpresaId => User.FindFirstValue("empresa_id");
 
+        // ==========================================
+        // ROTAS DO SALÃO (ADMINISTRADOR)
+        // ==========================================
+
         // Eu permito filtrar a agenda por início e fim para o frontend poder mostrar períodos menores.
         [HttpGet]
         public async Task<IActionResult> Get([FromQuery] DateTime? inicio, [FromQuery] DateTime? fim)
@@ -92,6 +96,54 @@ namespace Zlora.Controllers
             agendamento.AlteradoEm = DateTime.UtcNow;
             await _context.Agendamentos.ReplaceOneAsync(a => a.Id == id && a.EmpresaId == EmpresaId, agendamento);
             return Ok(agendamento);
+        }
+
+        // ==========================================
+        // ROTAS DO CLIENTE FINAL
+        // ==========================================
+
+        // Rota exclusiva para o cliente final logado ver os próprios agendamentos
+        [HttpGet("meus")]
+        public async Task<IActionResult> GetMeusAgendamentos()
+        {
+            // Pega o e-mail do Token JWT
+            var email = User.FindFirstValue(ClaimTypes.Email);
+            if (string.IsNullOrEmpty(email)) return Unauthorized(new { mensagem = "Usuário não autenticado." });
+
+            // 1. Acha todos os registros de "Cliente" que têm esse e-mail (pode ser cliente de vários salões)
+            var clientes = await _context.Clientes.Find(c => c.Email == email).ToListAsync();
+            var clienteIds = clientes.Select(c => c.Id).ToList();
+
+            // Se o cliente nunca fez um agendamento (não existe na collection Clientes), retorna lista vazia
+            if (!clienteIds.Any()) return Ok(new List<object>());
+
+            // 2. Busca os agendamentos desses clientes
+            var agendamentos = await _context.Agendamentos
+                .Find(a => clienteIds.Contains(a.ClienteId))
+                .SortByDescending(a => a.DataHoraInicio)
+                .ToListAsync();
+
+            // 3. Enriquecer os dados (buscar nome do serviço, profissional e salão para o React não precisar)
+            var resultado = new List<object>();
+            foreach (var ag in agendamentos)
+            {
+                var servico = await _context.Servicos.Find(s => s.Id == ag.ServicoId).FirstOrDefaultAsync();
+                var profissional = await _context.Profissionais.Find(p => p.Id == ag.ProfissionalId).FirstOrDefaultAsync();
+                var empresa = await _context.Empresas.Find(e => e.Id == ag.EmpresaId).FirstOrDefaultAsync();
+
+                resultado.Add(new
+                {
+                    id = ag.Id,
+                    dataHoraInicio = ag.DataHoraInicio,
+                    status = ag.Status,
+                    servicoNome = servico?.Nome ?? "Serviço Excluído",
+                    profissionalNome = profissional?.Nome ?? "Profissional Excluído",
+                    empresaNome = empresa?.NomeFantasia ?? "Estabelecimento Excluído",
+                    empresaSlug = empresa?.Slug ?? ""
+                });
+            }
+
+            return Ok(resultado);
         }
     }
 }
