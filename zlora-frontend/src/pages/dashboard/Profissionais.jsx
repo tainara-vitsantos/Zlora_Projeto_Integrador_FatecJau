@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { FiSearch, FiTrash2, FiPlus, FiX, FiEdit2, FiPhone, FiAward } from 'react-icons/fi';
+import { FiSearch, FiTrash2, FiPlus, FiX, FiEdit2, FiPhone, FiAward, FiKey } from 'react-icons/fi';
 import { api } from '../../services/api';
 
 export default function Profissionais() {
@@ -9,6 +9,12 @@ export default function Profissionais() {
   
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  
+  // Novos estados para a criação de acesso (A funcionalidade da sua amiga)
+  const [isAcessoModalOpen, setIsAcessoModalOpen] = useState(false);
+  const [profissionalSelecionado, setProfissionalSelecionado] = useState(null);
+  const [acessoData, setAcessoData] = useState({ email: '', senha: '' });
+  
   const [salvando, setSalvando] = useState(false);
   
   const [formData, setFormData] = useState({
@@ -69,6 +75,26 @@ export default function Profissionais() {
     }
   };
 
+  // Função que chama a rota da sua amiga no C#
+  const handleCriarAcesso = async (e) => {
+    e.preventDefault();
+    try {
+      setSalvando(true);
+      await api.request(`/api/profissionais/${profissionalSelecionado.id || profissionalSelecionado.Id}/acesso`, {
+        method: 'POST',
+        body: JSON.stringify(acessoData)
+      });
+      alert('Acesso criado com sucesso! O profissional já pode logar no sistema.');
+      setIsAcessoModalOpen(false);
+      setAcessoData({ email: '', senha: '' });
+      carregarProfissionais();
+    } catch (error) {
+      alert("Erro ao criar acesso: " + error.message);
+    } finally {
+      setSalvando(false);
+    }
+  };
+
   const handleExcluir = async (id) => {
     if (!window.confirm("Excluir este profissional?")) return;
     try {
@@ -122,6 +148,19 @@ export default function Profissionais() {
                   </td>
                   <td style={{ textAlign: 'right' }}>
                     <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
+                      
+                      {/* BOTÃO DE CRIAR ACESSO (Só aparece se ainda não tiver login criado) */}
+                      {!p.usuarioId && !p.UsuarioId && (
+                        <button 
+                          className="btn-icon" 
+                          onClick={() => { setProfissionalSelecionado(p); setIsAcessoModalOpen(true); }} 
+                          title="Criar Login de Acesso" 
+                          style={{ color: '#F59E0B' }}
+                        >
+                          <FiKey />
+                        </button>
+                      )}
+                      
                       <button className="btn-icon" onClick={() => handleEditar(p)} style={{ color: 'var(--zlora-primary)' }}><FiEdit2 /></button>
                       <button className="btn-icon" onClick={() => handleExcluir(p.id || p.Id)}><FiTrash2 /></button>
                     </div>
@@ -133,6 +172,7 @@ export default function Profissionais() {
         )}
       </div>
 
+      {/* MODAL DE CRIAR / EDITAR PROFISSIONAL */}
       {isModalOpen && (
         <div className="modal-overlay">
           <div className="modal-content">
@@ -169,6 +209,32 @@ export default function Profissionais() {
               <div style={{ display: 'flex', gap: '12px', marginTop: '32px' }}>
                 <button type="button" className="btn btn-ghost" style={{ flex: 1 }} onClick={() => setIsModalOpen(false)}>Cancelar</button>
                 <button type="submit" className="btn btn-primary" style={{ flex: 1 }} disabled={salvando}>{salvando ? 'Salvando...' : 'Salvar'}</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL DE CRIAR ACESSO (O código da sua amiga integrado) */}
+      {isAcessoModalOpen && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h3 className="modal-title">Criar Acesso para {profissionalSelecionado?.nome || profissionalSelecionado?.Nome}</h3>
+              <button className="btn-close" onClick={() => setIsAcessoModalOpen(false)}><FiX /></button>
+            </div>
+            <form onSubmit={handleCriarAcesso}>
+              <div className="form-group">
+                <label>E-mail de Login *</label>
+                <input type="email" className="form-control" required value={acessoData.email} onChange={e => setAcessoData({...acessoData, email: e.target.value})} />
+              </div>
+              <div className="form-group">
+                <label>Senha (Mín. 8 caracteres) *</label>
+                <input type="password" className="form-control" required minLength="8" value={acessoData.senha} onChange={e => setAcessoData({...acessoData, senha: e.target.value})} />
+              </div>
+              <div style={{ display: 'flex', gap: '12px', marginTop: '32px' }}>
+                <button type="button" className="btn btn-ghost" style={{ flex: 1 }} onClick={() => setIsAcessoModalOpen(false)}>Cancelar</button>
+                <button type="submit" className="btn btn-primary" style={{ flex: 1 }} disabled={salvando}>{salvando ? 'Criando...' : 'Criar Acesso'}</button>
               </div>
             </form>
           </div>

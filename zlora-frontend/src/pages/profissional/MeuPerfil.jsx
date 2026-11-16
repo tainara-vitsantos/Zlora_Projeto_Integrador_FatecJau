@@ -1,240 +1,180 @@
-
 import { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import { FiUser, FiMail, FiPhone, FiScissors, FiSave } from 'react-icons/fi';
+import { api } from '../../services/api';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+// Schema de validação com Zod
+const perfilSchema = z.object({
+  nome: z.string().trim().min(3, 'O nome deve ter pelo menos 3 letras.'),
+  telefone: z.string().optional(),
+  especialidade: z.string().optional(),
+});
 
 export default function MeuPerfil() {
-  const [perfil, setPerfil] = useState({
-    nome: '',
-    email: '',
-    telefone: '',
-    especialidade: '',
-  });
-
-  const [mensagem, setMensagem] = useState('');
-  const [erro, setErro] = useState('');
   const [carregando, setCarregando] = useState(true);
   const [salvando, setSalvando] = useState(false);
+  const [mensagem, setMensagem] = useState('');
+  const [erro, setErro] = useState('');
+  const [email, setEmail] = useState('');
 
-  const token = localStorage.getItem('@Zlora:token');
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm({ resolver: zodResolver(perfilSchema) });
 
+  // Busca os dados assim que a tela abre
   useEffect(() => {
     async function carregarPerfil() {
       try {
-        const resposta = await fetch(`${API_URL}/api/profissional/perfil`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+        const data = await api.request('/api/profissional/perfil');
+        setEmail(data.email);
+        reset({
+          nome: data.nome || '',
+          telefone: data.telefone || '',
+          especialidade: data.especialidade || '',
         });
-
-        if (!resposta.ok) {
-          throw new Error('Não foi possível carregar seu perfil.');
-        }
-
-        const dados = await resposta.json();
-        setPerfil(dados);
       } catch (error) {
-        setErro(error.message);
+        setErro(error.message || 'Não foi possível carregar o perfil.');
       } finally {
         setCarregando(false);
       }
     }
-
     carregarPerfil();
-  }, []);
+  }, [reset]);
 
-  function atualizarCampo(event) {
-    setPerfil({
-      ...perfil,
-      [event.target.name]: event.target.value,
-    });
-  }
-
-  async function salvarPerfil(event) {
-    event.preventDefault();
+  // Salva as alterações
+  const onSubmit = async (data) => {
+    setSalvando(true);
     setMensagem('');
     setErro('');
-    setSalvando(true);
 
     try {
-      const resposta = await fetch(`${API_URL}/api/profissional/perfil`, {
+      const resposta = await api.request('/api/profissional/perfil', {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          nome: perfil.nome,
-          telefone: perfil.telefone,
-          especialidade: perfil.especialidade,
-        }),
+        body: JSON.stringify(data),
       });
 
-      const dados = await resposta.json();
-
-      if (!resposta.ok) {
-        throw new Error(dados.mensagem || 'Não foi possível atualizar o perfil.');
-      }
-
-      setMensagem(dados.mensagem);
+      setMensagem(resposta.mensagem || 'Perfil atualizado com sucesso!');
+      
+      // Esconde a mensagem de sucesso após 3 segundos
+      setTimeout(() => setMensagem(''), 3000);
     } catch (error) {
-      setErro(error.message);
+      setErro(error.message || 'Erro ao atualizar perfil.');
     } finally {
       setSalvando(false);
     }
-  }
+  };
 
   if (carregando) {
-    return <p style={{ color: 'var(--zlora-text-soft)' }}>Carregando perfil...</p>;
+    return (
+      <div style={{ padding: '40px', textAlign: 'center', color: 'var(--zlora-text-soft)' }}>
+        Carregando perfil...
+      </div>
+    );
   }
 
   return (
     <div>
       <div className="page-header">
         <div>
-          <h2 style={{ fontSize: '1.5rem', marginBottom: '8px' }}>
-            Meu Perfil
-          </h2>
-
+          <h2 style={{ fontSize: '1.5rem', marginBottom: '8px' }}>Meu Perfil</h2>
           <p style={{ color: 'var(--zlora-text-soft)', margin: 0 }}>
             Gerencie suas informações profissionais.
           </p>
         </div>
       </div>
 
-      <div className="dash-card" style={{ padding: '28px', maxWidth: '850px' }}>
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '16px',
-          marginBottom: '28px'
-        }}>
+      <div className="dash-card" style={{ padding: '32px', maxWidth: '800px' }}>
+        
+        {/* CABEÇALHO DO CARD */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '32px' }}>
           <div style={{
-            width: '58px',
-            height: '58px',
-            borderRadius: '18px',
-            background: 'var(--zlora-primary-light, #F0E9FF)',
-            color: 'var(--zlora-primary)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: '25px'
+            width: '64px', height: '64px', borderRadius: '16px',
+            background: 'var(--zlora-primary-soft)', color: 'var(--zlora-primary)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '28px'
           }}>
             <FiUser />
           </div>
-
           <div>
-            <h3 style={{ margin: 0, fontSize: '18px' }}>
-              Dados profissionais
-            </h3>
-            <p style={{
-              margin: '5px 0 0',
-              color: 'var(--zlora-text-soft)',
-              fontSize: '13px'
-            }}>
+            <h3 style={{ margin: 0, fontSize: '1.2rem' }}>Dados Profissionais</h3>
+            <p style={{ margin: '4px 0 0', color: 'var(--zlora-text-soft)', fontSize: '14px' }}>
               Atualize seus dados de contato e especialidade.
             </p>
           </div>
         </div>
 
+        {/* MENSAGENS DE SUCESSO / ERRO */}
         {mensagem && (
-          <div style={{
-            padding: '12px 16px',
-            borderRadius: '10px',
-            background: '#E8F8EF',
-            color: '#21834A',
-            marginBottom: '20px',
-            fontSize: '14px'
-          }}>
+          <div className="alert alert-info" style={{ background: '#DCFCE7', color: '#166534', borderLeftColor: '#22C55E', marginBottom: '24px' }}>
             {mensagem}
           </div>
         )}
-
         {erro && (
-          <div style={{
-            padding: '12px 16px',
-            borderRadius: '10px',
-            background: '#FDECEC',
-            color: '#C0392B',
-            marginBottom: '20px',
-            fontSize: '14px'
-          }}>
+          <div className="alert alert-info" style={{ background: '#FEE2E2', color: '#991B1B', borderLeftColor: '#DC2626', marginBottom: '24px' }}>
             {erro}
           </div>
         )}
 
-        <form onSubmit={salvarPerfil}>
+        {/* FORMULÁRIO */}
+        <form onSubmit={handleSubmit(onSubmit)}>
+          
           <div className="form-group">
-            <label>
-              <FiUser style={{ marginRight: '7px' }} />
-              Nome completo
-            </label>
+            <label htmlFor="nome"><FiUser style={{ marginBottom: '-2px' }} /> Nome Completo *</label>
             <input
-              className="form-control"
-              name="nome"
-              value={perfil.nome}
-              onChange={atualizarCampo}
-              required
-              maxLength={120}
+              id="nome"
+              className={`form-control ${errors.nome ? 'is-invalid' : ''}`}
+              {...register('nome')}
             />
+            {errors.nome && <small className="form-error is-visible">{errors.nome.message}</small>}
           </div>
 
           <div className="form-group">
-            <label>
-              <FiMail style={{ marginRight: '7px' }} />
-              E-mail
-            </label>
+            <label htmlFor="email"><FiMail style={{ marginBottom: '-2px' }} /> E-mail de Acesso</label>
             <input
-              className="form-control"
+              id="email"
               type="email"
-              value={perfil.email}
+              className="form-control"
+              value={email}
               disabled
+              style={{ background: '#F3F4F6', cursor: 'not-allowed' }}
             />
-            <small className="form-hint">
-              O e-mail de acesso não pode ser alterado por esta tela.
-            </small>
+            <small className="form-hint">O e-mail de login não pode ser alterado por esta tela.</small>
           </div>
 
-          <div className="form-group">
-            <label>
-              <FiPhone style={{ marginRight: '7px' }} />
-              Telefone
-            </label>
-            <input
-              className="form-control"
-              name="telefone"
-              value={perfil.telefone || ''}
-              onChange={atualizarCampo}
-            />
+          <div className="row">
+            <div className="col-md-6">
+              <div className="form-group">
+                <label htmlFor="telefone"><FiPhone style={{ marginBottom: '-2px' }} /> Telefone</label>
+                <input
+                  id="telefone"
+                  className="form-control"
+                  placeholder="(00) 00000-0000"
+                  {...register('telefone')}
+                />
+              </div>
+            </div>
+
+            <div className="col-md-6">
+              <div className="form-group">
+                <label htmlFor="especialidade"><FiScissors style={{ marginBottom: '-2px' }} /> Especialidade</label>
+                <input
+                  id="especialidade"
+                  className="form-control"
+                  placeholder="Ex: Barbeiro, Manicure..."
+                  {...register('especialidade')}
+                />
+              </div>
+            </div>
           </div>
 
-          <div className="form-group">
-            <label>
-              <FiScissors style={{ marginRight: '7px' }} />
-              Especialidade
-            </label>
-            <input
-              className="form-control"
-              name="especialidade"
-              value={perfil.especialidade || ''}
-              onChange={atualizarCampo}
-              maxLength={120}
-            />
-          </div>
-
-          <div style={{
-            display: 'flex',
-            justifyContent: 'flex-end',
-            marginTop: '28px'
-          }}>
-            <button
-              type="submit"
-              className="btn btn-primary"
-              disabled={salvando}
-            >
-              <FiSave style={{ marginRight: '8px' }} />
-              {salvando ? 'Salvando...' : 'Salvar alterações'}
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '32px', paddingTop: '24px', borderTop: '1px solid var(--zlora-border)' }}>
+            <button type="submit" className="btn btn-primary" disabled={salvando}>
+              <FiSave style={{ marginRight: '8px', marginBottom: '-2px' }} />
+              {salvando ? 'Salvando...' : 'Salvar Alterações'}
             </button>
           </div>
         </form>

@@ -35,6 +35,9 @@ export default function Login() {
       if (usuarioLogado.papel === 'cliente') {
         console.log("Redirecionando para área do CLIENTE...");
         navigate('/cliente/dashboard'); 
+      } else if (usuarioLogado.papel === 'profissional') {
+        console.log("Redirecionando para área do PROFISSIONAL...");
+        navigate('/profissional/agenda'); // <-- ROTA DA SUA AMIGA AQUI
       } else {
         console.log("Redirecionando para área do ADMIN...");
         navigate('/dashboard');         
