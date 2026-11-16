@@ -39,6 +39,7 @@ export function AuthProvider({ children }) {
         nome: data.usuario.nome,
         email: data.usuario.email,
         estabelecimento: data.usuario.estabelecimento,
+        slug: data.usuario.slug, // <--- CORRIGIDO AQUI
         papel: data.usuario.papel,
         id: data.usuario.id,
         empresaId: data.usuario.empresaId,
@@ -48,7 +49,7 @@ export function AuthProvider({ children }) {
       localStorage.setItem('@Zlora:user', JSON.stringify(usuarioLogado));
       localStorage.setItem('@Zlora:token', data.token);
 
-      return usuarioLogado; // <--- CORRIGIDO AQUI
+      return usuarioLogado; 
 
     } catch (erro) {
       console.error('Erro no login:', erro);
