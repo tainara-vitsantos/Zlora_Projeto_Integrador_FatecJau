@@ -1,5 +1,6 @@
+
 import { useState, useEffect } from 'react';
-import { FiSearch, FiTrash2, FiPlus, FiX } from 'react-icons/fi';
+import { FiSearch, FiTrash2, FiPlus, FiX, FiEdit2 } from 'react-icons/fi';
 import { api } from '../../services/api';
 
 export default function Clientes() {
@@ -8,7 +9,8 @@ export default function Clientes() {
   const [busca, setBusca] = useState('');
   
   const [isModalOpen, setIsModalOpen] = useState(false);
-  // Adicionamos o Status aqui
+  const [clienteEditando, setClienteEditando] = useState(null);
+
   const [novoCliente, setNovoCliente] = useState({ Nome: '', Email: '', Telefone: '', Cpf: '', Status: 'ativo' });
   const [salvando, setSalvando] = useState(false);
 
@@ -38,21 +40,45 @@ export default function Clientes() {
     e.preventDefault();
     try {
       setSalvando(true);
-      console.log("Enviando para o C#:", novoCliente); // Raio-X
-      
-      await api.request('/api/clientes', {
-        method: 'POST',
-        body: JSON.stringify(novoCliente)
-      });
+      console.log("Enviando para o C#:", novoCliente);
+
+      if (clienteEditando) {
+        const id = clienteEditando.Id || clienteEditando.id;
+
+        await api.request(`/api/clientes/${id}`, {
+          method: 'PUT',
+          body: JSON.stringify(novoCliente)
+        });
+      } else {
+        await api.request('/api/clientes', {
+          method: 'POST',
+          body: JSON.stringify(novoCliente)
+        });
+      }
       
       setIsModalOpen(false);
+      setClienteEditando(null);
       setNovoCliente({ Nome: '', Email: '', Telefone: '', Cpf: '', Status: 'ativo' });
       carregarClientes(); 
     } catch (error) {
-      alert("Erro ao cadastrar cliente: \n" + error.message);
+      alert("Erro ao salvar cliente: \n" + error.message);
     } finally {
       setSalvando(false);
     }
+  };
+
+  const handleEditar = (cliente) => {
+    setClienteEditando(cliente);
+
+    setNovoCliente({
+      Nome: cliente.Nome || cliente.nome || '',
+      Email: cliente.Email || cliente.email || '',
+      Telefone: cliente.Telefone || cliente.telefone || '',
+      Cpf: cliente.Cpf || cliente.cpf || '',
+      Status: cliente.Status || cliente.status || 'ativo'
+    });
+
+    setIsModalOpen(true);
   };
 
   const handleExcluir = async (id) => {
@@ -72,7 +98,11 @@ export default function Clientes() {
           <h2 style={{ fontSize: '1.5rem', marginBottom: '8px' }}>Meus Clientes</h2>
           <p style={{ color: 'var(--zlora-text-soft)', margin: 0 }}>Gerencie a base de clientes do seu estabelecimento.</p>
         </div>
-        <button className="btn btn-primary" onClick={() => setIsModalOpen(true)}>
+        <button className="btn btn-primary" onClick={() => {
+          setClienteEditando(null);
+          setNovoCliente({ Nome: '', Email: '', Telefone: '', Cpf: '', Status: 'ativo' });
+          setIsModalOpen(true);
+        }}>
           <FiPlus /> Novo Cliente
         </button>
       </div>
@@ -125,6 +155,14 @@ export default function Clientes() {
                     <td style={{ textAlign: 'right' }}>
                       <button 
                         className="btn-icon" 
+                        onClick={() => handleEditar(cliente)}
+                        title="Editar"
+                      >
+                        <FiEdit2 />
+                      </button>
+
+                      <button 
+                        className="btn-icon" 
                         onClick={() => handleExcluir(id)}
                         title="Excluir"
                       >
@@ -143,8 +181,14 @@ export default function Clientes() {
         <div className="modal-overlay">
           <div className="modal-content">
             <div className="modal-header">
-              <h3 className="modal-title">Cadastrar Novo Cliente</h3>
-              <button className="btn-close" onClick={() => setIsModalOpen(false)}><FiX /></button>
+              <h3 className="modal-title">
+                {clienteEditando ? 'Editar Cliente' : 'Cadastrar Novo Cliente'}
+              </h3>
+              <button className="btn-close" onClick={() => {
+                setIsModalOpen(false);
+                setClienteEditando(null);
+                setNovoCliente({ Nome: '', Email: '', Telefone: '', Cpf: '', Status: 'ativo' });
+              }}><FiX /></button>
             </div>
             
             <form onSubmit={handleSalvar}>
@@ -181,11 +225,15 @@ export default function Clientes() {
                 />
               </div>
               <div style={{ display: 'flex', gap: '12px', marginTop: '32px' }}>
-                <button type="button" className="btn btn-ghost" style={{ flex: 1 }} onClick={() => setIsModalOpen(false)}>
+                <button type="button" className="btn btn-ghost" style={{ flex: 1 }} onClick={() => {
+                  setIsModalOpen(false);
+                  setClienteEditando(null);
+                  setNovoCliente({ Nome: '', Email: '', Telefone: '', Cpf: '', Status: 'ativo' });
+                }}>
                   Cancelar
                 </button>
                 <button type="submit" className="btn btn-primary" style={{ flex: 1 }} disabled={salvando}>
-                  {salvando ? 'Salvando...' : 'Salvar Cliente'}
+                  {salvando ? 'Salvando...' : clienteEditando ? 'Salvar Alterações' : 'Salvar Cliente'}
                 </button>
               </div>
             </form>

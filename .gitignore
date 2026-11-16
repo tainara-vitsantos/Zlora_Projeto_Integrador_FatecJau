@@ -10,6 +10,9 @@
 *.userosscache
 *.sln.docstates
 *.env
+/backups/
+**/bin/
+**/obj/
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
@@ -427,3 +430,5 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+backend.zip
+backend/wwwroot/uploads/

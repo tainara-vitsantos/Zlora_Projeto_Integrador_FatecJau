@@ -10,7 +10,7 @@ namespace Zlora.Controllers
 {
     // Eu protejo todas as rotas de clientes: é necessário enviar um JWT válido.
     [ApiController]
-    [Authorize]
+    [Authorize(Roles = "administrador")]
     [Route("api/clientes")]
     public class ClientesController : ControllerBase
     {

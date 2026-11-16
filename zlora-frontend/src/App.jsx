@@ -1,6 +1,7 @@
 import { Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
+import MinhaAgenda from './pages/profissional/MinhaAgenda';
 
 // Páginas Públicas
 import Home from './pages/Home';
@@ -22,6 +23,10 @@ import Configuracoes from './pages/dashboard/Configuracoes';
 import ClientLayout from './components/layout/ClientLayout';
 import MeusAgendamentos from './pages/cliente/MeusAgendamentos';
 import Perfil from './pages/cliente/Perfil';
+
+//Profissional
+import MeuPerfil from './pages/profissional/MeuPerfil';
+import ProfissionalLayout from './components/layout/ProfissionalLayout';
 
 export default function App() {
   return (
@@ -63,9 +68,26 @@ export default function App() {
           <Route path="perfil" element={<Perfil />} />
         </Route>
 
+
+
+{/* ÁREA DO PROFISSIONAL */}
+<Route
+  path="/profissional"
+  element={
+    <ProtectedRoute role="profissional">
+      <ProfissionalLayout />
+    </ProtectedRoute>
+  }
+>
+  <Route path="agenda" element={<MinhaAgenda />} />
+  <Route path="perfil" element={<MeuPerfil />} />
+</Route>
+
         {/* ROTA PÚBLICA DO SALÃO */}
         <Route path="/:slug" element={<PublicSalon />} />
       </Routes>
     </AuthProvider>
   );
+
+  
 }
