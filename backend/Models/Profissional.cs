@@ -12,6 +12,13 @@ namespace Zlora.Models
         [BsonElement("empresa_id"), BsonRepresentation(BsonType.ObjectId)]
         public string EmpresaId { get; set; } = "";
 
+
+        // Aqui eu guardo qual conta faz login como esse profissional.
+        // Assim a gente consegue descobrir de quem é cada agenda.
+        [BsonElement("usuario_id"), BsonRepresentation(BsonType.ObjectId)]
+        public string? UsuarioId { get; set; }
+
+
         [BsonElement("nome"), Required, StringLength(120)]
         public string Nome { get; set; } = "";
 

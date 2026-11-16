@@ -1,3 +1,4 @@
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
@@ -25,6 +26,7 @@ namespace Zlora.Controllers
         // ==========================================
 
         // Eu permito filtrar a agenda por início e fim para o frontend poder mostrar períodos menores.
+        [Authorize(Roles = "administrador")]
         [HttpGet]
         public async Task<IActionResult> Get([FromQuery] DateTime? inicio, [FromQuery] DateTime? fim)
         {
@@ -39,6 +41,7 @@ namespace Zlora.Controllers
         }
 
         // Eu procuro o agendamento pelo ID e pela empresa para evitar acesso cruzado.
+        [Authorize(Roles = "administrador")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(string id)
         {
@@ -48,6 +51,7 @@ namespace Zlora.Controllers
         }
 
         // Eu valido cliente, serviço e intervalo antes de registrar um novo horário.
+        [Authorize(Roles = "administrador")]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] Agendamento agendamento)
         {
@@ -85,6 +89,7 @@ namespace Zlora.Controllers
         }
 
         // Eu permito o cancelamento dentro da área administrativa; a regra de 24 horas do cliente final ainda precisa do fluxo próprio.
+        [Authorize(Roles = "administrador")]
         [HttpPatch("{id}/cancelar")]
         public async Task<IActionResult> Cancel(string id)
         {
@@ -103,6 +108,7 @@ namespace Zlora.Controllers
         // ==========================================
 
         // Rota exclusiva para o cliente final logado ver os próprios agendamentos
+        [Authorize(Roles = "cliente")]
         [HttpGet("meus")]
         public async Task<IActionResult> GetMeusAgendamentos()
         {
@@ -144,6 +150,68 @@ namespace Zlora.Controllers
             }
 
             return Ok(resultado);
+
+            
         }
+
+        // Cada profissional consulta somente os horários vinculados ao seu cadastro.
+        [Authorize(Roles = "profissional")]
+        [HttpGet("minha")]
+        public async Task<IActionResult> GetMinhaAgenda()
+        {
+            var usuarioId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrWhiteSpace(usuarioId) ||
+                string.IsNullOrWhiteSpace(EmpresaId))
+                return Forbid();
+
+            // Descubro qual cadastro profissional pertence a essa conta.
+            var profissional = await _context.Profissionais
+                .Find(p => p.UsuarioId == usuarioId &&
+                           p.EmpresaId == EmpresaId)
+                .FirstOrDefaultAsync();
+
+            if (profissional == null)
+                return NotFound(new
+                {
+                    mensagem = "Cadastro profissional não encontrado."
+                });
+
+            // Busco somente os agendamentos desse profissional e dessa empresa.
+            var agendamentos = await _context.Agendamentos
+                .Find(a => a.ProfissionalId == profissional.Id &&
+                           a.EmpresaId == EmpresaId)
+                .SortBy(a => a.DataHoraInicio)
+                .ToListAsync();
+
+            // Busco os nomes para a agenda não mostrar apenas os IDs do MongoDB.
+var resultado = new List<object>();
+
+foreach (var agendamento in agendamentos)
+{
+    var cliente = await _context.Clientes
+        .Find(c => c.Id == agendamento.ClienteId &&
+                   c.EmpresaId == EmpresaId)
+        .FirstOrDefaultAsync();
+
+    var servico = await _context.Servicos
+        .Find(s => s.Id == agendamento.ServicoId &&
+                   s.EmpresaId == EmpresaId)
+        .FirstOrDefaultAsync();
+
+    resultado.Add(new
+    {
+        id = agendamento.Id,
+        dataHoraInicio = agendamento.DataHoraInicio,
+        dataHoraFim = agendamento.DataHoraFim,
+        clienteNome = cliente?.Nome ?? "Cliente não encontrado",
+        servicoNome = servico?.Nome ?? "Serviço não encontrado",
+        status = agendamento.Status,
+        observacoes = agendamento.Observacoes
+    });
+}
+
+return Ok(resultado);
+        } //a rota sera GET /api/agendamentos/minha
     }
 }

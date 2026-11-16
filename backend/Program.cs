@@ -74,7 +74,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(chave)),
             ValidateLifetime = true,
-            ClockSkew = TimeSpan.FromSeconds(30)
+            ClockSkew = TimeSpan.FromSeconds(30),
+            // Eu defino os tipos de claim usados para papel e nome do usuário, para que o Authorize funcione.
+RoleClaimType = System.Security.Claims.ClaimTypes.Role,
+NameClaimType = System.Security.Claims.ClaimTypes.Name
+            
         };
     });
 builder.Services.AddAuthorization();

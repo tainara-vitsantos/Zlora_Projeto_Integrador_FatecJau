@@ -10,7 +10,7 @@ namespace Zlora.Controllers
 {
     // Eu exijo autenticação em todas as operações de serviços.
     [ApiController]
-    [Authorize]
+    [Authorize(Roles = "administrador")]
     [Route("api/servicos")]
     public class ServicosController : ControllerBase
     {
