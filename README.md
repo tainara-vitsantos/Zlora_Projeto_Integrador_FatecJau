@@ -172,57 +172,6 @@ O modelo comercial proposto considera assinaturas para estabelecimentos. A compo
 
 O Canvas organiza os segmentos de clientes, a proposta de valor, os canais, o relacionamento, as fontes de receita, os recursos, as atividades, os parceiros e a estrutura de custos. A proposta de valor está relacionada à centralização das informações e ao apoio à organização dos atendimentos.
 
-## 10 Execução local
-
-### 10.1 Pré-requisitos
-
-- Node.js compatível com a versão de Vite utilizada no projeto e npm.
-- SDK .NET 10.
-- MongoDB em execução, com banco `zlora`.
-- MongoDB Database Tools para utilização da rotina de backup.
-
-Os comandos abaixo devem ser executados a partir da pasta que contém `backend` e `zlora-frontend`.
-
-### 10.2 API
-
-Configure a conexão MongoDB e uma chave JWT de pelo menos 32 caracteres por variável de ambiente ou configuração local. Mantenha senhas e chaves fora dos arquivos publicados no repositório.
-
-```powershell
-cd backend
-dotnet restore
-dotnet run
-```
-
-O perfil local utiliza `http://localhost:5000`. A documentação da API pode ser acessada em `http://localhost:5000/swagger`, no ambiente de desenvolvimento.
-
-### 10.3 Frontend
-
-Em outro terminal:
-
-```powershell
-cd zlora-frontend
-npm install
-npm run dev
-```
-
-A interface utiliza `http://localhost:5173`. O endereço da API pode ser definido por `VITE_API_URL`; o valor padrão é `http://localhost:5000`. A configuração local de CORS considera a origem `http://localhost:5173`.
-
-### 10.4 Compilação
-
-Na pasta do frontend:
-
-```powershell
-npm run build
-```
-
-### 10.5 Utilização dos relatórios
-
-1. Acessar a aplicação com perfil de administrador.
-2. Abrir a aba **Relatórios**.
-3. Informar o período e o status desejados.
-4. Conferir os registros apresentados.
-5. Selecionar **Exportar PDF** e escolher **Salvar como PDF** na janela de impressão.
-
 ## 11 Considerações finais
 
 O projeto Zlora reúne conhecimentos de interface web, programação em JavaScript e C#, desenvolvimento de APIs, autenticação e persistência não relacional. Sua organização permite relacionar os cadastros ao fluxo de agendamento e às consultas administrativas, aproximando os conteúdos trabalhados no curso das necessidades de gestão do setor de beleza e estética.
