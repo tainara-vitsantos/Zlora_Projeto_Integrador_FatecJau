@@ -172,7 +172,7 @@ O modelo comercial proposto considera assinaturas para estabelecimentos. A compo
 
 O Canvas organiza os segmentos de clientes, a proposta de valor, os canais, o relacionamento, as fontes de receita, os recursos, as atividades, os parceiros e a estrutura de custos. A proposta de valor está relacionada à centralização das informações e ao apoio à organização dos atendimentos.
 
-## 11 Considerações finais
+## 10 Considerações finais
 
 O projeto Zlora reúne conhecimentos de interface web, programação em JavaScript e C#, desenvolvimento de APIs, autenticação e persistência não relacional. Sua organização permite relacionar os cadastros ao fluxo de agendamento e às consultas administrativas, aproximando os conteúdos trabalhados no curso das necessidades de gestão do setor de beleza e estética.
 
