@@ -2,6 +2,7 @@ import { Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import MinhaAgenda from './pages/profissional/MinhaAgenda';
+import Relatorios from './pages/dashboard/Relatorios';
 
 // Páginas Públicas
 import Home from './pages/Home';
@@ -18,6 +19,7 @@ import Servicos from './pages/dashboard/Servicos';
 import Profissionais from './pages/dashboard/Profissionais'; // <-- NOVA IMPORTAÇÃO
 import Financeiro from './pages/dashboard/Financeiro';
 import Configuracoes from './pages/dashboard/Configuracoes';
+
 
 // Cliente Final (Logado)
 import ClientLayout from './components/layout/ClientLayout';
@@ -53,6 +55,7 @@ export default function App() {
           <Route path="profissionais" element={<Profissionais />} /> {/* <-- NOVA ROTA */}
           <Route path="financeiro" element={<Financeiro />} />
           <Route path="config" element={<Configuracoes />} />
+          <Route path="relatorios" element={<Relatorios />} />
         </Route>
 
         {/* ROTAS DO CLIENTE FINAL (Só Cliente logado acessa) */}

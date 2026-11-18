@@ -1,7 +1,7 @@
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { 
-  FiGrid, FiCalendar, FiUsers, FiScissors, FiDollarSign, FiSettings, FiLogOut, FiBriefcase 
+  FiGrid, FiCalendar, FiUsers, FiScissors, FiDollarSign, FiSettings, FiLogOut, FiBriefcase, FiFileText
 } from 'react-icons/fi';
 
 const MENU_ITEMS = [
@@ -11,6 +11,7 @@ const MENU_ITEMS = [
   { path: '/dashboard/servicos', label: 'Serviços', icon: FiScissors },
   { path: '/dashboard/profissionais', label: 'Profissionais', icon: FiBriefcase }, // <-- NOVO ITEM
   { path: '/dashboard/financeiro', label: 'Financeiro', icon: FiDollarSign },
+  { path: '/dashboard/relatorios', label: 'Relatórios', icon: FiFileText },
   { path: '/dashboard/config', label: 'Configurações', icon: FiSettings },
 ];
 

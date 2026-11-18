@@ -103,6 +103,40 @@ namespace Zlora.Controllers
             return Ok(agendamento);
         }
 
+
+// Eu permito que o administrador marque um atendimento como concluído.
+[Authorize(Roles = "administrador")]
+[HttpPatch("{id}/concluir")]
+public async Task<IActionResult> Concluir(string id)
+{
+    if (!ObjectId.TryParse(id, out _) || string.IsNullOrWhiteSpace(EmpresaId))
+        return NotFound();
+
+    var agendamento = await _context.Agendamentos
+        .Find(a => a.Id == id && a.EmpresaId == EmpresaId)
+        .FirstOrDefaultAsync();
+
+    if (agendamento == null)
+        return NotFound();
+
+    if (agendamento.Status == "cancelado")
+        return BadRequest(new { mensagem = "Não é possível concluir um agendamento cancelado." });
+
+    if (agendamento.Status == "concluido")
+        return BadRequest(new { mensagem = "Este agendamento já está concluído." });
+
+    agendamento.Status = "concluido";
+    agendamento.AlteradoEm = DateTime.UtcNow;
+
+    await _context.Agendamentos.ReplaceOneAsync(
+        a => a.Id == id && a.EmpresaId == EmpresaId,
+        agendamento
+    );
+
+    return Ok(agendamento);
+}
+
+
         // ==========================================
         // ROTAS DO CLIENTE FINAL
         // ==========================================

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { FiPlus, FiUser, FiScissors, FiX, FiXCircle, FiBriefcase } from 'react-icons/fi';
+import { FiPlus, FiUser, FiScissors, FiX, FiXCircle, FiBriefcase, FiCheckCircle } from 'react-icons/fi';
 import { api } from '../../services/api';
 
 export default function Agenda() {
@@ -95,6 +95,23 @@ export default function Agenda() {
     }
   };
 
+
+const handleConcluir = async (id) => {
+  if (!window.confirm('Deseja marcar este atendimento como concluído?')) return;
+
+  try {
+    await api.request(`/api/agendamentos/${id}/concluir`, {
+      method: 'PATCH'
+    });
+
+    await carregarDados();
+
+  } catch (error) {
+    alert('Erro ao concluir atendimento: ' + error.message);
+  }
+};
+
+
   // Funções auxiliares
   const formatarHora = (dataString) => {
     if (!dataString) return '--:--';
@@ -170,15 +187,28 @@ export default function Agenda() {
                       {status}
                     </span>
                     
-                    {status !== 'cancelado' && (
-                      <button 
-                        onClick={() => handleCancelar(id)}
-                        className="btn-icon" 
-                        title="Cancelar Agendamento"
-                      >
-                        <FiXCircle style={{ fontSize: '20px' }} />
-                      </button>
-                    )}
+                    
+{status === 'agendado' && (
+  <>
+    <button
+      onClick={() => handleConcluir(id)}
+      className="btn-icon"
+      title="Concluir atendimento"
+      style={{ color: '#16a34a' }}
+    >
+      <FiCheckCircle style={{ fontSize: '20px' }} />
+    </button>
+
+    <button
+      onClick={() => handleCancelar(id)}
+      className="btn-icon"
+      title="Cancelar agendamento"
+    >
+      <FiXCircle style={{ fontSize: '20px' }} />
+    </button>
+  </>
+)}
+
                   </div>
                 </div>
               );
