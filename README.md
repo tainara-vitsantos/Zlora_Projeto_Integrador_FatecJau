@@ -1,101 +1,230 @@
-# Projeto Interdisciplinar - Fatec Jahu
+# Zlora: plataforma de gestão e agendamento para beleza e estética
 
-Projeto desenvolvido com apoio dos conteúdos das disciplinas do curso de DSM – Fatec Jahu. Documentação do Projeto Interdisciplinar (PI).
+**Projeto Interdisciplinar**  
+**Instituição:** Centro Paula Souza - Faculdade de Tecnologia de Jahu  
+**Curso:** Tecnologia em Desenvolvimento de Software Multiplataforma  
+**Integrantes:** Evellyn Santana Marinho, Rafael Henrique Biliasi e Tainara Santos  
+**Ano:** 2026
 
-## 1. Introdução
+## 1 Introdução
 
-A criação desta solução de gestão comercial surgiu da necessidade de modernizar e otimizar os processos internos de diversos estabelecimentos, garantindo mais organização, agilidade e qualidade no atendimento. No cotidiano das empresas, é comum que agendamentos, históricos de procedimentos, registros financeiros e controle de produtos sejam realizados de forma manual ou em aplicações separadas. Essa realidade gera falhas de comunicação, retrabalho e perda de informações essenciais para uma boa experiência do cliente. 
+O Zlora é um projeto de aplicação web destinado à gestão de estabelecimentos do setor de beleza e estética. Sua proposta é reunir informações de clientes, profissionais, serviços e agendamentos em um ambiente organizado, contribuindo para o acompanhamento das atividades administrativas e operacionais.
 
-A partir de uma análise de mercado e de conversas com profissionais da área, identificou-se que mais de 80% das clínicas e negócios de atendimento enfrentam dificuldades na gestão de horários, acompanhamento de clientes e controle de estoque — fatores que impactam diretamente na produtividade e na fidelização. Da mesma forma, foi constatado que a centralização desses processos em uma plataforma digital seria altamente benéfica tanto para os colaboradores quanto para os gestores. 
+O uso de agendas físicas, planilhas e canais de comunicação separados pode dificultar a consulta de horários e o registro dos atendimentos. A centralização dessas informações busca reduzir o retrabalho, facilitar a organização da agenda e oferecer uma visão mais clara das atividades do estabelecimento.
 
-Com base nesses resultados, o **Zlora** foi idealizado como uma solução completa para integrar e digitalizar os principais processos do estabelecimento contratante. O objetivo é proporcionar um ambiente intuitivo, eficiente e seguro, capaz de melhorar o fluxo de trabalho, reduzir erros, facilitar a comunicação e elevar o padrão de atendimento. Sua estrutura *white-label* permite que o produto seja expandido comercialmente para diversos setores que envolvem o atendimento ao cliente e o agendamento de procedimentos, como clínicas de estética, manicures, cabeleireiros, entre outros. 
+A solução considera três perfis de interação: administrador, profissional e cliente. O administrador gerencia os cadastros e acompanha os registros do negócio; o profissional consulta sua agenda e organiza sua jornada; o cliente acessa os serviços do estabelecimento e realiza agendamentos. A personalização visual por estabelecimento integra a proposta white-label do projeto.
 
-### Objetivos
+### 1.1 Público-alvo
 
-**Objetivo Geral:** 
-A plataforma de gestão e agendamentos tem como objetivo otimizar os processos administrativos e operacionais, garantindo maior organização, eficiência e qualidade no atendimento. Por meio de uma aplicação digital segura e intuitiva, busca-se centralizar informações, automatizar rotinas e oferecer suporte à tomada de decisões, elevando o padrão de serviço oferecido aos clientes e facilitando o trabalho diário dos profissionais. 
+O projeto é direcionado a salões de beleza, barbearias, clínicas de estética, manicures, profissionais autônomos e clientes desses estabelecimentos.
 
-**Objetivos Específicos:** 
-* **Otimizar o Agendamento de Procedimentos:** Desenvolver um módulo integrado de agendamentos que permita organizar horários, evitar conflitos, reduzir atrasos e facilitar a visualização da agenda dos profissionais. 
-* **Facilitar o Controle de Clientes e Histórico de Atendimentos:** Criar um recurso para registrar informações completas dos clientes, incluindo histórico de procedimentos, preferências e observações, permitindo um atendimento mais personalizado e eficiente. 
-* **Gerenciar Estoque e Produtos Utilizados:** Implementar funcionalidades para monitorar níveis de estoque, controlar entradas e saídas de produtos e gerar alertas de reposição, evitando faltas e desperdícios. 
-* **Automatizar Processos Financeiros:** Oferecer ferramentas para registrar pagamentos, controlar contas, emitir relatórios financeiros e acompanhar o faturamento, contribuindo para uma gestão mais profissional e organizada. 
-* **Aprimorar a Experiência do Cliente:** Construir uma solução que contribua para um atendimento mais rápido, organizado e personalizado, aumentando a satisfação, fidelização e percepção de qualidade dos serviços prestados. 
+### 1.2 Justificativa
 
-## Metodologia
+A organização dos atendimentos exige que informações de clientes, serviços e horários estejam acessíveis e relacionadas. Uma plataforma integrada pode apoiar esse processo ao reunir os registros em uma única base e oferecer interfaces adequadas às necessidades de cada perfil de usuário. No contexto acadêmico, o desenvolvimento do Zlora articula conteúdos de programação web, banco de dados, engenharia de software e interação humano-computador.
 
-Para o desenvolvimento do Zlora foram adotados métodos, ferramentas e tecnologias que garantiram organização, colaboração eficiente e agilidade na construção das funcionalidades. 
+## 2 Objetivos
 
-### Métodos e Processo 
-* Aplicação de um modelo ágil baseado no Scrum (versão simplificada). 
-* Reuniões frequentes para alinhamento e definição de prioridades. 
-* Sprints semanais com metas individuais e coletivas. 
-* Controle de tarefas utilizando Trello, organizado em listas no estilo Kanban. 
-* Registro de decisões e histórico de desenvolvimento por meio de Issues. 
+### 2.1 Objetivo geral
 
-### Tecnologias e Ferramentas 
-* **Frontend:** HTML5, CSS3 e JavaScript. 
-* **Backend:** ASP.NET e C#.
-* **Design e prototipação:** Figma. 
-* **Versionamento:** Git e GitHub. 
-* **Documentação:** Markdown. 
-* **Comunicação:** WhatsApp e reuniões presenciais/online. 
-* **Apresentação:** PowerPoint. 
+Desenvolver uma plataforma web para centralizar informações e apoiar a gestão de agendamentos e atendimentos em estabelecimentos de beleza e estética.
 
-### Onde e quando aplicamos
-O desenvolvimento da plataforma ocorreu de forma híbrida, combinando encontros presenciais e atividades remotas. O projeto foi desenvolvido ao longo do curso de desenvolvimento de software multiplataforma, com ajustes finais realizados nos últimos encontros da equipe. 
+### 2.2 Objetivos específicos
 
-## 2. Requisitos
+- Organizar os cadastros de clientes, profissionais e serviços.
+- Estruturar o agendamento de serviços e a consulta das agendas individuais.
+- Permitir o acompanhamento do histórico de atendimentos.
+- Apoiar o controle de produtos, movimentações de estoque e informações financeiras.
+- Disponibilizar recursos de personalização visual por estabelecimento.
+- Permitir a consulta de indicadores e a emissão de relatórios.
+- Oferecer uma interface clara e adequada aos diferentes perfis de usuário.
 
-Um documento de requisitos descreve o que a aplicação deve fazer, suas funções, regras e limitações. Ele serve como guia para o desenvolvimento, ajudando a garantir que o produto atenda às necessidades dos usuários e funcione corretamente. 
+## 3 Metodologia
 
-### 2.1 Requisitos Funcionais 
-* **RF01 – Registrar Cliente:** A plataforma deve permitir que o cliente se registre. 
-* **RF02 – Realizar Login do cliente:** A solução deve permitir que o cliente faça login e tenha acesso a seus recursos. 
-* **RF03 – Cancelar Sessão pelo Cliente:** O software deve permitir que o cliente cancele uma sessão com antecedência mínima de 24 horas. 
-* **RF04 – Cancelar Sessão pelo profissional:** A aplicação deve permitir que o profissional cancele o horário de um cliente, notificando o cliente automaticamente. 
-* **RF05 – Acessar Agenda Individual:** A plataforma deve permitir que cada profissional possua login individual, com acesso apenas à sua própria agenda. 
-* **RF06 – Escolher profissional:** A ferramenta deve permitir que o cliente escolha o profissional desejado no momento do agendamento. 
-* **RF07 – Enviar Notificações e Lembretes:** A solução deve enviar notificações/lembretes de consultas aos clientes. 
-* **RF08 – Integrar com Redes Sociais e Aplicativos:** O software deve permitir integração com redes sociais e WhatsApp. 
-* **RF09 – Permitir Autonomia da Administradora:** A plataforma deve permitir que o estabelecimento contratante tenha autonomia para realizar alterações, como ajustes em funcionalidades, regras ou conteúdos. 
-* **RF10 – Agendar e Pagar Online:** A aplicação deve permitir o agendamento e a realização de pagamentos online. 
+O desenvolvimento foi organizado com práticas simplificadas de Scrum, reuniões de acompanhamento, definição de atividades por sprint e uso de quadro Kanban no Trello. O versionamento do código utiliza Git e GitHub, permitindo registrar alterações e apoiar a colaboração entre os integrantes.
 
-### 2.2 Requisitos Não Funcionais
-* **RNF01 – Segurança (Autenticação):** A solução deve exigir login e senha válidos para acesso, garantindo a proteção dos dados do usuário. 
-* **RNF02 – Desempenho:** As páginas do software devem carregar em no máximo 3 segundos, mesmo em condições de internet limitada. 
-* **RNF03 – Usabilidade:** Um novo usuário deve conseguir realizar um agendamento em até 3 minutos, sem necessidade de treinamento prévio. 
-* **RNF04 – Personalização da Interface:** A interface deve ser personalizável (*white-label*) e detalhada, sem comprometer a clareza e a facilidade de uso. 
-* **RNF05 – Experiência do Usuário:** A plataforma deve proporcionar uma experiência agradável e intuitiva, incentivando o retorno e a fidelização dos clientes. 
-* **RNF06 – Segurança (Dados Sensíveis):** Os dados de pagamento devem ser armazenados e transmitidos de forma criptografada, seguindo boas práticas de segurança. 
-* **RNF07 – Responsividade:** O produto deve ser responsivo, funcionando corretamente em dispositivos desktop e mobile. 
+O planejamento visual utiliza o Figma, enquanto os materiais de interação humano-computador apresentam personas, mapas de empatia e fluxos de interação. Esses instrumentos orientam a organização das telas e a identificação das necessidades dos usuários. A documentação do projeto reúne requisitos, estrutura de dados, decisões de arquitetura e orientações de utilização.
 
-## 7. Estudo de Viabilidade
+## 4 Requisitos do sistema
 
-* **Viabilidade Técnica:** A viabilidade técnica demonstra que o Zlora pode ser desenvolvido e mantido com os recursos tecnológicos e conhecimentos atualmente disponíveis pela equipe. As tecnologias selecionadas para a construção da plataforma — como HTML, CSS, JavaScript e Bootstrap — são amplamente utilizadas, possuem documentação robusta e contam com grande suporte da comunidade, garantindo estabilidade e facilidade de implementação. A infraestrutura necessária para o funcionamento da aplicação é simples e acessível, exigindo apenas um ambiente de hospedagem padrão. A arquitetura garante que a ferramenta possa ser implementada com qualidade, além de permitir futuras expansões sem comprometer a estrutura inicial. O produto é flexível e pode ser integrado futuramente com APIs de pagamento ou serviços de gestão corporativa. 
-* **Viabilidade Operacional:** A viabilidade operacional demonstra que o software proposto pode ser implementado e utilizado de forma eficiente pelos usuários finais. O funcionamento da plataforma é sustentado por uma estrutura intuitiva e compatível com os administradores das empresas contratantes. A interface foi planejada para ser clara e de fácil navegação, garantindo que clientes e colaboradores consigam realizar operações sem necessidade de treinamento avançado. A estrutura permite fácil integração de novas funcionalidades no futuro, garantindo que o produto possa evoluir conforme a necessidade de escala dos negócios atendidos. 
-* **Viabilidade Financeira:** A análise de viabilidade financeira demonstra que a construção da plataforma B2B é executável com os recursos disponíveis e apresenta bom potencial de retorno. O investimento inicial envolve custos relacionados ao desenvolvimento, infraestrutura e contratação de serviços de hospedagem, mantendo-se dentro de um orçamento acessível. Do ponto de vista de retorno financeiro, a solução tem potencial para gerar receita através de funcionalidades avançadas, pacotes de assinaturas para as clínicas e automações de vendas, aumentando a rentabilidade do negócio matriz. 
-* **Viabilidade de Mercado:** A viabilidade de mercado revela que existe uma demanda crescente por agendamento de serviços de bem-estar, estética e atendimento comercial, o que favorece a adoção em massa da plataforma. O cenário de consumo atual valoriza ferramentas digitais que melhorem o atendimento ao cliente e reduzam gargalos de tempo. A adoção da ferramenta por estabelecimentos comerciais aumenta a competitividade deles em relação a concorrentes que ainda não possuem presença digital estruturada. 
+### 4.1 Requisitos funcionais
 
-## 8. Regras de Negócio (Modelo Canvas)
+| Código | Requisito | Descrição |
+| --- | --- | --- |
+| RF01 | Registrar cliente | A plataforma deve permitir que o cliente realize seu cadastro. |
+| RF02 | Autenticar cliente | A plataforma deve permitir que o cliente faça login e acesse os recursos associados à sua conta. |
+| RF03 | Cancelar sessão pelo cliente | A plataforma deve permitir que o cliente cancele uma sessão com antecedência mínima de 24 horas. |
+| RF04 | Cancelar sessão pelo profissional | A plataforma deve permitir que o profissional cancele o horário de um cliente e deve notificar o cliente automaticamente. |
+| RF05 | Acessar agenda individual | A plataforma deve permitir que cada profissional possua login individual e acesso apenas à sua própria agenda. |
+| RF06 | Escolher profissional | A plataforma deve permitir que o cliente escolha o profissional desejado no momento do agendamento. |
+| RF07 | Enviar notificações e lembretes | A plataforma deve enviar notificações e lembretes de atendimento aos clientes. |
+| RF08 | Integrar redes sociais e aplicativos | A plataforma deve permitir integração com redes sociais e WhatsApp. |
+| RF09 | Permitir autonomia administrativa | A plataforma deve permitir que o estabelecimento ajuste conteúdos, regras e configurações administrativas de acordo com suas necessidades. |
+| RF10 | Agendar e pagar online | A plataforma deve permitir o agendamento de serviços e a realização de pagamentos online. |
+| RF11 | Gerenciar clientes | A plataforma deve permitir ao administrador cadastrar, consultar, atualizar e excluir registros de clientes, incluindo informações de contato e observações. |
+| RF12 | Gerenciar serviços | A plataforma deve permitir ao administrador cadastrar, consultar, atualizar e excluir serviços, informando descrição, duração, preço e situação. |
+| RF13 | Gerenciar profissionais | A plataforma deve permitir ao administrador cadastrar, consultar, atualizar e excluir profissionais, registrando especialidade, contato e informações de atendimento. |
+| RF14 | Consultar histórico | A plataforma deve permitir a consulta do histórico de agendamentos, relacionando cliente, profissional, serviço, data, horário e status. |
+| RF15 | Gerar relatórios em PDF | A plataforma deve permitir ao administrador filtrar o histórico de agendamentos por período e status e exportar o resultado em PDF. |
+| RF16 | Personalizar o estabelecimento | A plataforma deve permitir configurar a identidade visual e as informações públicas do estabelecimento, incluindo cor, logotipo, imagem de capa, endereço e rede social. |
+| RF17 | Consultar indicadores | A plataforma deve apresentar indicadores administrativos relacionados a agendamentos, clientes e valores dos serviços. |
+| RF18 | Gerenciar estoque | A plataforma deve permitir o controle de produtos, entradas e saídas de estoque e a emissão de alertas de reposição. |
 
-Para compreender de forma clara a proposta de valor do software e como a plataforma se integra ao mercado comercial, desenvolvemos o Modelo de Negócio Canvas. Esse quadro permite visualizar os principais elementos que sustentam o funcionamento do projeto SaaS, incluindo público-alvo, proposta de valor, canais, parcerias, estrutura de custos e fontes de receita. O Canvas alinha a solução *white-label* às necessidades reais dos estabelecimentos comerciais, garantindo coerência entre o produto e o mercado. 
+### 4.2 Requisitos não funcionais
 
-## 9. Design
+| Código | Requisito | Descrição |
+| --- | --- | --- |
+| RNF01 | Segurança da autenticação | A plataforma deve exigir login e senha válidos para o acesso às áreas restritas e proteger os dados de autenticação dos usuários. |
+| RNF02 | Desempenho | As páginas da plataforma devem carregar em até 3 segundos, inclusive nas condições de internet limitada definidas para avaliação. |
+| RNF03 | Usabilidade | A plataforma deve permitir que um novo usuário realize um agendamento em até 3 minutos, sem treinamento prévio. |
+| RNF04 | Personalização da interface | A interface deve permitir personalização por estabelecimento, mantendo clareza, legibilidade e facilidade de uso. |
+| RNF05 | Experiência do usuário | A plataforma deve oferecer navegação intuitiva, organização consistente das informações e mensagens compreensíveis. |
+| RNF06 | Proteção dos dados sensíveis | Os dados de pagamento devem ser armazenados e transmitidos de forma criptografada, seguindo boas práticas de segurança. |
+| RNF07 | Responsividade | A plataforma deve adaptar a apresentação e a interação às telas de computadores e dispositivos móveis. |
 
-A identidade visual base do projeto foi desenvolvida para transmitir leveza, bem-estar e confiança, e foi idealizada para ser adaptável às marcas que utilizarem o modelo. 
+## 5 Organização funcional
 
-* **Paleta de Cores:** Transmite equilíbrio através dos tons `#C8E6E2`, `#9ED5D1`, `#63C1BB`, `#3A9295` e `#105F68`. 
-* **Tipografia:** Roboto Bold (Títulos) e Roboto Regular (Corpo de texto). 
+| Área | Responsabilidade |
+| --- | --- |
+| Administrador | Gerenciamento de clientes, serviços, profissionais, agenda, informações financeiras, relatórios e configurações. |
+| Profissional | Consulta da agenda individual, atualização de perfil e configuração da jornada de trabalho. |
+| Cliente | Acesso à conta e consulta dos próprios agendamentos. |
+| Página pública do estabelecimento | Apresentação da identidade visual, dos serviços e dos profissionais, com formulário de agendamento. |
+| Relatórios | Consulta do histórico com filtros e exportação para PDF. |
 
-## 10. Protótipo
+O cadastro de um estabelecimento associa uma conta administrativa à empresa. Os serviços descrevem os atendimentos oferecidos, enquanto os agendamentos relacionam cliente, profissional, serviço e intervalo de tempo. Essa organização fornece os dados necessários para as consultas do painel e para a geração de relatórios.
 
-Antes do desenvolvimento, as telas foram planejadas e testadas através de um protótipo navegável no Figma. 
+### 5.1 Relatórios de agendamentos
 
-## 11. Aplicação
+A tela de relatórios consulta as informações de agendamentos, clientes, serviços e profissionais. O administrador seleciona a data inicial, a data final e o status dos registros. A tabela apresenta data e hora, cliente, serviço, profissional e situação, acompanhada do total de agendamentos selecionados.
 
-Nesta seção apresentamos a versão final da aplicação hospedada, permitindo navegar e visualizar o ERP funcionando em um de seus casos de uso (como a Essense SPA). 
+A exportação utiliza o recurso de impressão do navegador, acionado por `window.print()`. O CSS de impressão organiza o documento em A4 paisagem e retira os elementos de navegação, filtros e botões. Na janela de impressão, o usuário seleciona **Salvar como PDF**.
 
-## Considerações Finais
+### 5.2 Informações financeiras
 
-O desenvolvimento da plataforma representou uma experiência completa de integração entre análise, design, prototipação e implementação. A solução SaaS *white-label* proposta busca facilitar o dia a dia comercial dos estabelecimentos, oferecendo agilidade, organização e ferramentas gerenciais que fortalecem a tomada de decisão. O produto permanece em evolução, e melhorias futuras poderão ser incorporadas conforme novas demandas e feedbacks dos parceiros comerciais surgirem.
+O painel financeiro apresenta valores calculados a partir dos agendamentos e dos preços dos serviços, além de indicadores e da listagem dos registros. Esses valores apoiam a consulta administrativa do movimento do estabelecimento.
+
+## 6 Arquitetura e tecnologias
+
+A aplicação é organizada em frontend, backend e banco de dados. O frontend apresenta as telas e recebe as ações do usuário. A API processa as requisições, aplica validações e acessa as coleções do banco. As respostas são retornadas em JSON para atualização da interface.
+
+```text
+Interface React -> Requisições HTTP/JSON -> API ASP.NET Core -> MongoDB
+```
+
+| Camada ou finalidade | Tecnologias |
+| --- | --- |
+| Interface | React, JavaScript, HTML e CSS |
+| Ambiente de desenvolvimento frontend | Node.js, npm e Vite |
+| Navegação e componentes | React Router e React Icons |
+| Gráficos e formulários | Recharts, React Hook Form e Zod |
+| Backend | C# e ASP.NET Core, com projeto direcionado ao .NET 10 |
+| Banco de dados | MongoDB e MongoDB.Driver |
+| Autenticação | JWT e PasswordHasher do ASP.NET Core |
+| Documentação da API | Swagger/OpenAPI |
+| Relatórios | Impressão nativa do navegador e CSS |
+
+O fluxo de autenticação retorna um token JWT utilizado nas requisições protegidas. As senhas são tratadas por meio do `PasswordHasher`. O backend utiliza papéis de acesso para organizar as permissões administrativas, profissionais e de clientes.
+
+## 7 Modelo de dados
+
+| Coleção | Responsabilidade |
+| --- | --- |
+| `usuarios` | Contas de acesso, dados de identificação e hash de senha. |
+| `empresas` | Estabelecimentos, proprietário, endereço público e personalização. |
+| `membros_empresa` | Associação entre usuário, empresa, papel e permissões. |
+| `clientes` | Dados cadastrais, informações de contato e observações. |
+| `profissionais` | Identificação, especialidade, jornada e informações profissionais. |
+| `servicos` | Descrição, duração, preço e situação dos serviços. |
+| `agendamentos` | Relacionamento entre cliente, profissional e serviço, com datas e status. |
+
+Os documentos utilizam identificadores para representar as associações entre as coleções. O agendamento mantém referências ao cliente, ao serviço e ao profissional, além de sua vinculação ao estabelecimento. O contexto de dados concentra o acesso às coleções utilizadas pelos controllers.
+
+O banco possui índice único para o e-mail dos usuários. As consultas do dashboard utilizam agregações para reunir indicadores. A rotina `scripts/backup-mongodb.ps1` executa `mongodump` e registra o resultado em arquivo de log.
+
+## 8 Design e experiência de uso
+
+A identidade visual utiliza roxos e lilases, com organização das telas por menu lateral, cartões, formulários e tabelas. A tipografia definida no CSS utiliza Inter para o corpo do texto e Outfit para os títulos, acompanhadas de fontes alternativas do sistema.
+
+| Aplicação | Cor |
+| --- | --- |
+| Primária | `#6F3CE7` |
+| Texto principal | `#24173C` |
+| Lilás de apoio | `#EDE7FF` |
+| Fundo | `#FAF9FF` |
+
+A personalização da página pública permite adequar a apresentação à identidade do estabelecimento. A consistência entre formulários, botões e tabelas orienta a navegação e facilita o reconhecimento das ações disponíveis.
+
+## 9 Viabilidade e modelo de negócio
+
+### 9.1 Viabilidade técnica
+
+A arquitetura separa as responsabilidades de interface, processamento e persistência. A infraestrutura deve contemplar a execução do frontend, da API e do MongoDB, com configuração dos ambientes, das conexões e das rotinas de manutenção.
+
+### 9.2 Viabilidade operacional
+
+A proposta concentra atividades relacionadas ao atendimento em um ambiente comum aos diferentes perfis. Essa organização busca facilitar a consulta de informações e reduzir a dependência de registros dispersos.
+
+### 9.3 Viabilidade financeira
+
+O modelo comercial proposto considera assinaturas para estabelecimentos. A composição dos custos envolve desenvolvimento, hospedagem, banco de dados, manutenção e suporte. Esses elementos orientam o planejamento financeiro e a definição dos serviços oferecidos.
+
+### 9.4 Modelo Canvas
+
+O Canvas organiza os segmentos de clientes, a proposta de valor, os canais, o relacionamento, as fontes de receita, os recursos, as atividades, os parceiros e a estrutura de custos. A proposta de valor está relacionada à centralização das informações e ao apoio à organização dos atendimentos.
+
+## 10 Execução local
+
+### 10.1 Pré-requisitos
+
+- Node.js compatível com a versão de Vite utilizada no projeto e npm.
+- SDK .NET 10.
+- MongoDB em execução, com banco `zlora`.
+- MongoDB Database Tools para utilização da rotina de backup.
+
+Os comandos abaixo devem ser executados a partir da pasta que contém `backend` e `zlora-frontend`.
+
+### 10.2 API
+
+Configure a conexão MongoDB e uma chave JWT de pelo menos 32 caracteres por variável de ambiente ou configuração local. Mantenha senhas e chaves fora dos arquivos publicados no repositório.
+
+```powershell
+cd backend
+dotnet restore
+dotnet run
+```
+
+O perfil local utiliza `http://localhost:5000`. A documentação da API pode ser acessada em `http://localhost:5000/swagger`, no ambiente de desenvolvimento.
+
+### 10.3 Frontend
+
+Em outro terminal:
+
+```powershell
+cd zlora-frontend
+npm install
+npm run dev
+```
+
+A interface utiliza `http://localhost:5173`. O endereço da API pode ser definido por `VITE_API_URL`; o valor padrão é `http://localhost:5000`. A configuração local de CORS considera a origem `http://localhost:5173`.
+
+### 10.4 Compilação
+
+Na pasta do frontend:
+
+```powershell
+npm run build
+```
+
+### 10.5 Utilização dos relatórios
+
+1. Acessar a aplicação com perfil de administrador.
+2. Abrir a aba **Relatórios**.
+3. Informar o período e o status desejados.
+4. Conferir os registros apresentados.
+5. Selecionar **Exportar PDF** e escolher **Salvar como PDF** na janela de impressão.
+
+## 11 Considerações finais
+
+O projeto Zlora reúne conhecimentos de interface web, programação em JavaScript e C#, desenvolvimento de APIs, autenticação e persistência não relacional. Sua organização permite relacionar os cadastros ao fluxo de agendamento e às consultas administrativas, aproximando os conteúdos trabalhados no curso das necessidades de gestão do setor de beleza e estética.
+
+A documentação apresenta os objetivos, os requisitos e a estrutura técnica da solução, servindo como referência para a compreensão do sistema e para a continuidade de seu desenvolvimento.
