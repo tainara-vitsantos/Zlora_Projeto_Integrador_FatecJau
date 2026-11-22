@@ -39,7 +39,7 @@ export function AuthProvider({ children }) {
         nome: data.usuario.nome,
         email: data.usuario.email,
         estabelecimento: data.usuario.estabelecimento,
-        slug: data.usuario.slug, // <--- CORRIGIDO AQUI
+        slug: data.usuario.slug, 
         papel: data.usuario.papel,
         id: data.usuario.id,
         empresaId: data.usuario.empresaId,

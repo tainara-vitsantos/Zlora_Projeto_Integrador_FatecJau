@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { FiPlus, FiUser, FiScissors, FiX, FiXCircle, FiBriefcase } from 'react-icons/fi';
+import { FiPlus, FiUser, FiScissors, FiX, FiXCircle, FiBriefcase, FiCheckCircle } from 'react-icons/fi';
 import { api } from '../../services/api';
 
 export default function Agenda() {
@@ -8,11 +8,11 @@ export default function Agenda() {
   const [servicos, setServicos] = useState([]);
   const [profissionais, setProfissionais] = useState([]); // <-- NOVO ESTADO
   const [carregando, setCarregando] = useState(true);
-  
+
   // Modal
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [salvando, setSalvando] = useState(false);
-  
+
   // O form agora tem o profissionalId
   const [formData, setFormData] = useState({
     clienteId: '',
@@ -31,7 +31,7 @@ export default function Agenda() {
         api.request('/api/servicos'),
         api.request('/api/profissionais')
       ]);
-      
+
       setAgendamentos(agendamentosData);
       setClientes(clientesData);
       setServicos(servicosData);
@@ -51,7 +51,7 @@ export default function Agenda() {
     e.preventDefault();
     try {
       setSalvando(true);
-      
+
       // 1. Descobre a duração do serviço escolhido
       const servicoSelecionado = servicos.find(s => (s.id || s.Id) === formData.servicoId);
       if (!servicoSelecionado) throw new Error("Serviço não encontrado");
@@ -77,7 +77,7 @@ export default function Agenda() {
 
       setIsModalOpen(false);
       setFormData({ clienteId: '', servicoId: '', profissionalId: '', dataHoraInicio: '' });
-      carregarDados(); 
+      carregarDados();
     } catch (error) {
       alert("Aviso: " + (error.message || "Erro ao agendar. Verifique o horário."));
     } finally {
@@ -95,6 +95,21 @@ export default function Agenda() {
     }
   };
 
+  const handleConcluir = async (id) => {
+    if (!window.confirm('Deseja marcar este atendimento como concluído?')) return;
+
+    try {
+      await api.request(`/api/agendamentos/${id}/concluir`, {
+        method: 'PATCH'
+      });
+
+      await carregarDados();
+
+    } catch (error) {
+      alert('Erro ao concluir atendimento: ' + error.message);
+    }
+  };
+
   // Funções auxiliares
   const formatarHora = (dataString) => {
     if (!dataString) return '--:--';
@@ -108,7 +123,7 @@ export default function Agenda() {
 
   const getClienteNome = (id) => clientes.find(c => (c.id || c.Id) === id)?.nome || clientes.find(c => (c.id || c.Id) === id)?.Nome || 'Desconhecido';
   const getServicoNome = (id) => servicos.find(s => (s.id || s.Id) === id)?.nome || servicos.find(s => (s.id || s.Id) === id)?.Nome || 'Desconhecido';
-  
+
   // NOVA FUNÇÃO AUXILIAR
   const getProfissionalNome = (id) => profissionais.find(p => (p.id || p.Id) === id)?.nome || profissionais.find(p => (p.id || p.Id) === id)?.Nome || 'Não definido';
 
@@ -149,10 +164,10 @@ export default function Agenda() {
                       {formatarData(dataInicio)}
                     </div>
                   </div>
-                  
+
                   <div className="agenda-info">
                     <h3 className="agenda-client">
-                      <FiUser style={{ fontSize: '14px', marginRight: '6px' }} /> 
+                      <FiUser style={{ fontSize: '14px', marginRight: '6px' }} />
                       {getClienteNome(idCli)}
                     </h3>
                     <p className="agenda-service" style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginTop: '6px' }}>
@@ -169,15 +184,26 @@ export default function Agenda() {
                     <span className={`agenda-status status-${status}`}>
                       {status}
                     </span>
-                    
-                    {status !== 'cancelado' && (
-                      <button 
-                        onClick={() => handleCancelar(id)}
-                        className="btn-icon" 
-                        title="Cancelar Agendamento"
-                      >
-                        <FiXCircle style={{ fontSize: '20px' }} />
-                      </button>
+
+                    {status === 'agendado' && (
+                      <>
+                        <button
+                          onClick={() => handleConcluir(id)}
+                          className="btn-icon"
+                          title="Concluir atendimento"
+                          style={{ color: '#16a34a' }}
+                        >
+                          <FiCheckCircle style={{ fontSize: '20px' }} />
+                        </button>
+
+                        <button
+                          onClick={() => handleCancelar(id)}
+                          className="btn-icon"
+                          title="Cancelar agendamento"
+                        >
+                          <FiXCircle style={{ fontSize: '20px' }} />
+                        </button>
+                      </>
                     )}
                   </div>
                 </div>
@@ -195,14 +221,14 @@ export default function Agenda() {
               <h3 className="modal-title">Novo Agendamento</h3>
               <button className="btn-close" onClick={() => setIsModalOpen(false)}><FiX /></button>
             </div>
-            
+
             <form onSubmit={handleSalvar}>
               <div className="form-group">
                 <label>Cliente *</label>
-                <select 
+                <select
                   className="form-control" required
                   value={formData.clienteId}
-                  onChange={e => setFormData({...formData, clienteId: e.target.value})}
+                  onChange={e => setFormData({ ...formData, clienteId: e.target.value })}
                 >
                   <option value="">Selecione um cliente...</option>
                   {clientes.map(c => (
@@ -213,10 +239,10 @@ export default function Agenda() {
 
               <div className="form-group">
                 <label>Serviço *</label>
-                <select 
+                <select
                   className="form-control" required
                   value={formData.servicoId}
-                  onChange={e => setFormData({...formData, servicoId: e.target.value})}
+                  onChange={e => setFormData({ ...formData, servicoId: e.target.value })}
                 >
                   <option value="">Selecione um serviço...</option>
                   {servicos.map(s => (
@@ -230,27 +256,27 @@ export default function Agenda() {
               {/* NOVO CAMPO: PROFISSIONAL */}
               <div className="form-group">
                 <label>Profissional *</label>
-                <select 
+                <select
                   className="form-control" required
                   value={formData.profissionalId}
-                  onChange={e => setFormData({...formData, profissionalId: e.target.value})}
+                  onChange={e => setFormData({ ...formData, profissionalId: e.target.value })}
                 >
                   <option value="">Selecione o profissional...</option>
                   {profissionais
                     .filter(p => (p.status || p.Status) === 'ativo') // Só mostra os ativos
                     .map(p => (
                       <option key={p.id || p.Id} value={p.id || p.Id}>{p.nome || p.Nome}</option>
-                  ))}
+                    ))}
                 </select>
               </div>
 
               <div className="form-group">
                 <label>Início do Atendimento *</label>
-                <input 
-                  type="datetime-local" 
+                <input
+                  type="datetime-local"
                   className="form-control" required
                   value={formData.dataHoraInicio}
-                  onChange={e => setFormData({...formData, dataHoraInicio: e.target.value})}
+                  onChange={e => setFormData({ ...formData, dataHoraInicio: e.target.value })}
                 />
                 <small className="form-hint">O fim será calculado automaticamente com base no serviço.</small>
               </div>

@@ -103,6 +103,39 @@ namespace Zlora.Controllers
             return Ok(agendamento);
         }
 
+
+        // Eu permito que o administrador marque um atendimento como concluído.
+        [Authorize(Roles = "administrador")]
+        [HttpPatch("{id}/concluir")]
+        public async Task<IActionResult> Concluir(string id)
+        {
+            if (!ObjectId.TryParse(id, out _) || string.IsNullOrWhiteSpace(EmpresaId))
+                return NotFound();
+
+            var agendamento = await _context.Agendamentos
+                .Find(a => a.Id == id && a.EmpresaId == EmpresaId)
+                .FirstOrDefaultAsync();
+
+            if (agendamento == null)
+                return NotFound();
+
+            if (agendamento.Status == "cancelado")
+                return BadRequest(new { mensagem = "Não é possível concluir um agendamento cancelado." });
+
+            if (agendamento.Status == "concluido")
+                return BadRequest(new { mensagem = "Este agendamento já está concluído." });
+
+            agendamento.Status = "concluido";
+            agendamento.AlteradoEm = DateTime.UtcNow;
+
+            await _context.Agendamentos.ReplaceOneAsync(
+                a => a.Id == id && a.EmpresaId == EmpresaId,
+                agendamento
+            );
+
+            return Ok(agendamento);
+        }
+
         // ==========================================
         // ROTAS DO CLIENTE FINAL
         // ==========================================
@@ -151,7 +184,7 @@ namespace Zlora.Controllers
 
             return Ok(resultado);
 
-            
+
         }
 
         // Cada profissional consulta somente os horários vinculados ao seu cadastro.
@@ -185,33 +218,33 @@ namespace Zlora.Controllers
                 .ToListAsync();
 
             // Busco os nomes para a agenda não mostrar apenas os IDs do MongoDB.
-var resultado = new List<object>();
+            var resultado = new List<object>();
 
-foreach (var agendamento in agendamentos)
-{
-    var cliente = await _context.Clientes
-        .Find(c => c.Id == agendamento.ClienteId &&
-                   c.EmpresaId == EmpresaId)
-        .FirstOrDefaultAsync();
+            foreach (var agendamento in agendamentos)
+            {
+                var cliente = await _context.Clientes
+                    .Find(c => c.Id == agendamento.ClienteId &&
+                               c.EmpresaId == EmpresaId)
+                    .FirstOrDefaultAsync();
 
-    var servico = await _context.Servicos
-        .Find(s => s.Id == agendamento.ServicoId &&
-                   s.EmpresaId == EmpresaId)
-        .FirstOrDefaultAsync();
+                var servico = await _context.Servicos
+                    .Find(s => s.Id == agendamento.ServicoId &&
+                               s.EmpresaId == EmpresaId)
+                    .FirstOrDefaultAsync();
 
-    resultado.Add(new
-    {
-        id = agendamento.Id,
-        dataHoraInicio = agendamento.DataHoraInicio,
-        dataHoraFim = agendamento.DataHoraFim,
-        clienteNome = cliente?.Nome ?? "Cliente não encontrado",
-        servicoNome = servico?.Nome ?? "Serviço não encontrado",
-        status = agendamento.Status,
-        observacoes = agendamento.Observacoes
-    });
-}
+                resultado.Add(new
+                {
+                    id = agendamento.Id,
+                    dataHoraInicio = agendamento.DataHoraInicio,
+                    dataHoraFim = agendamento.DataHoraFim,
+                    clienteNome = cliente?.Nome ?? "Cliente não encontrado",
+                    servicoNome = servico?.Nome ?? "Serviço não encontrado",
+                    status = agendamento.Status,
+                    observacoes = agendamento.Observacoes
+                });
+            }
 
-return Ok(resultado);
+            return Ok(resultado);
         } //a rota sera GET /api/agendamentos/minha
     }
 }

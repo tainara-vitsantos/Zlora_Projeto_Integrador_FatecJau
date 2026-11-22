@@ -2,13 +2,14 @@ import { Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import MinhaAgenda from './pages/profissional/MinhaAgenda';
+import Relatorios from './pages/dashboard/Relatorios';
 
 // Páginas Públicas
 import Home from './pages/Home';
 import Login from './pages/Login';
 import CadastroPage from './pages/CadastroPage';
 import PublicSalon from './pages/PublicSalon';
-import PublicClientArea from './pages/PublicClientArea'; // <-- NOVA IMPORTAÇÃO
+import PublicClientArea from './pages/PublicClientArea';
 
 // Admin (Salão)
 import DashboardLayout from './components/layout/DashboardLayout';
@@ -54,6 +55,9 @@ export default function App() {
           <Route path="profissionais" element={<Profissionais />} />
           <Route path="financeiro" element={<Financeiro />} />
           <Route path="config" element={<Configuracoes />} />
+          
+          {/* A ROTA QUE FALTAVA AQUI */}
+          <Route path="relatorios" element={<Relatorios />} />
         </Route>
 
         {/* ROTAS DO CLIENTE FINAL (Só Cliente logado acessa) */}
@@ -83,7 +87,7 @@ export default function App() {
         </Route>
 
         {/* ROTAS PÚBLICAS DO SALÃO */}
-        <Route path="/:slug/cliente" element={<PublicClientArea />} /> {/* <-- NOVA ROTA */}
+        <Route path="/:slug/cliente" element={<PublicClientArea />} />
         <Route path="/:slug" element={<PublicSalon />} />
       </Routes>
     </AuthProvider>
