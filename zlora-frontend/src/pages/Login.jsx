@@ -5,7 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { FiMail, FiLock, FiArrowLeft, FiEye, FiEyeOff } from 'react-icons/fi';
 import { useAuth } from '../contexts/AuthContext';
-import logoZlora from '../assets/logo.png'; // <-- IMPORTAÇÃO DA LOGO
+import logoZlora from '../assets/logo.png';
 
 const loginSchema = z.object({
   email: z.string().email('Informe um e-mail válido.'),
@@ -48,11 +48,38 @@ export default function Login() {
   };
 
   return (
-    <div className="auth-container">
+    <div className="auth-container" style={{ position: 'relative' }}>
       
+      {/* BOTÃO FLUTUANTE VOLTAR PARA O SITE (GLASSMORPHISM) */}
+      <Link 
+        to="/" 
+        style={{ 
+          position: 'absolute', 
+          top: '24px', 
+          left: '24px', 
+          zIndex: 100, 
+          display: 'inline-flex', 
+          alignItems: 'center', 
+          gap: '8px', 
+          color: '#fff', 
+          backgroundColor: 'rgba(255, 255, 255, 0.15)', 
+          padding: '10px 20px', 
+          borderRadius: '30px', 
+          border: '1px solid rgba(255, 255, 255, 0.2)',
+          backdropFilter: 'blur(8px)',
+          WebkitBackdropFilter: 'blur(8px)',
+          textDecoration: 'none', 
+          fontWeight: '600', 
+          fontSize: '14px',
+          transition: 'all 0.3s ease'
+        }}
+      >
+        <FiArrowLeft /> Voltar para o site
+      </Link>
+
       {/* LADO ESQUERDO: IMAGEM E BRANDING */}
       <div className="auth-left" style={{ backgroundImage: `url(${BG_IMAGE})` }}>
-        <div>
+        <div style={{ marginTop: '40px' }}>
           <Link to="/" style={{ textDecoration: 'none' }}>
             {/* LOGO BRANCA (INVERTIDA) PARA O FUNDO ESCURO */}
             <img 
@@ -62,7 +89,7 @@ export default function Login() {
             />
           </Link>
           
-          <div style={{ marginTop: '120px' }}>
+          <div style={{ marginTop: '80px' }}>
             <h1>Bem-vindo de volta.</h1>
             <p>Acesse sua conta e continue gerenciando seu salão, barbearia ou clínica com a melhor plataforma do mercado.</p>
           </div>
@@ -78,10 +105,6 @@ export default function Login() {
       <div className="auth-right">
         <div className="auth-form-wrapper">
           
-          <Link to="/" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', color: 'var(--zlora-text-soft)', textDecoration: 'none', fontWeight: '600', fontSize: '14px', marginBottom: '40px' }}>
-            <FiArrowLeft /> Voltar para o site
-          </Link>
-
           <div style={{ marginBottom: '32px' }}>
             {/* LOGO COLORIDA PARA O FUNDO CLARO */}
             <img 

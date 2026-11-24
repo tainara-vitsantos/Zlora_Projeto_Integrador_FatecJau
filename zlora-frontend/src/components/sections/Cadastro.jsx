@@ -5,7 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { FiBriefcase, FiUser, FiPhone, FiMail, FiLock, FiArrowLeft, FiCheck, FiEye, FiEyeOff, FiLoader } from 'react-icons/fi';
 import { cadastroSchema } from '../../schemas/cadastroSchema';
 import { useAuth } from '../../contexts/AuthContext';
-import logoZlora from '../../assets/logo.png'; // <-- IMPORTAÇÃO DA LOGO
+import logoZlora from '../../assets/logo.png';
 
 const BG_IMAGE = "https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?auto=format&fit=crop&w=1000&q=80";
 
@@ -51,12 +51,39 @@ export default function Cadastro() {
   };
 
   return (
-    <div className="cadastro-container">
+    <div className="cadastro-container" style={{ position: 'relative' }}>
+      
+      {/* BOTÃO FLUTUANTE VOLTAR PARA O SITE (GLASSMORPHISM) */}
+      <Link 
+        to="/" 
+        style={{ 
+          position: 'absolute', 
+          top: '24px', 
+          left: '24px', 
+          zIndex: 100, 
+          display: 'inline-flex', 
+          alignItems: 'center', 
+          gap: '8px', 
+          color: '#fff', 
+          backgroundColor: 'rgba(255, 255, 255, 0.15)', 
+          padding: '10px 20px', 
+          borderRadius: '30px', 
+          border: '1px solid rgba(255, 255, 255, 0.2)',
+          backdropFilter: 'blur(8px)',
+          WebkitBackdropFilter: 'blur(8px)',
+          textDecoration: 'none', 
+          fontWeight: '600', 
+          fontSize: '14px',
+          transition: 'all 0.3s ease'
+        }}
+      >
+        <FiArrowLeft /> Voltar para o site
+      </Link>
+
       {/* LADO ESQUERDO: IMAGEM E BENEFÍCIOS */}
       <div className="cadastro-left" style={{ backgroundImage: `url(${BG_IMAGE})` }}>
-        <div>
+        <div style={{ marginTop: '40px' }}> {/* Ajustei a margem para não bater no botão flutuante */}
           <Link to="/" style={{ textDecoration: 'none' }}>
-            {/* LOGO BRANCA PARA FUNDO ESCURO */}
             <img 
               src={logoZlora} 
               alt="Zlora" 
@@ -64,7 +91,7 @@ export default function Cadastro() {
             />
           </Link>
 
-          <div style={{ marginTop: '80px' }}>
+          <div style={{ marginTop: '60px' }}>
             <h1>Leve seu salão para o próximo nível.</h1>
             <ul className="beneficios-list">
               {[
@@ -91,12 +118,8 @@ export default function Cadastro() {
       {/* LADO DIREITO: FORMULÁRIO */}
       <div className="cadastro-right">
         <div className="cadastro-form-wrapper">
-          <Link to="/" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', color: 'var(--zlora-text-soft)', textDecoration: 'none', fontWeight: '600', fontSize: '14px', marginBottom: '32px' }}>
-            <FiArrowLeft /> Voltar para o site
-          </Link>
-
+          
           <div style={{ marginBottom: '32px' }}>
-            {/* LOGO COLORIDA PARA FUNDO CLARO */}
             <img 
               src={logoZlora} 
               alt="Zlora" 
