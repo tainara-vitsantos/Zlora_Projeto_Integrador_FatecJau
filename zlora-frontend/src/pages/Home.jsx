@@ -4,7 +4,6 @@ import WhatsAppButton from '../components/layout/WhatsAppButton';
 import Reveal from '../components/ui/Reveal'; // <-- Importação
 
 import Hero from '../components/sections/Hero';
-import Stats from '../components/sections/Stats';
 import Sobre from '../components/sections/Sobre';
 import Funcionalidades from '../components/sections/Funcionalidades';
 import Passos from '../components/sections/Passos';
@@ -22,7 +21,6 @@ export default function Home() {
         <Hero />
         
         {/* As seções abaixo vão surgir suavemente ao rolar a página */}
-        <Reveal><Stats /></Reveal>
         <Reveal><Sobre /></Reveal>
         <Reveal><Funcionalidades /></Reveal>
         <Reveal><Passos /></Reveal>

@@ -1,4 +1,4 @@
-
+import logoZlora from '../../assets/logo.png'; // <-- IMPORTAÇÃO DA LOGO
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import {
@@ -38,8 +38,13 @@ export default function ProfissionalLayout() {
     <div className="dashboard-wrapper">
       <aside className="sidebar">
         <div className="sidebar-header">
-          <NavLink to="/" className="sidebar-brand">
-            Zlora
+          {/* LOGO NA SIDEBAR */}
+          <NavLink to="/" className="sidebar-brand" style={{ padding: '10px 0', display: 'flex', alignItems: 'center' }}>
+            <img 
+              src={logoZlora} 
+              alt="Zlora" 
+              style={{ height: '55px', objectFit: 'contain' }} 
+            />
           </NavLink>
         </div>
 

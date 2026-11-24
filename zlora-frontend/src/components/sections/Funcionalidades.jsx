@@ -11,15 +11,14 @@ export default function Funcionalidades() {
           subtitle="Funcionalidades pensadas para o dia a dia de quem vive de beleza"
         />
 
-        <div className="features-grid" role="list">
-          {FEATURES.map(({ code, title, icon: Icon }) => (
-            <a key={code} className="feature-bg" href="#" role="listitem">
-              <span className="icon-box" aria-hidden="true">
+        <div className="features-grid">
+          {FEATURES.map(({ title, icon: Icon }) => (
+            <div key={title} className="feature-card">
+              <div className="feature-icon">
                 <Icon />
-              </span>
+              </div>
               <h3 className="feature-title">{title}</h3>
-              <span className="feature-details">{code}</span>
-            </a>
+            </div>
           ))}
         </div>
       </div>

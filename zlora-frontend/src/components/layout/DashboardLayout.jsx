@@ -1,3 +1,4 @@
+import logoZlora from '../../assets/logo.png'; 
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { 
@@ -9,7 +10,7 @@ const MENU_ITEMS = [
   { path: '/dashboard/agenda', label: 'Agenda', icon: FiCalendar },
   { path: '/dashboard/clientes', label: 'Clientes', icon: FiUsers },
   { path: '/dashboard/servicos', label: 'Serviços', icon: FiScissors },
-  { path: '/dashboard/profissionais', label: 'Profissionais', icon: FiBriefcase }, // <-- NOVO ITEM
+  { path: '/dashboard/profissionais', label: 'Profissionais', icon: FiBriefcase },
   { path: '/dashboard/financeiro', label: 'Financeiro', icon: FiDollarSign },
   { path: '/dashboard/relatorios', label: 'Relatórios', icon: FiFileText },
   { path: '/dashboard/config', label: 'Configurações', icon: FiSettings },
@@ -31,7 +32,14 @@ export default function DashboardLayout() {
       {/* SIDEBAR */}
       <aside className="sidebar">
         <div className="sidebar-header">
-          <NavLink to="/" className="sidebar-brand">Zlora</NavLink>
+          {/* LOGO NA SIDEBAR */}
+          <NavLink to="/" className="sidebar-brand" style={{ padding: '10px 0', display: 'flex', alignItems: 'center' }}>
+            <img 
+              src={logoZlora} 
+              alt="Zlora" 
+              style={{ height: '55px', objectFit: 'contain' }} 
+            />
+          </NavLink>
         </div>
         <nav className="sidebar-nav">
           {MENU_ITEMS.map((item) => (

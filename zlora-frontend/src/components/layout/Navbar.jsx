@@ -1,5 +1,6 @@
+import logoZlora from '../../assets/logo.png';
 import { useEffect, useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom'; // <-- Importação nova
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useScrolled } from '../../hooks/useScrolled';
 import { useSmoothScroll } from '../../hooks/useSmoothScroll';
 import { useActiveSection } from '../../hooks/useActiveSection';
@@ -21,8 +22,8 @@ export default function Navbar() {
   const scrollTo = useSmoothScroll();
   const active = useActiveSection(SECTION_IDS);
   
-  const navigate = useNavigate();      // Hook para navegar entre páginas
-  const location = useLocation();      // Hook para saber em qual página estamos
+  const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const onResize = () => {
@@ -37,20 +38,17 @@ export default function Navbar() {
     return () => { document.body.style.overflow = ''; };
   }, [open]);
 
-  // Função que lida com o clique nos links de rolagem
   const handleNav = (e, id) => {
     e.preventDefault();
     setOpen(false);
 
     if (location.pathname !== '/') {
-      // Se não estiver na Home, vai para a Home e depois rola
       navigate('/');
       setTimeout(() => {
         const el = document.getElementById(id);
         if (el) window.scrollTo({ top: el.offsetTop - 70, behavior: 'smooth' });
       }, 100);
     } else {
-      // Se já estiver na Home, só rola suavemente
       scrollTo(e, id);
     }
   };
@@ -62,15 +60,18 @@ export default function Navbar() {
     >
       <div className="container">
         <nav className="navbar" aria-label="Navegação principal">
-          
-          {/* Ao clicar no logo, volta para a Home */}
           <a
             className="navbar-brand"
             href="/"
             onClick={(e) => handleNav(e, 'home')}
             aria-label="Zlora — ir para o início"
+            style={{ padding: 0, display: 'flex', alignItems: 'center' }}
           >
-            Zlora
+            <img 
+              src={logoZlora} 
+              alt="Zlora" 
+              style={{ height: '60px', objectFit: 'contain' }} 
+            />
           </a>
 
           <button
@@ -100,7 +101,6 @@ export default function Navbar() {
             </ul>
 
             <div className="navbar-actions">
-              {/* O botão Acessar agora navega para a rota /login */}
               <button
                 onClick={() => { setOpen(false); navigate('/login'); }}
                 className="btn btn-nav-ghost"
@@ -108,7 +108,6 @@ export default function Navbar() {
                 Acessar
               </button>
               
-              {/* O botão Teste grátis agora navega para a rota /cadastro */}
               <button
                 onClick={() => { setOpen(false); navigate('/cadastro'); }}
                 className="btn btn-nav-cta"

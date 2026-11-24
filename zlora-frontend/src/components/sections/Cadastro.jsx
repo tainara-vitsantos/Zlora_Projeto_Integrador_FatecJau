@@ -1,339 +1,318 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import SectionTitle from '../ui/SectionTitle';
+import { FiBriefcase, FiUser, FiPhone, FiMail, FiLock, FiArrowLeft, FiCheck, FiEye, FiEyeOff, FiLoader } from 'react-icons/fi';
 import { cadastroSchema } from '../../schemas/cadastroSchema';
 import { useAuth } from '../../contexts/AuthContext';
+import logoZlora from '../../assets/logo.png'; // <-- IMPORTAÇÃO DA LOGO
 
-// Schema de validação específico para o Cliente (Pessoa Física)
-const clienteSchema = z.object({
-  nome: z.string().trim().min(3, 'Informe seu nome completo.'),
-  email: z.string().email('Informe um e-mail válido.'),
-  telefone: z.string().trim().min(10, 'Informe um telefone válido com DDD.'),
-  senha: z.string().min(6, 'A senha deve ter no mínimo 6 caracteres.'),
-});
+const BG_IMAGE = "https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?auto=format&fit=crop&w=1000&q=80";
 
 export default function Cadastro() {
-  const [tipo, setTipo] = useState('negocio'); // 'negocio' | 'cliente'
   const [erroServidor, setErroServidor] = useState('');
-  const [sucessoCliente, setSucessoCliente] = useState('');
-  
-  const { register: registerUser } = useAuth(); // Função do Contexto para cadastrar o Negócio
+  const [mostrarSenha, setMostrarSenha] = useState(false);
+  const [mostrarConfirmar, setMostrarConfirmar] = useState(false);
+  const { register: registerUser } = useAuth();
   const navigate = useNavigate();
 
-  // ==========================================
-  // 1. FORMULÁRIO DE NEGÓCIO
-  // ==========================================
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm({ resolver: zodResolver(cadastroSchema) });
 
-  const onSubmitNegocio = async (data) => {
+  const senhaDigitada = watch('senha', '');
+  const hasLength = senhaDigitada.length >= 8;
+  const hasLetter = /[a-zA-Z]/.test(senhaDigitada);
+  const hasNumber = /\d/.test(senhaDigitada);
+
+  const formatarTelefone = (valor) => {
+    return valor
+      .replace(/\D/g, '')
+      .replace(/(\d{2})(\d)/, '($1) $2')
+      .replace(/(\d{5})(\d)/, '$1-$2')
+      .replace(/(-\d{4})\d+?$/, '$1');
+  };
+
+  const onSubmit = async (data) => {
     try {
       setErroServidor('');
-      // registerUser chama a API /api/auth/register e já loga o dono do salão
       await registerUser(data);
       navigate('/dashboard');
     } catch (err) {
-      setErroServidor(err.message);
+      setErroServidor(
+        err.response?.data?.message ||
+        err.message ||
+        'Não foi possível realizar o cadastro. Tente novamente.'
+      );
     }
-  };
-
-  // ==========================================
-  // 2. FORMULÁRIO DE CLIENTE
-  // ==========================================
-  const {
-    register: registerCli,
-    handleSubmit: handleSubmitCli,
-    formState: { errors: errorsCli, isSubmitting: isSubmittingCli },
-  } = useForm({ resolver: zodResolver(clienteSchema) });
-
-  const onSubmitCliente = async (data) => {
-    try {
-      setErroServidor('');
-      setSucessoCliente('');
-
-      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-      
-      // Chama a rota de cadastro de cliente no C#
-      const response = await fetch(`${API_URL}/api/auth/register-cliente`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      });
-
-      const resData = await response.json();
-
-      if (!response.ok) {
-        throw new Error(resData.message || resData.mensagem || 'Erro ao criar conta de cliente.');
-      }
-
-      setSucessoCliente('Conta criada com sucesso! Redirecionando para o login...');
-      
-      // Redireciona para a tela de login após 2.5 segundos
-      setTimeout(() => navigate('/login'), 2500);
-    } catch (err) {
-      setErroServidor(err.message);
-    }
-  };
-
-  // Limpa mensagens ao trocar de aba
-  const handleMudarTipo = (novoTipo) => {
-    setTipo(novoTipo);
-    setErroServidor('');
-    setSucessoCliente('');
   };
 
   return (
-    <section className="section" id="cadastro">
-      <div className="container">
-        <SectionTitle
-          title="Selecione a opção e"
-          highlight="cadastre-se"
-          subtitle="Experimente todas as funcionalidades grátis por 30 dias, sem compromisso."
-        />
+    <div className="cadastro-container">
+      {/* LADO ESQUERDO: IMAGEM E BENEFÍCIOS */}
+      <div className="cadastro-left" style={{ backgroundImage: `url(${BG_IMAGE})` }}>
+        <div>
+          <Link to="/" style={{ textDecoration: 'none' }}>
+            {/* LOGO BRANCA PARA FUNDO ESCURO */}
+            <img 
+              src={logoZlora} 
+              alt="Zlora" 
+              style={{ height: '60px', objectFit: 'contain', filter: 'brightness(0) invert(1)' }} 
+            />
+          </Link>
 
-        <div className="row justify-content-center">
-          <div className="col-lg-9 col-md-12">
-            
-            {/* BOTÕES DE SELEÇÃO (NEGÓCIO x CLIENTE) */}
-            <div className="d-flex justify-content-center mb-5">
-              <div
-                className="btn-group type-switch flex-wrap justify-content-center"
-                role="group"
-                aria-label="Tipo de cadastro"
-              >
-                <button
-                  type="button"
-                  className={`btn btn-type-customer ${tipo === 'negocio' ? 'active' : ''}`}
-                  aria-pressed={tipo === 'negocio'}
-                  onClick={() => handleMudarTipo('negocio')}
-                >
-                  Tenho um negócio
-                  <span className="type-hint">Salão, barbearia ou clínica</span>
-                </button>
-                <button
-                  type="button"
-                  className={`btn btn-type-customer ${tipo === 'cliente' ? 'active' : ''}`}
-                  aria-pressed={tipo === 'cliente'}
-                  onClick={() => handleMudarTipo('cliente')}
-                >
-                  Sou cliente
-                  <span className="type-hint">De estabelecimento</span>
-                </button>
+          <div style={{ marginTop: '80px' }}>
+            <h1>Leve seu salão para o próximo nível.</h1>
+            <ul className="beneficios-list">
+              {[
+                'Agenda online 24 horas por dia',
+                'Controle total de comissões',
+                'Gestão de clientes e serviços',
+                'Relatórios financeiros precisos'
+              ].map((item, index) => (
+                <li key={index}>
+                  <div className="beneficios-icon">
+                    <FiCheck size={18} />
+                  </div>
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+        <div style={{ fontSize: '14px', color: 'rgba(255,255,255,0.6)', marginTop: 'auto' }}>
+          © {new Date().getFullYear()} Zlora. Todos os direitos reservados.
+        </div>
+      </div>
+
+      {/* LADO DIREITO: FORMULÁRIO */}
+      <div className="cadastro-right">
+        <div className="cadastro-form-wrapper">
+          <Link to="/" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', color: 'var(--zlora-text-soft)', textDecoration: 'none', fontWeight: '600', fontSize: '14px', marginBottom: '32px' }}>
+            <FiArrowLeft /> Voltar para o site
+          </Link>
+
+          <div style={{ marginBottom: '32px' }}>
+            {/* LOGO COLORIDA PARA FUNDO CLARO */}
+            <img 
+              src={logoZlora} 
+              alt="Zlora" 
+              style={{ height: '50px', objectFit: 'contain', marginBottom: '24px' }} 
+            />
+            <h2 style={{ fontSize: '1.8rem', color: 'var(--zlora-dark)', marginBottom: '8px', fontFamily: 'Outfit' }}>
+              Comece seu teste grátis
+            </h2>
+            <p style={{ color: 'var(--zlora-text-soft)', fontSize: '15px', margin: 0 }}>
+              30 dias gratuitos. Não pedimos cartão de crédito.
+            </p>
+          </div>
+
+          {erroServidor && (
+            <div style={{ background: '#FEE2E2', color: '#991B1B', padding: '12px 16px', borderRadius: '12px', marginBottom: '24px', fontSize: '14px', fontWeight: '500' }}>
+              {erroServidor}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit(onSubmit)} noValidate>
+            {/* ETAPA 1: DADOS DO ESTABELECIMENTO */}
+            <div className="section-title-form">1. Dados do Estabelecimento</div>
+
+            <div style={{ marginBottom: '16px' }}>
+              <label htmlFor="nome" style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: 'var(--zlora-dark)', marginBottom: '8px' }}>
+                Nome do estabelecimento *
+              </label>
+              <div style={{ position: 'relative' }}>
+                <FiBriefcase style={{ position: 'absolute', left: '16px', top: '16px', color: '#9CA3AF' }} size={20} />
+                <input
+                  id="nome"
+                  className={`form-control ${errors.nome ? 'is-invalid' : ''}`}
+                  placeholder="Ex: Studio Bella"
+                  style={{ padding: '14px 14px 14px 44px', borderRadius: '12px', background: '#fff' }}
+                  {...register('nome')}
+                />
+              </div>
+              {errors.nome && <small style={{ color: '#DC2626', fontSize: '12px', marginTop: '4px', display: 'block' }}>{errors.nome.message}</small>}
+            </div>
+
+            <div className="row">
+              <div className="col-md-6">
+                <div style={{ marginBottom: '16px' }}>
+                  <label htmlFor="nomecontato" style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: 'var(--zlora-dark)', marginBottom: '8px' }}>
+                    Seu nome *
+                  </label>
+                  <div style={{ position: 'relative' }}>
+                    <FiUser style={{ position: 'absolute', left: '16px', top: '16px', color: '#9CA3AF' }} size={20} />
+                    <input
+                      id="nomecontato"
+                      className={`form-control ${errors.nomecontato ? 'is-invalid' : ''}`}
+                      placeholder="Ex: João Silva"
+                      style={{ padding: '14px 14px 14px 44px', borderRadius: '12px', background: '#fff' }}
+                      {...register('nomecontato')}
+                    />
+                  </div>
+                  {errors.nomecontato && <small style={{ color: '#DC2626', fontSize: '12px', marginTop: '4px', display: 'block' }}>{errors.nomecontato.message}</small>}
+                </div>
+              </div>
+
+              <div className="col-md-6">
+                <div style={{ marginBottom: '16px' }}>
+                  <label htmlFor="telefone" style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: 'var(--zlora-dark)', marginBottom: '8px' }}>
+                    WhatsApp *
+                  </label>
+                  <div style={{ position: 'relative' }}>
+                    <FiPhone style={{ position: 'absolute', left: '16px', top: '16px', color: '#9CA3AF' }} size={20} />
+                    <input
+                      id="telefone"
+                      className={`form-control ${errors.telefone ? 'is-invalid' : ''}`}
+                      placeholder="(00) 00000-0000"
+                      inputMode="tel"
+                      style={{ padding: '14px 14px 14px 44px', borderRadius: '12px', background: '#fff' }}
+                      {...register('telefone')}
+                      onChange={(e) => {
+                        e.target.value = formatarTelefone(e.target.value);
+                        register('telefone').onChange(e);
+                      }}
+                    />
+                  </div>
+                  {errors.telefone && <small style={{ color: '#DC2626', fontSize: '12px', marginTop: '4px', display: 'block' }}>{errors.telefone.message}</small>}
+                </div>
               </div>
             </div>
 
-            {/* MENSAGENS DE FEEDBACK DA API */}
-            {erroServidor && (
-              <div className="alert alert-info" style={{ background: '#FEE2E2', color: '#991B1B', borderLeftColor: '#DC2626', marginBottom: '24px' }}>
-                {erroServidor}
+            {/* ETAPA 2: ACESSO À PLATAFORMA */}
+            <div className="section-title-form" style={{ marginTop: '16px' }}>2. Acesso à Plataforma</div>
+
+            <div style={{ marginBottom: '16px' }}>
+              <label htmlFor="email" style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: 'var(--zlora-dark)', marginBottom: '8px' }}>
+                E-mail profissional *
+              </label>
+              <div style={{ position: 'relative' }}>
+                <FiMail style={{ position: 'absolute', left: '16px', top: '16px', color: '#9CA3AF' }} size={20} />
+                <input
+                  id="email"
+                  type="email"
+                  className={`form-control ${errors.email ? 'is-invalid' : ''}`}
+                  placeholder="seu@email.com"
+                  style={{ padding: '14px 14px 14px 44px', borderRadius: '12px', background: '#fff' }}
+                  {...register('email')}
+                />
               </div>
-            )}
-            {sucessoCliente && (
-              <div className="alert alert-info" style={{ background: '#DCFCE7', color: '#166534', borderLeftColor: '#22C55E', marginBottom: '24px' }}>
-                {sucessoCliente}
+              {errors.email && <small style={{ color: '#DC2626', fontSize: '12px', marginTop: '4px', display: 'block' }}>{errors.email.message}</small>}
+            </div>
+
+            <div className="row">
+              <div className="col-md-6">
+                <div style={{ marginBottom: '16px' }}>
+                  <label htmlFor="senha" style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: 'var(--zlora-dark)', marginBottom: '8px' }}>
+                    Crie uma senha *
+                  </label>
+                  <div style={{ position: 'relative' }}>
+                    <FiLock style={{ position: 'absolute', left: '16px', top: '16px', color: '#9CA3AF' }} size={20} />
+                    <input
+                      id="senha"
+                      type={mostrarSenha ? 'text' : 'password'}
+                      className={`form-control ${errors.senha ? 'is-invalid' : ''}`}
+                      placeholder="Sua senha"
+                      style={{ padding: '14px 44px 14px 44px', borderRadius: '12px', background: '#fff' }}
+                      {...register('senha')}
+                    />
+                    <button type="button" onClick={() => setMostrarSenha(!mostrarSenha)} style={{ position: 'absolute', right: '16px', top: '16px', background: 'none', border: 0, color: '#9CA3AF', cursor: 'pointer' }}>
+                      {mostrarSenha ? <FiEyeOff size={20} /> : <FiEye size={20} />}
+                    </button>
+                  </div>
+
+                  <div className="password-req">
+                    <span className={hasLength ? 'valid' : ''}>✓ Mínimo de 8 caracteres</span>
+                    <span className={hasLetter ? 'valid' : ''}>✓ Pelo menos uma letra</span>
+                    <span className={hasNumber ? 'valid' : ''}>✓ Pelo menos um número</span>
+                  </div>
+                </div>
               </div>
-            )}
 
-            {/* ========================================== */}
-            {/* RENDERIZAÇÃO: FORMULÁRIO DE CLIENTE        */}
-            {/* ========================================== */}
-            {tipo === 'cliente' ? (
-              <form onSubmit={handleSubmitCli(onSubmitCliente)} noValidate>
-                <div className="row">
-                  <div className="col-lg-12">
-                    <div className="form-group">
-                      <label htmlFor="cli-nome">Seu Nome Completo <span aria-hidden="true">*</span></label>
-                      <input
-                        id="cli-nome"
-                        className={`form-control ${errorsCli.nome ? 'is-invalid' : ''}`}
-                        autoComplete="name"
-                        placeholder="Ex: Maria Silva"
-                        {...registerCli('nome')}
-                      />
-                      {errorsCli.nome && (
-                        <small className="form-error is-visible">{errorsCli.nome.message}</small>
-                      )}
-                    </div>
+              <div className="col-md-6">
+                <div style={{ marginBottom: '16px' }}>
+                  <label htmlFor="confirmarSenha" style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: 'var(--zlora-dark)', marginBottom: '8px' }}>
+                    Confirme a senha *
+                  </label>
+                  <div style={{ position: 'relative' }}>
+                    <FiLock style={{ position: 'absolute', left: '16px', top: '16px', color: '#9CA3AF' }} size={20} />
+                    <input
+                      id="confirmarSenha"
+                      type={mostrarConfirmar ? 'text' : 'password'}
+                      className={`form-control ${errors.confirmarSenha ? 'is-invalid' : ''}`}
+                      placeholder="Repita a senha"
+                      style={{ padding: '14px 44px 14px 44px', borderRadius: '12px', background: '#fff' }}
+                      {...register('confirmarSenha')}
+                    />
+                    <button type="button" onClick={() => setMostrarConfirmar(!mostrarConfirmar)} style={{ position: 'absolute', right: '16px', top: '16px', background: 'none', border: 0, color: '#9CA3AF', cursor: 'pointer' }}>
+                      {mostrarConfirmar ? <FiEyeOff size={20} /> : <FiEye size={20} />}
+                    </button>
                   </div>
-
-                  <div className="col-lg-6">
-                    <div className="form-group">
-                      <label htmlFor="cli-email">E-mail <span aria-hidden="true">*</span></label>
-                      <input
-                        id="cli-email"
-                        type="email"
-                        className={`form-control ${errorsCli.email ? 'is-invalid' : ''}`}
-                        autoComplete="email"
-                        placeholder="seu@email.com"
-                        {...registerCli('email')}
-                      />
-                      {errorsCli.email && (
-                        <small className="form-error is-visible">{errorsCli.email.message}</small>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="col-lg-6">
-                    <div className="form-group">
-                      <label htmlFor="cli-telefone">Celular <span aria-hidden="true">*</span></label>
-                      <input
-                        id="cli-telefone"
-                        className={`form-control ${errorsCli.telefone ? 'is-invalid' : ''}`}
-                        inputMode="tel"
-                        autoComplete="tel"
-                        placeholder="(00) 00000-0000"
-                        {...registerCli('telefone')}
-                      />
-                      {errorsCli.telefone && (
-                        <small className="form-error is-visible">{errorsCli.telefone.message}</small>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="col-lg-12">
-                    <div className="form-group">
-                      <label htmlFor="cli-senha">Senha de Acesso <span aria-hidden="true">*</span></label>
-                      <input
-                        id="cli-senha"
-                        type="password"
-                        className={`form-control ${errorsCli.senha ? 'is-invalid' : ''}`}
-                        autoComplete="new-password"
-                        placeholder="Mínimo de 6 caracteres"
-                        {...registerCli('senha')}
-                      />
-                      <small className="form-hint">Sua senha deve ter no mínimo 6 caracteres.</small>
-                      {errorsCli.senha && (
-                        <small className="form-error is-visible">{errorsCli.senha.message}</small>
-                      )}
-                    </div>
-                  </div>
+                  {errors.confirmarSenha && <small style={{ color: '#DC2626', fontSize: '12px', marginTop: '4px', display: 'block' }}>{errors.confirmarSenha.message}</small>}
                 </div>
+              </div>
+            </div>
 
-                <div className="text-center mt-4">
-                  <button type="submit" className="btn btn-primary btn-lg" disabled={isSubmittingCli}>
-                    {isSubmittingCli ? 'Criando conta...' : 'Criar conta de Cliente'}
-                  </button>
-                  <p className="form-note mt-3">
-                    Já tem uma conta? <a href="/login" className="text-barber2">Faça login aqui</a>.
-                  </p>
-                </div>
-              </form>
-            ) : (
-              
-              /* ========================================== */
-              /* RENDERIZAÇÃO: FORMULÁRIO DE NEGÓCIO        */
-              /* ========================================== */
-              <form onSubmit={handleSubmit(onSubmitNegocio)} noValidate>
-                <div className="row">
-                  <div className="col-lg-12">
-                    <div className="form-group">
-                      <label htmlFor="nome">Nome do estabelecimento <span aria-hidden="true">*</span></label>
-                      <input 
-                        id="nome" 
-                        className={`form-control ${errors.nome ? 'is-invalid' : ''}`} 
-                        autoComplete="organization" 
-                        placeholder="Ex: Studio Bella"
-                        {...register('nome')} 
-                      />
-                      {errors.nome && <small className="form-error is-visible">{errors.nome.message}</small>}
-                    </div>
-                  </div>
+            {/* ETAPA 3: TERMOS */}
+            <div className="section-title-form" style={{ marginTop: '16px' }}>3. Finalização</div>
 
-                  <div className="col-lg-6">
-                    <div className="form-group">
-                      <label htmlFor="nomecontato">Nome do contato <span aria-hidden="true">*</span></label>
-                      <input 
-                        id="nomecontato" 
-                        className={`form-control ${errors.nomecontato ? 'is-invalid' : ''}`} 
-                        autoComplete="name" 
-                        placeholder="Ex: João Silva"
-                        {...register('nomecontato')} 
-                      />
-                      {errors.nomecontato && <small className="form-error is-visible">{errors.nomecontato.message}</small>}
-                    </div>
-                  </div>
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', marginTop: '8px' }}>
+              <input
+                id="conduso"
+                type="checkbox"
+                className={`form-check-input ${errors.conduso ? 'is-invalid' : ''}`}
+                style={{ marginTop: '4px', cursor: 'pointer', accentColor: 'var(--zlora-primary)' }}
+                {...register('conduso')}
+              />
+              <label htmlFor="conduso" style={{ fontSize: '13px', color: 'var(--zlora-text-soft)', lineHeight: '1.5', cursor: 'pointer' }}>
+                Li e aceito os <Link to="/termos" style={{ color: 'var(--zlora-primary)', fontWeight: '600', textDecoration: 'none' }}>Termos de Uso</Link> e a <Link to="/privacidade" style={{ color: 'var(--zlora-primary)', fontWeight: '600', textDecoration: 'none' }}>Política de Privacidade</Link>.
+              </label>
+            </div>
+            {errors.conduso && <small style={{ color: '#DC2626', fontSize: '12px', marginTop: '4px', display: 'block' }}>{errors.conduso.message}</small>}
 
-                  <div className="col-lg-6">
-                    <div className="form-group">
-                      <label htmlFor="telefone">Celular do contato <span aria-hidden="true">*</span></label>
-                      <input 
-                        id="telefone" 
-                        className={`form-control ${errors.telefone ? 'is-invalid' : ''}`} 
-                        inputMode="tel" 
-                        autoComplete="tel" 
-                        placeholder="(00) 00000-0000" 
-                        {...register('telefone')} 
-                      />
-                      {errors.telefone && <small className="form-error is-visible">{errors.telefone.message}</small>}
-                    </div>
-                  </div>
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              style={{
+                width: '100%', background: 'var(--zlora-primary)', color: '#fff',
+                padding: '16px', border: 'none', borderRadius: '12px', fontSize: '16px',
+                fontWeight: '700', cursor: isSubmitting ? 'not-allowed' : 'pointer',
+                marginTop: '40px',
+                boxShadow: '0 8px 24px rgba(111, 60, 231, 0.3)',
+                display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px',
+                opacity: isSubmitting ? 0.7 : 1
+              }}
+            >
+              {isSubmitting ? (
+                <><FiLoader className="spin" /> Criando conta...</>
+              ) : (
+                'Criar conta e começar'
+              )}
+            </button>
+          </form>
 
-                  <div className="col-lg-6">
-                    <div className="form-group">
-                      <label htmlFor="email">E-mail para acesso <span aria-hidden="true">*</span></label>
-                      <input 
-                        id="email" 
-                        type="email" 
-                        className={`form-control ${errors.email ? 'is-invalid' : ''}`} 
-                        autoComplete="email" 
-                        placeholder="seu@email.com"
-                        {...register('email')} 
-                      />
-                      {errors.email && <small className="form-error is-visible">{errors.email.message}</small>}
-                    </div>
-                  </div>
-
-                  <div className="col-lg-6">
-                    <div className="form-group">
-                      <label htmlFor="senha">Senha <span aria-hidden="true">*</span></label>
-                      <input 
-                        id="senha" 
-                        type="password" 
-                        className={`form-control ${errors.senha ? 'is-invalid' : ''}`} 
-                        autoComplete="new-password" 
-                        placeholder="Entre 6 e 15 caracteres"
-                        {...register('senha')} 
-                      />
-                      <small className="form-hint">Entre 6 e 15 caracteres.</small>
-                      {errors.senha && <small className="form-error is-visible">{errors.senha.message}</small>}
-                    </div>
-                  </div>
-
-                  <div className="col-lg-12">
-                    <div className="form-group form-check">
-                      <input 
-                        id="conduso" 
-                        type="checkbox" 
-                        className={`form-check-input ${errors.conduso ? 'is-invalid' : ''}`} 
-                        {...register('conduso')} 
-                      />
-                      <label className="form-check-label" htmlFor="conduso">
-                        Li e aceito o <a href="#termos" className="text-barber2">Termo de Condição de Uso</a>.
-                      </label>
-                      {errors.conduso && <small className="form-error is-visible">{errors.conduso.message}</small>}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="text-center mt-4">
-                  <button type="submit" className="btn btn-primary btn-lg" disabled={isSubmitting}>
-                    {isSubmitting ? 'Criando conta...' : 'Cadastrar Negócio'}
-                  </button>
-                  <p className="form-note mt-3">
-                    Ao se cadastrar, você será redirecionado para o seu painel.
-                  </p>
-                </div>
-              </form>
-            )}
+          <div style={{ display: 'flex', alignItems: 'center', margin: '24px 0' }}>
+            <div style={{ flex: 1, height: '1px', background: '#E5E7EB' }}></div>
+            <span style={{ padding: '0 16px', color: '#9CA3AF', fontSize: '13px', fontWeight: '500' }}>Já tem conta?</span>
+            <div style={{ flex: 1, height: '1px', background: '#E5E7EB' }}></div>
           </div>
+
+          <Link
+            to="/login"
+            style={{
+              display: 'block', width: '100%', textAlign: 'center', padding: '16px',
+              background: '#F6F4FF', color: 'var(--zlora-primary)', borderRadius: '12px',
+              textDecoration: 'none', fontWeight: '700', fontSize: '15px',
+              border: '1.5px solid var(--zlora-primary-soft)'
+            }}
+          >
+            Fazer login
+          </Link>
         </div>
       </div>
-    </section>
+    </div>
   );
 }

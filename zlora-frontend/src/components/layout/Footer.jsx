@@ -1,3 +1,4 @@
+import logoZlora from '../../assets/logo.png'; 
 import {
   FaMapMarkerAlt,
   FaEnvelope,
@@ -22,7 +23,12 @@ export default function Footer() {
       <div className="container">
         <div className="footer-main">
           <div className="footer-brand-block">
-            <span className="footer-brand">Zlora</span>
+            {/* LOGO NO FOOTER */}
+            <img 
+              src={logoZlora} 
+              alt="Zlora" 
+              style={{ height: '55px', objectFit: 'contain', marginBottom: '16px', display: 'block' }} 
+            />
             <p className="footer-brand-desc">
               Gestão e agendamento para salões de beleza, barbearias, clínicas
               de estética e profissionais da beleza.
