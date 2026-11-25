@@ -18,13 +18,13 @@ export default function CtaFinal() {
             Pronto para organizar<br />a gestão do seu negócio?
           </h2>
           <p>
-            Junte-se a mais de 2.400 estabelecimentos que já usam a Zlora
+            Junte-se a mais de 2.400 estabelecimentos que já usam a Zilora
             para crescer com menos esforço.
           </p>
 
           <div className="cta-actions">
             <a
-              href="#cadastro"
+              href="/cadastro"
               className="btn btn-light"
               onClick={(e) => scrollTo(e, 'cadastro')}
             >

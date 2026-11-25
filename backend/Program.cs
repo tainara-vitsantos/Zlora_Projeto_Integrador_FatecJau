@@ -49,7 +49,7 @@ builder.Services.AddSwaggerGen(options =>
 
 // Eu permito que o React local chame a API durante o desenvolvimento.
 // Se o Vite usar outra porta, eu preciso atualizar esta origem.
-builder.Services.AddCors(options => options.AddPolicy("FrontendZlora", policy =>
+builder.Services.AddCors(options => options.AddPolicy("FrontendZilora", policy =>
     policy.WithOrigins("http://localhost:5173")
           .AllowAnyHeader()
           .AllowAnyMethod()));
@@ -85,6 +85,24 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
+app.UseExceptionHandler(errorApp =>
+{
+    errorApp.Run(async context =>
+    {
+        context.Response.StatusCode = 500;
+        context.Response.ContentType = "application/json";
+        var exceptionHandlerPathFeature = context.Features.Get<Microsoft.AspNetCore.Diagnostics.IExceptionHandlerPathFeature>();
+        var exception = exceptionHandlerPathFeature?.Error;
+
+        await context.Response.WriteAsJsonAsync(new
+        {
+            mensagem = "Erro interno no servidor.",
+            detalhe = exception?.Message,
+            stackTrace = exception?.StackTrace // Em produção, remova o stack trace por segurança
+        });
+    });
+});
+
 // Eu crio um índice único para evitar que duas contas usem o mesmo e-mail normalizado.
 // Em um banco já existente, preciso resolver e-mails duplicados antes de criar este índice.
 using (var scope = app.Services.CreateScope())
@@ -106,7 +124,7 @@ if (app.Environment.IsDevelopment())
 app.UseStaticFiles(); // Permite acessar as imagens salvas
 
 // Eu mantenho a ordem para que CORS e autenticação sejam aplicados antes de chegar aos Controllers.
-app.UseCors("FrontendZlora");
+app.UseCors("FrontendZilora");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

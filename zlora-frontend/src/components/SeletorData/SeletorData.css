@@ -1,0 +1,80 @@
+.seletor-data-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.seletor-data-scroll {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  /* Esconde a barra de rolagem mas mantém o scroll */
+  scrollbar-width: none; 
+}
+.seletor-data-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.data-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 64px;
+  padding: 12px 8px;
+  border-radius: 12px;
+  border: 1.5px solid #E5E7EB;
+  background: #fff;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.data-btn .dia-semana {
+  font-size: 11px;
+  font-weight: 700;
+  color: #6B7280;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.data-btn .dia-numero {
+  font-size: 18px;
+  font-weight: 800;
+  color: #111;
+}
+
+.data-btn:hover:not(:disabled) {
+  border-color: var(--brand-color, #6F3CE7);
+}
+
+.data-btn.selected {
+  background: var(--brand-color, #6F3CE7);
+  border-color: var(--brand-color, #6F3CE7);
+}
+
+.data-btn.selected .dia-semana,
+.data-btn.selected .dia-numero {
+  color: #fff;
+}
+
+/* ESTADO CINZA (Desabilitado) */
+.data-btn:disabled {
+  background: #F3F4F6;
+  border-color: #F3F4F6;
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.data-btn:disabled .dia-semana,
+.data-btn:disabled .dia-numero {
+  color: #9CA3AF;
+  text-decoration: line-through;
+}
+
+.aviso-selecione-prof {
+  font-size: 12px;
+  color: #6B7280;
+  margin: 0;
+  font-style: italic;
+}

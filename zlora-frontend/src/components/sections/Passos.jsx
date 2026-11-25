@@ -7,7 +7,7 @@ const PASSOS = [
     n: 1,
     icon: FiUserPlus,
     title: 'Faça o cadastro',
-    text: 'Cadastre-se na Zlora informando os dados básicos do seu estabelecimento. É rápido e fácil.',
+    text: 'Cadastre-se na Zilora informando os dados básicos do seu estabelecimento. É rápido e fácil.',
   },
   {
     n: 2,
@@ -63,7 +63,7 @@ export default function Passos() {
                   <span className="dot"></span>
                   <span className="dot"></span>
                 </div>
-                <div className="mockup-title">Agenda - Zlora</div>
+                <div className="mockup-title">Agenda - Zilora</div>
               </div>
               
               <div className="mockup-calendar">
@@ -103,7 +103,7 @@ export default function Passos() {
 
         <div className="text-center mt-5">
           <a
-            href="#cadastro"
+            href="/cadastro"
             className="btn btn-primary btn-lg"
             onClick={(e) => scrollTo(e, 'cadastro')}
           >

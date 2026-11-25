@@ -24,7 +24,7 @@ export default function Hero() {
 
         <div className="hero-cta">
           <a
-            href="#cadastro"
+            href="/cadastro"
             className="btn btn-header"
             onClick={(e) => scrollTo(e, 'cadastro')}
           >
@@ -40,7 +40,7 @@ export default function Hero() {
         </div>
 
         <div className="hero-apps">
-          <span className="hero-apps-label">Aplicativo Zlora</span>
+          <span className="hero-apps-label">Aplicativo Zilora</span>
           <span className="hero-apps-soon">Em breve nas lojas oficiais</span>
         </div>
       </div>

@@ -5,7 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { FiMail, FiLock, FiArrowLeft, FiEye, FiEyeOff } from 'react-icons/fi';
 import { useAuth } from '../contexts/AuthContext';
-import logoZlora from '../assets/logo.png';
+import logoZilora from '../assets/logo.png';
 
 const loginSchema = z.object({
   email: z.string().email('Informe um e-mail válido.'),
@@ -83,8 +83,8 @@ export default function Login() {
           <Link to="/" style={{ textDecoration: 'none' }}>
             {/* LOGO BRANCA (INVERTIDA) PARA O FUNDO ESCURO */}
             <img 
-              src={logoZlora} 
-              alt="Zlora" 
+              src={logoZilora} 
+              alt="Zilora" 
               style={{ height: '60px', objectFit: 'contain', filter: 'brightness(0) invert(1)' }} 
             />
           </Link>
@@ -108,8 +108,8 @@ export default function Login() {
           <div style={{ marginBottom: '32px' }}>
             {/* LOGO COLORIDA PARA O FUNDO CLARO */}
             <img 
-              src={logoZlora} 
-              alt="Zlora" 
+              src={logoZilora} 
+              alt="Zilora" 
               style={{ height: '50px', objectFit: 'contain', marginBottom: '24px' }} 
             />
             

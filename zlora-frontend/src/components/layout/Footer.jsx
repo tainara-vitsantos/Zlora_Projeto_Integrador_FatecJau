@@ -1,4 +1,4 @@
-import logoZlora from '../../assets/logo.png'; 
+import logoZilora from '../../assets/logo.png'; 
 import {
   FaMapMarkerAlt,
   FaEnvelope,
@@ -11,10 +11,10 @@ import {
 import { SITE } from '../../data/site';
 
 const REDES = [
-  { key: 'facebook',  Icon: FaFacebookF, label: 'Facebook da Zlora' },
-  { key: 'youtube',   Icon: FaYoutube,   label: 'YouTube da Zlora' },
-  { key: 'instagram', Icon: FaInstagram, label: 'Instagram da Zlora' },
-  { key: 'twitter',   Icon: FaTwitter,   label: 'Twitter da Zlora' },
+  { key: 'facebook',  Icon: FaFacebookF, label: 'Facebook da Zilora' },
+  { key: 'youtube',   Icon: FaYoutube,   label: 'YouTube da Zilora' },
+  { key: 'instagram', Icon: FaInstagram, label: 'Instagram da Zilora' },
+  { key: 'twitter',   Icon: FaTwitter,   label: 'Twitter da Zilora' },
 ];
 
 export default function Footer() {
@@ -25,8 +25,8 @@ export default function Footer() {
           <div className="footer-brand-block">
             {/* LOGO NO FOOTER */}
             <img 
-              src={logoZlora} 
-              alt="Zlora" 
+              src={logoZilora} 
+              alt="Zilora" 
               style={{ height: '55px', objectFit: 'contain', marginBottom: '16px', display: 'block' }} 
             />
             <p className="footer-brand-desc">
@@ -54,7 +54,7 @@ export default function Footer() {
           </div>
 
           <div className="footer-social-block">
-            <h3 className="footer-block-title">Siga a Zlora</h3>
+            <h3 className="footer-block-title">Siga a Zilora</h3>
             <div className="social-icons">
               {REDES.map(({ key, Icon, label }) => (
                 <a
@@ -72,7 +72,7 @@ export default function Footer() {
         </div>
 
         <div className="footer-bottom">
-          <p>© {new Date().getFullYear()} Zlora. Todos os direitos reservados.</p>
+          <p>© {new Date().getFullYear()} Zilora. Todos os direitos reservados.</p>
           <ul className="footer-legal">
             <li><a href="#termos" data-todo>Termos de Uso</a></li>
             <li><a href="#privacidade" data-todo>Privacidade</a></li>

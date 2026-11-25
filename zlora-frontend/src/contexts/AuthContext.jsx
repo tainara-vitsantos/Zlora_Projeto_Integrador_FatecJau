@@ -18,9 +18,9 @@ function salvarSessao(data) {
     id: data.usuario.id,
     empresaId: data.usuario.empresaId,
   };
-
-  localStorage.setItem('@Zlora:user', JSON.stringify(usuarioLogado));
-  localStorage.setItem('@Zlora:token', data.token);
+  
+  localStorage.setItem('@Zilora:user', JSON.stringify(usuarioLogado));
+  localStorage.setItem('@Zilora:token', data.token);
 
   return usuarioLogado;
 }
@@ -45,18 +45,18 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     try {
-      const storedUser = localStorage.getItem('@Zlora:user');
-      const storedToken = localStorage.getItem('@Zlora:token');
+      const storedUser = localStorage.getItem('@Zilora:user');
+      const storedToken = localStorage.getItem('@Zilora:token');
 
       if (storedUser && storedToken) {
         setUser(JSON.parse(storedUser));
       } else {
-        localStorage.removeItem('@Zlora:user');
-        localStorage.removeItem('@Zlora:token');
+        localStorage.removeItem('@Zilora:user');
+        localStorage.removeItem('@Zilora:token');
       }
     } catch {
-      localStorage.removeItem('@Zlora:user');
-      localStorage.removeItem('@Zlora:token');
+      localStorage.removeItem('@Zilora:user');
+      localStorage.removeItem('@Zilora:token');
       setUser(null);
     } finally {
       setLoading(false);
@@ -119,8 +119,8 @@ export function AuthProvider({ children }) {
   const logout = () => {
     setUser(null);
 
-    localStorage.removeItem('@Zlora:user');
-    localStorage.removeItem('@Zlora:token');
+    localStorage.removeItem('@Zilora:user');
+    localStorage.removeItem('@Zilora:token');
   };
 
   return (

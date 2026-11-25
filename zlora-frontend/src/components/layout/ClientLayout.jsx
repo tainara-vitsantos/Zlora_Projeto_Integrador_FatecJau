@@ -22,7 +22,7 @@ export default function ClientLayout() {
     <div className="dashboard-wrapper">
       <aside className="sidebar">
         <div className="sidebar-header">
-          <NavLink to="/" className="sidebar-brand">Zlora</NavLink>
+          <NavLink to="/" className="sidebar-brand">Zilora</NavLink>
         </div>
         <nav className="sidebar-nav">
           {MENU_ITEMS.map((item) => (

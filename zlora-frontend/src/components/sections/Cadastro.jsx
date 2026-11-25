@@ -5,7 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { FiBriefcase, FiUser, FiPhone, FiMail, FiLock, FiArrowLeft, FiCheck, FiEye, FiEyeOff, FiLoader } from 'react-icons/fi';
 import { cadastroSchema } from '../../schemas/cadastroSchema';
 import { useAuth } from '../../contexts/AuthContext';
-import logoZlora from '../../assets/logo.png';
+import logoZilora from '../../assets/logo.png';
 
 const BG_IMAGE = "https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?auto=format&fit=crop&w=1000&q=80";
 
@@ -85,8 +85,8 @@ export default function Cadastro() {
         <div style={{ marginTop: '40px' }}> {/* Ajustei a margem para não bater no botão flutuante */}
           <Link to="/" style={{ textDecoration: 'none' }}>
             <img 
-              src={logoZlora} 
-              alt="Zlora" 
+              src={logoZilora} 
+              alt="Zilora" 
               style={{ height: '60px', objectFit: 'contain', filter: 'brightness(0) invert(1)' }} 
             />
           </Link>
@@ -111,7 +111,7 @@ export default function Cadastro() {
           </div>
         </div>
         <div style={{ fontSize: '14px', color: 'rgba(255,255,255,0.6)', marginTop: 'auto' }}>
-          © {new Date().getFullYear()} Zlora. Todos os direitos reservados.
+          © {new Date().getFullYear()} Zilora. Todos os direitos reservados.
         </div>
       </div>
 
@@ -121,8 +121,8 @@ export default function Cadastro() {
           
           <div style={{ marginBottom: '32px' }}>
             <img 
-              src={logoZlora} 
-              alt="Zlora" 
+              src={logoZilora} 
+              alt="Zilora" 
               style={{ height: '50px', objectFit: 'contain', marginBottom: '24px' }} 
             />
             <h2 style={{ fontSize: '1.8rem', color: 'var(--zlora-dark)', marginBottom: '8px', fontFamily: 'Outfit' }}>

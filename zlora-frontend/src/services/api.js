@@ -3,8 +3,8 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 export const api = {
   request: async (endpoint, options = {}) => {
-    // Pega o token salvo pelo AuthContext
-    const token = localStorage.getItem('@Zlora:token');
+    // Pega o token salvo pelo AuthContext (Atualizado para Zilora)
+    const token = localStorage.getItem('@Zilora:token');
     
     const headers = {
       'Content-Type': 'application/json',

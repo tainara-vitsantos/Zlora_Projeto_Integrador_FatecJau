@@ -1,6 +1,7 @@
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace Zlora.Models
 {
@@ -31,5 +32,9 @@ namespace Zlora.Models
         public DateTime CriadoEm { get; set; } = DateTime.UtcNow;
         [BsonElement("alterado_em")]
         public DateTime AlteradoEm { get; set; } = DateTime.UtcNow;
+
+        [BsonIgnore]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+        public int FusoMinutos { get; set; }
     }
 }

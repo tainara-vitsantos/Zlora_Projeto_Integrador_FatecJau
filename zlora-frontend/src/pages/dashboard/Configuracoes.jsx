@@ -1,10 +1,26 @@
 import { useState, useEffect, useRef } from 'react';
-import { FiImage, FiInfo, FiSave, FiMapPin, FiInstagram, FiUploadCloud, FiLoader } from 'react-icons/fi';
+import {
+  FiImage,
+  FiSave,
+  FiMapPin,
+  FiInstagram,
+  FiUploadCloud,
+  FiLoader,
+  FiLink,
+  FiTrash2,
+  FiCheckCircle,
+  FiAlertCircle,
+  FiX
+} from 'react-icons/fi';
+
 import { api } from '../../services/api';
 import { useAuth } from '../../contexts/AuthContext';
 
+import './Configuracoes.css';
+
 export default function Configuracoes() {
   const { user } = useAuth();
+
   const [formData, setFormData] = useState({
     corPrimaria: '#6F3CE7',
     logoUrl: '',
@@ -12,25 +28,44 @@ export default function Configuracoes() {
     instagram: '',
     endereco: ''
   });
-  
+
   const [carregando, setCarregando] = useState(true);
   const [salvando, setSalvando] = useState(false);
-  const [sucesso, setSucesso] = useState(false);
-  
-  // Estados para controlar o carregamento das fotos
+
   const [uploadandoLogo, setUploadandoLogo] = useState(false);
   const [uploadandoCapa, setUploadandoCapa] = useState(false);
-  
-  // Referências para os inputs de arquivo ocultos
+
+  const [modoLogo, setModoLogo] = useState('arquivo');
+  const [modoCapa, setModoCapa] = useState('arquivo');
+
+  const [erroLogo, setErroLogo] = useState(false);
+  const [erroCapa, setErroCapa] = useState(false);
+
+  const [mensagem, setMensagem] = useState({
+    tipo: '',
+    texto: ''
+  });
+
   const logoInputRef = useRef(null);
   const capaInputRef = useRef(null);
 
-  const coresSugeridas = ['#6F3CE7', '#FF69B4', '#FFB6C1', '#D4AF37', '#2E8B57', '#1E3A8A', '#111827'];
+  const coresSugeridas = [
+    '#6F3CE7',
+    '#FF69B4',
+    '#FFB6C1',
+    '#D4AF37',
+    '#2E8B57',
+    '#1E3A8A',
+    '#111827'
+  ];
+
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
   useEffect(() => {
     async function carregarConfiguracoes() {
       try {
         const data = await api.request('/api/empresas/configuracoes');
+
         setFormData({
           corPrimaria: data.corPrimaria || '#6F3CE7',
           logoUrl: data.logoUrl || '',
@@ -39,239 +74,660 @@ export default function Configuracoes() {
           endereco: data.endereco || ''
         });
       } catch (error) {
-        console.error("Erro ao carregar configurações:", error);
+        console.error('Erro ao carregar configurações:', error);
+
+        setMensagem({
+          tipo: 'erro',
+          texto: 'Não foi possível carregar as configurações.'
+        });
       } finally {
         setCarregando(false);
       }
     }
+
     carregarConfiguracoes();
   }, []);
 
-  // Função para fazer o upload da imagem para o C#
-  const handleUpload = async (event, tipo) => {
-    const file = event.target.files[0];
+  function atualizarCampo(campo, valor) {
+    setFormData(prev => ({
+      ...prev,
+      [campo]: valor
+    }));
+
+    if (campo === 'logoUrl') {
+      setErroLogo(false);
+    }
+
+    if (campo === 'fotoCapaUrl') {
+      setErroCapa(false);
+    }
+
+    setMensagem({ tipo: '', texto: '' });
+  }
+
+  function validarUrl(url) {
+    if (!url.trim()) return true;
+
+    try {
+      const endereco = new URL(url);
+
+      return (
+        endereco.protocol === 'http:' ||
+        endereco.protocol === 'https:'
+      );
+    } catch {
+      return false;
+    }
+  }
+
+  async function handleUpload(event, tipo) {
+    const file = event.target.files?.[0];
+
     if (!file) return;
 
-    if (file.size > 5 * 1024 * 1024) {
-      alert("A imagem deve ter no máximo 5MB.");
+    const formatosPermitidos = [
+      'image/jpeg',
+      'image/png',
+      'image/webp'
+    ];
+
+    if (!formatosPermitidos.includes(file.type)) {
+      setMensagem({
+        tipo: 'erro',
+        texto: 'Formato inválido. Escolha uma imagem JPG, PNG ou WEBP.'
+      });
+
+      event.target.value = '';
       return;
     }
 
-    const formDataUpload = new FormData();
-    formDataUpload.append('arquivo', file);
+    if (file.size > 5 * 1024 * 1024) {
+      setMensagem({
+        tipo: 'erro',
+        texto: 'A imagem deve ter no máximo 5 MB.'
+      });
 
-    const setLoading = tipo === 'logo' ? setUploadandoLogo : setUploadandoCapa;
+      event.target.value = '';
+      return;
+    }
+
+    const setLoading =
+      tipo === 'logo' ? setUploadandoLogo : setUploadandoCapa;
+
     setLoading(true);
+    setMensagem({ tipo: '', texto: '' });
 
     try {
       const token = localStorage.getItem('@Zlora:token');
-      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-      
-      // Requisição específica para upload (não usamos a api.request porque ela envia JSON)
+
+      if (!token) {
+        throw new Error('Sessão não encontrada. Faça login novamente.');
+      }
+
+      const formDataUpload = new FormData();
+
+      formDataUpload.append('arquivo', file);
+
       const response = await fetch(`${API_URL}/api/empresas/upload`, {
         method: 'POST',
-        headers: { Authorization: `Bearer ${token}` },
-        body: formDataUpload // Envia o arquivo puro
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
+        body: formDataUpload
       });
 
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.mensagem || 'Erro no upload');
+      const data = await response.json().catch(() => ({}));
 
-      // Atualiza o estado com a URL que o C# devolveu
-      if (tipo === 'logo') {
-        setFormData(prev => ({ ...prev, logoUrl: data.url }));
-      } else {
-        setFormData(prev => ({ ...prev, fotoCapaUrl: data.url }));
+      if (!response.ok) {
+        throw new Error(data.mensagem || 'Não foi possível enviar a imagem.');
       }
+
+      if (!data.url) {
+        throw new Error('A API não retornou o endereço da imagem.');
+      }
+
+      if (tipo === 'logo') {
+        atualizarCampo('logoUrl', data.url);
+      } else {
+        atualizarCampo('fotoCapaUrl', data.url);
+      }
+
+      setMensagem({
+        tipo: 'sucesso',
+        texto: tipo === 'logo'
+          ? 'Logo enviada com sucesso!'
+          : 'Foto de capa enviada com sucesso!'
+      });
+
     } catch (error) {
-      alert("Erro ao enviar imagem: " + error.message);
+      setMensagem({
+        tipo: 'erro',
+        texto: error.message || 'Erro ao enviar imagem.'
+      });
     } finally {
       setLoading(false);
-      // Limpa o input para permitir subir a mesma imagem novamente se quiser
-      event.target.value = null; 
+      event.target.value = '';
     }
-  };
+  }
 
-  const handleSalvar = async (e) => {
-    e.preventDefault();
+  function removerImagem(tipo) {
+    if (tipo === 'logo') {
+      atualizarCampo('logoUrl', '');
+      setErroLogo(false);
+    } else {
+      atualizarCampo('fotoCapaUrl', '');
+      setErroCapa(false);
+    }
+
+    setMensagem({
+      tipo: 'sucesso',
+      texto: 'Imagem removida. Salve as alterações para confirmar.'
+    });
+  }
+
+  async function handleSalvar(event) {
+    event.preventDefault();
+
+    if (!/^#[0-9A-Fa-f]{6}$/.test(formData.corPrimaria)) {
+      setMensagem({
+        tipo: 'erro',
+        texto: 'Informe uma cor hexadecimal válida.'
+      });
+      return;
+    }
+
+    if (!validarUrl(formData.logoUrl)) {
+      setMensagem({
+        tipo: 'erro',
+        texto: 'O link da logo não é válido. Utilize HTTP ou HTTPS.'
+      });
+      return;
+    }
+
+    if (!validarUrl(formData.fotoCapaUrl)) {
+      setMensagem({
+        tipo: 'erro',
+        texto: 'O link da foto de capa não é válido. Utilize HTTP ou HTTPS.'
+      });
+      return;
+    }
+
     setSalvando(true);
-    setSucesso(false);
+    setMensagem({ tipo: '', texto: '' });
+
     try {
       await api.request('/api/empresas/configuracoes', {
         method: 'PUT',
         body: JSON.stringify(formData)
       });
-      setSucesso(true);
-      setTimeout(() => setSucesso(false), 3000);
+
+      setMensagem({
+        tipo: 'sucesso',
+        texto: 'Configurações salvas com sucesso!'
+      });
+
     } catch (error) {
-      alert('Erro ao salvar: ' + error.message);
+      setMensagem({
+        tipo: 'erro',
+        texto: error.message || 'Não foi possível salvar as configurações.'
+      });
     } finally {
       setSalvando(false);
     }
-  };
+  }
 
-  if (carregando) return <div style={{ padding: '40px', textAlign: 'center' }}>Carregando...</div>;
+  function renderCampoImagem(tipo) {
+    const isLogo = tipo === 'logo';
+
+    const campo = isLogo ? 'logoUrl' : 'fotoCapaUrl';
+    const valor = formData[campo];
+
+    const modo = isLogo ? modoLogo : modoCapa;
+    const setModo = isLogo ? setModoLogo : setModoCapa;
+
+    const inputRef = isLogo ? logoInputRef : capaInputRef;
+
+    const carregandoImagem = isLogo
+      ? uploadandoLogo
+      : uploadandoCapa;
+
+    const imagemComErro = isLogo ? erroLogo : erroCapa;
+    const setImagemComErro = isLogo ? setErroLogo : setErroCapa;
+
+    return (
+      <div className="config-image-field">
+
+        <label className="config-field-label">
+          {isLogo ? 'Logo do estabelecimento' : 'Foto de capa'}
+        </label>
+
+        <div className="config-image-options">
+          <button
+            type="button"
+            className={`config-image-option ${
+              modo === 'arquivo' ? 'active' : ''
+            }`}
+            onClick={() => setModo('arquivo')}
+          >
+            <FiUploadCloud size={16} />
+            Enviar foto
+          </button>
+
+          <button
+            type="button"
+            className={`config-image-option ${
+              modo === 'link' ? 'active' : ''
+            }`}
+            onClick={() => setModo('link')}
+          >
+            <FiLink size={16} />
+            Usar link
+          </button>
+        </div>
+
+        {modo === 'arquivo' ? (
+          <button
+            type="button"
+            className={`config-image-upload ${
+              carregandoImagem ? 'uploading' : ''
+            }`}
+            onClick={() => !carregandoImagem && inputRef.current?.click()}
+            disabled={carregandoImagem}
+          >
+            <input
+              type="file"
+              ref={inputRef}
+              accept="image/jpeg,image/png,image/webp"
+              onChange={event => handleUpload(event, tipo)}
+              hidden
+            />
+
+            {carregandoImagem ? (
+              <div className="config-upload-loading">
+                <FiLoader className="config-spin" size={28} />
+                <span>Enviando imagem...</span>
+              </div>
+            ) : (
+              <>
+                <FiUploadCloud size={30} />
+
+                <strong>
+                  {valor ? 'Clique para trocar a imagem' : 'Escolher imagem'}
+                </strong>
+
+                <span>JPG, PNG ou WEBP · Máximo 5 MB</span>
+              </>
+            )}
+          </button>
+        ) : (
+          <div className="config-image-link">
+            <div className="config-image-link-input">
+              <FiLink size={17} />
+
+              <input
+                type="url"
+                className="config-input"
+                placeholder="https://exemplo.com/imagem.png"
+                value={valor}
+                onChange={event => atualizarCampo(campo, event.target.value)}
+              />
+            </div>
+
+            <small>
+              Cole o endereço direto da imagem.
+            </small>
+          </div>
+        )}
+
+        {valor && (
+          <div className="config-image-preview">
+
+            <div className="config-image-preview-header">
+              <span>Pré-visualização</span>
+
+              <button
+                type="button"
+                className="config-remove-image"
+                onClick={() => removerImagem(tipo)}
+              >
+                <FiTrash2 size={14} />
+                Remover
+              </button>
+            </div>
+
+            {imagemComErro ? (
+              <div className="config-image-error">
+                <FiAlertCircle size={20} />
+                <span>Não foi possível carregar esta imagem.</span>
+              </div>
+            ) : (
+              <img
+                src={valor}
+                alt={isLogo ? 'Logo do estabelecimento' : 'Foto de capa'}
+                className={isLogo
+                  ? 'config-image-preview-logo'
+                  : 'config-image-preview-cover'}
+                onError={() => setImagemComErro(true)}
+                onLoad={() => setImagemComErro(false)}
+              />
+            )}
+
+          </div>
+        )}
+
+      </div>
+    );
+  }
+
+  if (carregando) {
+    return (
+      <div className="config-loading">
+        <span className="config-loader" />
+        <p>Carregando configurações...</p>
+      </div>
+    );
+  }
 
   return (
-    <div>
-      {/* CSS para a animação de rodinha */}
-      <style>{`@keyframes spin { 100% { transform: rotate(360deg); } } .spin { animation: spin 1s linear infinite; }`}</style>
+    <div className="configuracoes-page">
 
-      <div className="page-header">
+      <header className="config-page-header">
         <div>
-          <h2 style={{ fontSize: '1.5rem', marginBottom: '8px' }}>Minha Marca</h2>
-          <p style={{ color: 'var(--zlora-text-soft)', margin: 0 }}>Personalize a página de agendamento e veja como seus clientes vão ver.</p>
-        </div>
-      </div>
+          <span className="config-eyebrow">PERSONALIZAÇÃO</span>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 400px', gap: '32px', alignItems: 'start' }}>
-        
-        {/* COLUNA 1: FORMULÁRIO */}
-        <div className="dash-card" style={{ padding: '32px' }}>
+          <h1>Minha Marca</h1>
+
+          <p>
+            Personalize a página de agendamento do seu estabelecimento.
+          </p>
+        </div>
+      </header>
+
+      <div className="config-layout">
+
+        <main className="config-panel">
+
           <form onSubmit={handleSalvar}>
-            
-            {/* 1. SEÇÃO DE CORES */}
-            <div style={{ marginBottom: '32px' }}>
-              <h3 style={{ fontSize: '1.1rem', borderBottom: '1px solid var(--zlora-border)', paddingBottom: '12px', marginBottom: '20px' }}>Identidade Visual</h3>
-              
-              <div className="form-group">
-                <label>Cor Principal</label>
-                <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '12px' }}>
-                  <input 
-                    type="color" value={formData.corPrimaria}
-                    onChange={e => setFormData({...formData, corPrimaria: e.target.value})}
-                    style={{ width: '56px', height: '56px', padding: '4px', cursor: 'pointer', borderRadius: '8px', border: '1px solid #ccc' }}
+
+            {mensagem.texto && (
+              <div className={`config-alert config-alert--${mensagem.tipo}`}>
+                {mensagem.tipo === 'sucesso'
+                  ? <FiCheckCircle size={18} />
+                  : <FiAlertCircle size={18} />
+                }
+
+                <span>{mensagem.texto}</span>
+
+                <button
+                  type="button"
+                  className="config-alert-close"
+                  onClick={() => setMensagem({ tipo: '', texto: '' })}
+                  aria-label="Fechar mensagem"
+                >
+                  <FiX size={17} />
+                </button>
+              </div>
+            )}
+
+            <section className="config-section">
+
+              <h2 className="config-section-title">
+                Identidade visual
+              </h2>
+
+              <div className="config-form-field">
+
+                <label className="config-field-label">
+                  Cor principal
+                </label>
+
+                <div className="config-color-control">
+
+                  <input
+                    type="color"
+                    className="config-color-picker"
+                    value={formData.corPrimaria}
+                    onChange={event =>
+                      atualizarCampo('corPrimaria', event.target.value)
+                    }
+                    aria-label="Selecionar cor principal"
                   />
-                  <input type="text" className="form-control" value={formData.corPrimaria} onChange={e => setFormData({...formData, corPrimaria: e.target.value})} />
+
+                  <input
+                    type="text"
+                    className="config-input"
+                    value={formData.corPrimaria}
+                    onChange={event =>
+                      atualizarCampo('corPrimaria', event.target.value)
+                    }
+                    pattern="^#[0-9A-Fa-f]{6}$"
+                    title="Informe uma cor hexadecimal válida."
+                  />
+
                 </div>
-                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+
+                <div className="config-color-options">
                   {coresSugeridas.map(cor => (
-                    <button key={cor} type="button" onClick={() => setFormData({...formData, corPrimaria: cor})}
-                      style={{ width: '32px', height: '32px', borderRadius: '50%', background: cor, border: formData.corPrimaria === cor ? '3px solid #111' : '1px solid #ccc', cursor: 'pointer' }} />
+                    <button
+                      key={cor}
+                      type="button"
+                      title={cor}
+                      aria-label={`Selecionar cor ${cor}`}
+                      className={`config-color-option ${
+                        formData.corPrimaria.toUpperCase() === cor
+                          ? 'active'
+                          : ''
+                      }`}
+                      style={{ '--config-color': cor }}
+                      onClick={() => atualizarCampo('corPrimaria', cor)}
+                    />
                   ))}
                 </div>
-              </div>
-            </div>
 
-            {/* 2. SEÇÃO DE IMAGENS (UPLOAD) */}
-            <div style={{ marginBottom: '32px' }}>
-              <h3 style={{ fontSize: '1.1rem', borderBottom: '1px solid var(--zlora-border)', paddingBottom: '12px', marginBottom: '20px' }}>Imagens do Salão</h3>
-              
-              {/* Upload Logo */}
-              <div className="form-group">
-                <label>Logo do Salão (Foto redonda)</label>
-                <div 
-                  onClick={() => logoInputRef.current?.click()}
-                  style={{ border: '2px dashed #D1D5DB', borderRadius: '12px', padding: '24px', textAlign: 'center', cursor: 'pointer', background: '#F9FAFB', transition: 'all 0.2s' }}
-                >
-                  <input type="file" ref={logoInputRef} onChange={(e) => handleUpload(e, 'logo')} accept="image/*" style={{ display: 'none' }} />
-                  {uploadandoLogo ? (
-                    <FiLoader className="spin" size={24} color="var(--zlora-primary)" style={{ margin: '0 auto' }} />
-                  ) : formData.logoUrl ? (
-                    <div>
-                      <img src={formData.logoUrl} alt="Logo" style={{ width: '80px', height: '80px', borderRadius: '50%', objectFit: 'cover', margin: '0 auto 12px' }} />
-                      <p style={{ margin: 0, fontSize: '13px', color: 'var(--zlora-primary)', fontWeight: '600' }}>Clique para trocar a logo</p>
-                    </div>
-                  ) : (
-                    <div>
-                      <FiUploadCloud size={32} color="#9CA3AF" style={{ margin: '0 auto 12px' }} />
-                      <p style={{ margin: 0, fontSize: '14px', color: '#6B7280' }}>Clique para enviar a logo</p>
-                      <p style={{ margin: '4px 0 0', fontSize: '12px', color: '#9CA3AF' }}>JPG, PNG ou WEBP (Máx 5MB)</p>
-                    </div>
-                  )}
-                </div>
               </div>
 
-              {/* Upload Capa */}
-              <div className="form-group">
-                <label>Foto de Capa (Banner)</label>
-                <div 
-                  onClick={() => capaInputRef.current?.click()}
-                  style={{ border: '2px dashed #D1D5DB', borderRadius: '12px', padding: '24px', textAlign: 'center', cursor: 'pointer', background: '#F9FAFB', transition: 'all 0.2s' }}
-                >
-                  <input type="file" ref={capaInputRef} onChange={(e) => handleUpload(e, 'capa')} accept="image/*" style={{ display: 'none' }} />
-                  {uploadandoCapa ? (
-                    <FiLoader className="spin" size={24} color="var(--zlora-primary)" style={{ margin: '0 auto' }} />
-                  ) : formData.fotoCapaUrl ? (
-                    <div>
-                      <img src={formData.fotoCapaUrl} alt="Capa" style={{ width: '100%', height: '120px', borderRadius: '8px', objectFit: 'cover', margin: '0 auto 12px' }} />
-                      <p style={{ margin: 0, fontSize: '13px', color: 'var(--zlora-primary)', fontWeight: '600' }}>Clique para trocar a capa</p>
-                    </div>
-                  ) : (
-                    <div>
-                      <FiUploadCloud size={32} color="#9CA3AF" style={{ margin: '0 auto 12px' }} />
-                      <p style={{ margin: 0, fontSize: '14px', color: '#6B7280' }}>Clique para enviar a capa</p>
-                      <p style={{ margin: '4px 0 0', fontSize: '12px', color: '#9CA3AF' }}>JPG, PNG ou WEBP (Máx 5MB)</p>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
+            </section>
 
-            {/* 3. CONTATO */}
-            <div style={{ marginBottom: '32px' }}>
-              <h3 style={{ fontSize: '1.1rem', borderBottom: '1px solid var(--zlora-border)', paddingBottom: '12px', marginBottom: '20px' }}>Contato e Localização</h3>
-              
-              <div className="form-group">
-                <label><FiInstagram style={{ marginBottom: '-2px' }}/> Instagram (sem o @)</label>
-                <input type="text" className="form-control" placeholder="paulo.hair" value={formData.instagram} onChange={e => setFormData({...formData, instagram: e.target.value})} />
+            <section className="config-section">
+
+              <h2 className="config-section-title">
+                <FiImage />
+                Imagens do estabelecimento
+              </h2>
+
+              <p className="config-section-description">
+                Escolha imagens para representar sua marca na página de agendamento.
+              </p>
+
+              {renderCampoImagem('logo')}
+
+              {renderCampoImagem('capa')}
+
+            </section>
+
+            <section className="config-section">
+
+              <h2 className="config-section-title">
+                Contato e localização
+              </h2>
+
+              <div className="config-form-field">
+
+                <label className="config-field-label">
+                  <FiInstagram />
+                  Instagram
+                </label>
+
+                <input
+                  type="text"
+                  className="config-input"
+                  placeholder="seuestabelecimento"
+                  value={formData.instagram}
+                  onChange={event =>
+                    atualizarCampo(
+                      'instagram',
+                      event.target.value.replace(/^@/, '')
+                    )
+                  }
+                />
+
+                <small className="config-field-hint">
+                  Informe o usuário sem o @.
+                </small>
+
               </div>
 
-              <div className="form-group">
-                <label><FiMapPin style={{ marginBottom: '-2px' }}/> Endereço Completo</label>
-                <input type="text" className="form-control" placeholder="Av. Paulista, 1000 - São Paulo/SP" value={formData.endereco} onChange={e => setFormData({...formData, endereco: e.target.value})} />
-              </div>
-            </div>
+              <div className="config-form-field">
 
-            {/* BOTÃO SALVAR */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-              <button type="submit" className="btn btn-primary" disabled={salvando || uploadandoLogo || uploadandoCapa} style={{ padding: '14px 28px', fontSize: '16px' }}>
-                <FiSave style={{ marginRight: '8px', marginBottom: '-2px' }} />
-                {salvando ? 'Salvando...' : 'Salvar Alterações'}
+                <label className="config-field-label">
+                  <FiMapPin />
+                  Endereço completo
+                </label>
+
+                <input
+                  type="text"
+                  className="config-input"
+                  placeholder="Rua, número, bairro, cidade - UF"
+                  value={formData.endereco}
+                  onChange={event =>
+                    atualizarCampo('endereco', event.target.value)
+                  }
+                />
+
+              </div>
+
+            </section>
+
+            <footer className="config-form-footer">
+
+              <button
+                type="submit"
+                className="config-btn config-btn--primary"
+                disabled={
+                  salvando ||
+                  uploadandoLogo ||
+                  uploadandoCapa
+                }
+              >
+                {salvando
+                  ? <FiLoader className="config-spin" />
+                  : <FiSave />
+                }
+
+                {salvando ? 'Salvando...' : 'Salvar alterações'}
               </button>
-              {sucesso && <span style={{ color: '#16A34A', fontWeight: '600', fontSize: '14px' }}>✓ Salvo com sucesso!</span>}
-            </div>
+
+              <span>
+                As alterações serão aplicadas após salvar.
+              </span>
+
+            </footer>
+
           </form>
-        </div>
 
-        {/* COLUNA 2: PREVIEW EM TEMPO REAL */}
-        <div style={{ position: 'sticky', top: '100px' }}>
-          <p style={{ textAlign: 'center', fontWeight: '600', color: 'var(--zlora-text-soft)', marginBottom: '16px' }}>Como o cliente vê:</p>
-          
-          <div style={{ width: '100%', maxWidth: '340px', margin: '0 auto', background: '#fff', borderRadius: '40px', boxShadow: '0 20px 40px rgba(0,0,0,0.1)', border: '8px solid #111', overflow: 'hidden', position: 'relative' }}>
-            <div style={{ height: '24px', background: '#111', width: '50%', borderBottomLeftRadius: '16px', borderBottomRightRadius: '16px', margin: '0 auto', position: 'relative', zIndex: 10 }}></div>
-            
-            <div style={{ height: '550px', overflowY: 'auto', background: '#F8F9FA', position: 'relative' }}>
-              <div style={{ height: '140px', background: formData.fotoCapaUrl ? `url(${formData.fotoCapaUrl}) center/cover` : formData.corPrimaria, borderBottomLeftRadius: '24px', borderBottomRightRadius: '24px' }} />
+        </main>
 
-              <div style={{ width: '70px', height: '70px', borderRadius: '50%', background: '#fff', margin: '-35px auto 0', position: 'relative', border: '4px solid #fff', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 10px rgba(0,0,0,0.1)' }}>
-                {formData.logoUrl ? (
-                  <img src={formData.logoUrl} alt="Logo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                ) : (
-                  <span style={{ fontSize: '1.5rem', fontWeight: 'bold', color: formData.corPrimaria }}>{user?.estabelecimento?.charAt(0) || 'S'}</span>
+        <aside className="config-preview-sticky">
+
+          <div className="config-preview-heading">
+            <h2>Prévia da página</h2>
+
+            <p>
+              Veja como seus clientes visualizarão seu estabelecimento.
+            </p>
+          </div>
+
+          <div className="config-preview-phone">
+
+            <div className="config-preview-notch" />
+
+            <div className="config-preview-content">
+
+              <div
+                className="config-preview-cover"
+                style={{
+                  backgroundColor: formData.corPrimaria
+                }}
+              >
+                {formData.fotoCapaUrl && !erroCapa && (
+                  <img
+                    src={formData.fotoCapaUrl}
+                    alt="Capa do estabelecimento"
+                    onError={() => setErroCapa(true)}
+                    onLoad={() => setErroCapa(false)}
+                  />
                 )}
               </div>
 
-              <div style={{ textAlign: 'center', padding: '12px 16px' }}>
-                <h4 style={{ margin: '0 0 4px', fontSize: '1.1rem', color: '#111' }}>{user?.estabelecimento || 'Seu Salão'}</h4>
-                {formData.endereco && <p style={{ margin: 0, fontSize: '11px', color: '#6B7280' }}>{formData.endereco}</p>}
-                {formData.instagram && <p style={{ margin: '4px 0 0', fontSize: '11px', color: formData.corPrimaria, fontWeight: 'bold' }}>@{formData.instagram}</p>}
+              <div className="config-preview-logo">
+
+                {formData.logoUrl && !erroLogo ? (
+                  <img
+                    src={formData.logoUrl}
+                    alt="Logo do estabelecimento"
+                    onError={() => setErroLogo(true)}
+                    onLoad={() => setErroLogo(false)}
+                  />
+                ) : (
+                  <span style={{ color: formData.corPrimaria }}>
+                    {user?.estabelecimento?.charAt(0) || 'S'}
+                  </span>
+                )}
+
               </div>
 
-              <div style={{ padding: '0 16px 20px' }}>
-                <h5 style={{ fontSize: '12px', color: '#111', margin: '0 0 10px' }}>Serviços Disponíveis</h5>
-                <div style={{ background: '#fff', padding: '12px', borderRadius: '12px', border: '1px solid #E5E7EB', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <div>
-                    <div style={{ fontWeight: 'bold', fontSize: '13px', color: '#111' }}>Corte Masculino</div>
-                    <div style={{ fontSize: '11px', color: '#6B7280' }}>30 min</div>
-                  </div>
-                  <button style={{ background: formData.corPrimaria, color: '#fff', border: 0, padding: '6px 12px', borderRadius: '20px', fontSize: '11px', fontWeight: 'bold' }}>Agendar</button>
-                </div>
+              <div className="config-preview-info">
+
+                <h3>
+                  {user?.estabelecimento || 'Seu estabelecimento'}
+                </h3>
+
+                {formData.endereco && (
+                  <p>{formData.endereco}</p>
+                )}
+
+                {formData.instagram && (
+                  <p className="config-preview-instagram">
+                    @{formData.instagram}
+                  </p>
+                )}
+
               </div>
+
+              <div className="config-preview-services">
+
+                <h4>Serviços disponíveis</h4>
+
+                <div className="config-preview-service">
+
+                  <div>
+                    <strong>Serviço de exemplo</strong>
+                    <small>30 minutos</small>
+                  </div>
+
+                  <span
+                    className="config-preview-book"
+                    style={{ backgroundColor: formData.corPrimaria }}
+                  >
+                    Agendar
+                  </span>
+
+                </div>
+
+              </div>
+
+              <div className="config-preview-footer">
+                Prévia ilustrativa da página de agendamento
+              </div>
+
             </div>
+
           </div>
-        </div>
+
+        </aside>
+
       </div>
+
     </div>
   );
 }

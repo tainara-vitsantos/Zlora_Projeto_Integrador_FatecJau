@@ -1,4 +1,4 @@
-import logoZlora from '../../assets/logo.png'; 
+import logoZilora from '../../assets/logo.png'; 
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { 
@@ -35,8 +35,8 @@ export default function DashboardLayout() {
           {/* LOGO NA SIDEBAR */}
           <NavLink to="/" className="sidebar-brand" style={{ padding: '10px 0', display: 'flex', alignItems: 'center' }}>
             <img 
-              src={logoZlora} 
-              alt="Zlora" 
+              src={logoZilora} 
+              alt="Zilora" 
               style={{ height: '55px', objectFit: 'contain' }} 
             />
           </NavLink>

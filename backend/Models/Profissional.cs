@@ -4,17 +4,48 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Zlora.Models
 {
-    // Classe auxiliar para guardar o horário de um dia específico
-    public class HorarioDia
+    // NOVO: Classe que representa um turno específico (ex: 09:00 às 12:00)
+    public class Turno
     {
-        [BsonElement("ativo")]
-        public bool Ativo { get; set; } = true;
-        
         [BsonElement("inicio")]
         public string Inicio { get; set; } = "09:00";
         
         [BsonElement("fim")]
         public string Fim { get; set; } = "18:00";
+    }
+
+    // CLASSE ATUALIZADA: Agora aceita uma lista de turnos
+    public class HorarioDia
+    {
+        [BsonElement("ativo")]
+        public bool Ativo { get; set; } = true;
+        
+        [BsonElement("turnos")]
+        public List<Turno> Turnos { get; set; } = new List<Turno>();
+
+        [BsonElement("inicio")]
+        public string? Inicio { get; set; }
+
+        [BsonElement("fim")]
+        public string? Fim { get; set; }
+    }
+
+    public class BloqueioAgenda
+    {
+        [BsonElement("id")]
+        public string Id { get; set; } = "";
+
+        [BsonElement("data")]
+        public string Data { get; set; } = "";
+
+        [BsonElement("inicio")]
+        public string? Inicio { get; set; }
+
+        [BsonElement("fim")]
+        public string? Fim { get; set; }
+
+        [BsonElement("motivo")]
+        public string Motivo { get; set; } = "";
     }
 
     public class Profissional
@@ -43,9 +74,12 @@ namespace Zlora.Models
         [BsonElement("status")]
         public string Status { get; set; } = "ativo";
 
-        // NOVO CAMPO: Dicionário que guarda a jornada de trabalho (Ex: "segunda" -> { ativo: true, inicio: "09:00", fim: "18:00" })
+        // NOME ALTERADO PARA JORNADA_TRABALHO PARA BATER COM O SEU
         [BsonElement("jornada_trabalho")]
         public Dictionary<string, HorarioDia> JornadaTrabalho { get; set; } = new Dictionary<string, HorarioDia>();
+
+        [BsonElement("bloqueios_agenda")]
+        public List<BloqueioAgenda> BloqueiosAgenda { get; set; } = new List<BloqueioAgenda>();
 
         [BsonElement("criado_em")]
         public DateTime CriadoEm { get; set; } = DateTime.UtcNow;

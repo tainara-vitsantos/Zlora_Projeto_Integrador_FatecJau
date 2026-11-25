@@ -13,11 +13,13 @@ export const cadastroSchema = z.object({
     .min(8, 'A senha deve ter no mínimo 8 caracteres.')
     .regex(/[a-zA-Z]/, 'A senha deve conter pelo menos uma letra.')
     .regex(/[0-9]/, 'A senha deve conter pelo menos um número.'),
-  confirmarSenha: z.string()
+  confirmarSenha: z.string(),
+  conduso: z
+    .boolean()
+    .refine((val) => val === true, {
+      message: 'É necessário aceitar os Termos de Uso.',
+    }),
 }).refine((data) => data.senha === data.confirmarSenha, {
   message: "As senhas não coincidem.",
   path: ["confirmarSenha"],
-}).refine((data) => data.conduso === true, {
-  message: "É necessário aceitar os Termos de Uso.",
-  path: ["conduso"],
 });

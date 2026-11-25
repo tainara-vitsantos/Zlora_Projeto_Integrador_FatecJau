@@ -1,7 +1,7 @@
 export const FAQ = [
   {
-    q: 'Não possuo CNPJ. Posso utilizar a Zlora?',
-    a: 'Sim. A Zlora pode ser utilizada tanto por Pessoa Jurídica quanto Pessoa Física.',
+    q: 'Não possuo CNPJ. Posso utilizar a Zilora?',
+    a: 'Sim. A Zilora pode ser utilizada tanto por Pessoa Jurídica quanto Pessoa Física.',
   },
   {
     q: 'O período gratuito possui alguma limitação das funcionalidades?',
@@ -17,7 +17,7 @@ export const FAQ = [
   },
   {
     q: 'O cliente precisa pagar para baixar o aplicativo?',
-    a: 'Não. O download do aplicativo Zlora é gratuito e está disponível para iOS e Android.',
+    a: 'Não. O download do aplicativo Zilora é gratuito e está disponível para iOS e Android.',
   },
   {
     q: 'Consigo exportar minha base de dados?',

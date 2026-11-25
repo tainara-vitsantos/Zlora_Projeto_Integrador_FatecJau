@@ -1,18 +1,38 @@
 import { useState, useEffect } from 'react';
-import { FiSearch, FiTrash2, FiPlus, FiX, FiEdit2, FiClock } from 'react-icons/fi';
+import {
+  FiSearch,
+  FiTrash2,
+  FiPlus,
+  FiX,
+  FiEdit2,
+  FiClock,
+  FiDollarSign,
+  FiBriefcase,
+  FiCheckCircle,
+  FiAlertCircle,
+  FiLoader,
+  FiScissors
+} from 'react-icons/fi';
+
 import { api } from '../../services/api';
+import './Servicos.css';
 
 export default function Servicos() {
   const [servicos, setServicos] = useState([]);
   const [carregando, setCarregando] = useState(true);
   const [busca, setBusca] = useState('');
-  
-  // Estados do Modal
+  const [filtroStatus, setFiltroStatus] = useState('todos');
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [salvando, setSalvando] = useState(false);
-  
-  // Estado do formulário
+  const [excluindo, setExcluindo] = useState(null);
+
+  const [mensagem, setMensagem] = useState({
+    tipo: '',
+    texto: ''
+  });
+
   const [formData, setFormData] = useState({
     id: '',
     nome: '',
@@ -22,59 +42,140 @@ export default function Servicos() {
     status: 'ativo'
   });
 
-  const carregarServicos = async () => {
+  function obterCampo(objeto, campo) {
+    const campoCapitalizado =
+      campo.charAt(0).toUpperCase() + campo.slice(1);
+
+    return objeto[campo] ?? objeto[campoCapitalizado];
+  }
+
+  async function carregarServicos() {
     try {
       setCarregando(true);
+
       const data = await api.request('/api/servicos');
-      setServicos(data);
+
+      setServicos(Array.isArray(data) ? data : []);
     } catch (error) {
-      console.error("Erro ao buscar serviços:", error);
+      console.error('Erro ao buscar serviços:', error);
+
+      setMensagem({
+        tipo: 'erro',
+        texto: 'Não foi possível carregar os serviços.'
+      });
     } finally {
       setCarregando(false);
     }
-  };
+  }
 
   useEffect(() => {
     carregarServicos();
   }, []);
 
-  // Filtro de pesquisa
-  const servicosFiltrados = servicos.filter(s => 
-    (s.nome || s.Nome || '').toLowerCase().includes(busca.toLowerCase())
-  );
+  const servicosFiltrados = servicos.filter(servico => {
+    const nome = obterCampo(servico, 'nome') || '';
+    const status = obterCampo(servico, 'status') || 'ativo';
 
-  const handleNovoServico = () => {
-    setFormData({ id: '', nome: '', descricao: '', duracaoMinutos: 30, preco: 0, status: 'ativo' });
-    setIsEditing(false);
-    setIsModalOpen(true);
-  };
+    const correspondeBusca = nome
+      .toLowerCase()
+      .includes(busca.toLowerCase());
 
-  const handleEditarServico = (servico) => {
+    const correspondeStatus =
+      filtroStatus === 'todos' || status === filtroStatus;
+
+    return correspondeBusca && correspondeStatus;
+  });
+
+  const totalServicos = servicos.length;
+
+  const servicosAtivos = servicos.filter(
+    servico => obterCampo(servico, 'status') === 'ativo'
+  ).length;
+
+  const servicosInativos = totalServicos - servicosAtivos;
+
+  function abrirNovoServico() {
     setFormData({
-      id: servico.id || servico.Id,
-      nome: servico.nome || servico.Nome,
-      descricao: servico.descricao || servico.Descricao || '',
-      duracaoMinutos: servico.duracaoMinutos || servico.DuracaoMinutos,
-      preco: servico.preco || servico.Preco,
-      status: servico.status || servico.Status || 'ativo'
+      id: '',
+      nome: '',
+      descricao: '',
+      duracaoMinutos: 30,
+      preco: 0,
+      status: 'ativo'
     });
-    setIsEditing(true);
-    setIsModalOpen(true);
-  };
 
-  const handleSalvar = async (e) => {
-    e.preventDefault();
+    setIsEditing(false);
+    setMensagem({ tipo: '', texto: '' });
+    setIsModalOpen(true);
+  }
+
+  function abrirEdicao(servico) {
+    setFormData({
+      id: obterCampo(servico, 'id'),
+      nome: obterCampo(servico, 'nome') || '',
+      descricao: obterCampo(servico, 'descricao') || '',
+      duracaoMinutos: obterCampo(servico, 'duracaoMinutos') ?? 30,
+      preco: obterCampo(servico, 'preco') ?? 0,
+      status: obterCampo(servico, 'status') || 'ativo'
+    });
+
+    setIsEditing(true);
+    setMensagem({ tipo: '', texto: '' });
+    setIsModalOpen(true);
+  }
+
+  function fecharModal() {
+    if (salvando) return;
+
+    setIsModalOpen(false);
+    setMensagem({ tipo: '', texto: '' });
+  }
+
+  function atualizarCampo(campo, valor) {
+    setFormData(prev => ({
+      ...prev,
+      [campo]: valor
+    }));
+  }
+
+  async function handleSalvar(event) {
+    event.preventDefault();
+
+    if (!formData.nome.trim()) {
+      setMensagem({
+        tipo: 'erro',
+        texto: 'Informe o nome do serviço.'
+      });
+      return;
+    }
+
+    if (Number(formData.duracaoMinutos) < 5) {
+      setMensagem({
+        tipo: 'erro',
+        texto: 'A duração mínima do serviço é de 5 minutos.'
+      });
+      return;
+    }
+
+    if (Number(formData.preco) < 0) {
+      setMensagem({
+        tipo: 'erro',
+        texto: 'O preço não pode ser negativo.'
+      });
+      return;
+    }
+
+    const payload = {
+      nome: formData.nome.trim(),
+      descricao: formData.descricao.trim(),
+      duracaoMinutos: Number(formData.duracaoMinutos),
+      preco: Number(formData.preco),
+      status: formData.status
+    };
+
     try {
       setSalvando(true);
-      
-      // Monta o JSON exatamente como o Model do C# espera
-      const payload = {
-        nome: formData.nome,
-        descricao: formData.descricao,
-        duracaoMinutos: Number(formData.duracaoMinutos),
-        preco: Number(formData.preco),
-        status: formData.status
-      };
+      setMensagem({ tipo: '', texto: '' });
 
       if (isEditing) {
         await api.request(`/api/servicos/${formData.id}`, {
@@ -89,222 +190,481 @@ export default function Servicos() {
       }
 
       setIsModalOpen(false);
-      carregarServicos(); 
+
+      setMensagem({
+        tipo: 'sucesso',
+        texto: isEditing
+          ? 'Serviço atualizado com sucesso!'
+          : 'Serviço cadastrado com sucesso!'
+      });
+
+      await carregarServicos();
+
     } catch (error) {
-      alert("Erro ao salvar serviço: " + error.message);
+      setMensagem({
+        tipo: 'erro',
+        texto: error.message || 'Não foi possível salvar o serviço.'
+      });
     } finally {
       setSalvando(false);
     }
-  };
+  }
 
-  const handleExcluir = async (id) => {
-    if (!window.confirm("Tem certeza que deseja excluir este serviço?")) return;
-    try {
-      await api.request(`/api/servicos/${id}`, { method: 'DELETE' });
-      carregarServicos(); 
-    } catch (error) {
-      alert("Erro ao excluir serviço: " + error.message);
+  async function handleExcluir(servico) {
+    const id = obterCampo(servico, 'id');
+    const nome = obterCampo(servico, 'nome');
+
+    if (!window.confirm(`Deseja realmente excluir o serviço "${nome}"?`)) {
+      return;
     }
-  };
 
-  const formatarDinheiro = (valor) => {
-    return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valor || 0);
-  };
+    try {
+      setExcluindo(id);
 
-  const formatarDuracao = (minutos) => {
-    if (minutos < 60) return `${minutos} min`;
-    const horas = Math.floor(minutos / 60);
-    const minRestantes = minutos % 60;
-    return minRestantes > 0 ? `${horas}h ${minRestantes}min` : `${horas}h`;
-  };
+      await api.request(`/api/servicos/${id}`, {
+        method: 'DELETE'
+      });
+
+      setMensagem({
+        tipo: 'sucesso',
+        texto: 'Serviço excluído com sucesso!'
+      });
+
+      await carregarServicos();
+
+    } catch (error) {
+      setMensagem({
+        tipo: 'erro',
+        texto: error.message || 'Não foi possível excluir o serviço.'
+      });
+    } finally {
+      setExcluindo(null);
+    }
+  }
+
+  function formatarDinheiro(valor) {
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL'
+    }).format(Number(valor) || 0);
+  }
+
+  function formatarDuracao(minutos) {
+    const valor = Number(minutos) || 0;
+
+    if (valor < 60) {
+      return `${valor} min`;
+    }
+
+    const horas = Math.floor(valor / 60);
+    const minutosRestantes = valor % 60;
+
+    return minutosRestantes > 0
+      ? `${horas}h ${minutosRestantes}min`
+      : `${horas}h`;
+  }
 
   return (
-    <div>
-      <div className="page-header">
+    <div className="servicos-page">
+
+      <div className="servicos-page-header">
         <div>
-          <h2 style={{ fontSize: '1.5rem', marginBottom: '8px' }}>Meus Serviços</h2>
-          <p style={{ color: 'var(--zlora-text-soft)', margin: 0 }}>Gerencie os serviços, preços e durações do seu estabelecimento.</p>
+          <span className="servicos-eyebrow">
+            GESTÃO DO ESTABELECIMENTO
+          </span>
+
+          <h1>Meus Serviços</h1>
+
+          <p>
+            Gerencie os serviços, preços e durações do seu estabelecimento.
+          </p>
         </div>
-        <button className="btn btn-primary" onClick={handleNovoServico}>
-          <FiPlus /> Novo Serviço
-        </button>
+
+        <div className="servicos-header-actions">
+          <button
+            className="servicos-btn servicos-btn--primary"
+            onClick={abrirNovoServico}
+          >
+            <FiPlus size={17} />
+            Novo serviço
+          </button>
+        </div>
       </div>
 
-      <div className="dash-card" style={{ marginBottom: '24px', padding: '16px' }}>
-        <div style={{ position: 'relative', maxWidth: '400px' }}>
-          <FiSearch style={{ position: 'absolute', left: '16px', top: '14px', color: 'var(--zlora-text-soft)' }} />
-          <input 
-            type="text" 
-            className="form-control" 
-            placeholder="Buscar serviço pelo nome..." 
-            value={busca}
-            onChange={(e) => setBusca(e.target.value)}
-            style={{ paddingLeft: '44px' }}
-          />
+      {mensagem.texto && (
+        <div className={`servicos-alert servicos-alert--${mensagem.tipo}`}>
+          {mensagem.tipo === 'sucesso'
+            ? <FiCheckCircle size={18} />
+            : <FiAlertCircle size={18} />
+          }
+
+          <span>{mensagem.texto}</span>
+
+          <button
+            className="servicos-alert-close"
+            type="button"
+            onClick={() => setMensagem({ tipo: '', texto: '' })}
+          >
+            <FiX size={17} />
+          </button>
         </div>
+      )}
+
+      <div className="servicos-summary">
+
+        <div className="servicos-summary-card">
+          <div className="servicos-summary-icon">
+            <FiBriefcase />
+          </div>
+
+          <div>
+            <small>Total de serviços</small>
+            <strong>{totalServicos}</strong>
+          </div>
+        </div>
+
+        <div className="servicos-summary-card">
+          <div className="servicos-summary-icon servicos-summary-icon--green">
+            <FiCheckCircle />
+          </div>
+
+          <div>
+            <small>Serviços ativos</small>
+            <strong>{servicosAtivos}</strong>
+          </div>
+        </div>
+
+        <div className="servicos-summary-card">
+          <div className="servicos-summary-icon servicos-summary-icon--red">
+            <FiScissors />
+          </div>
+
+          <div>
+            <small>Serviços inativos</small>
+            <strong>{servicosInativos}</strong>
+          </div>
+        </div>
+
       </div>
 
-      <div className="table-container">
+      <div className="servicos-panel">
+
+        <div className="servicos-panel-header">
+          <div>
+            <h2>Lista de serviços</h2>
+            <p>Consulte e gerencie os serviços cadastrados.</p>
+          </div>
+        </div>
+
+        <div className="servicos-toolbar">
+
+          <div className="servicos-search">
+            <FiSearch size={17} />
+
+            <input
+              type="text"
+              placeholder="Buscar serviço pelo nome..."
+              value={busca}
+              onChange={event => setBusca(event.target.value)}
+            />
+          </div>
+
+          <div className="servicos-filter">
+            <select
+              value={filtroStatus}
+              onChange={event => setFiltroStatus(event.target.value)}
+            >
+              <option value="todos">Todos os status</option>
+              <option value="ativo">Ativos</option>
+              <option value="inativo">Inativos</option>
+            </select>
+          </div>
+
+        </div>
+
         {carregando ? (
-          <div style={{ padding: '40px', textAlign: 'center', color: 'var(--zlora-text-soft)' }}>
-            Buscando serviços no servidor...
+          <div className="servicos-loading">
+            <div className="servicos-loader" />
+            <p>Carregando serviços...</p>
           </div>
         ) : servicosFiltrados.length === 0 ? (
-          <div style={{ padding: '40px', textAlign: 'center', color: 'var(--zlora-text-soft)' }}>
-            Nenhum serviço encontrado.
+          <div className="servicos-empty">
+
+            <div className="servicos-empty-icon">
+              <FiScissors />
+            </div>
+
+            <h3>
+              {busca || filtroStatus !== 'todos'
+                ? 'Nenhum serviço encontrado'
+                : 'Nenhum serviço cadastrado'
+              }
+            </h3>
+
+            <p>
+              {busca || filtroStatus !== 'todos'
+                ? 'Tente alterar os filtros ou o termo pesquisado.'
+                : 'Cadastre seu primeiro serviço para começar a organizar seus agendamentos.'
+              }
+            </p>
+
+            {!busca && filtroStatus === 'todos' && (
+              <button
+                className="servicos-btn servicos-btn--primary"
+                onClick={abrirNovoServico}
+              >
+                <FiPlus size={16} />
+                Cadastrar serviço
+              </button>
+            )}
+
           </div>
         ) : (
-          <table className="dash-table">
-            <thead>
-              <tr>
-                <th>Serviço</th>
-                <th>Duração</th>
-                <th>Preço</th>
-                <th>Status</th>
-                <th style={{ textAlign: 'right' }}>Ações</th>
-              </tr>
-            </thead>
-            <tbody>
-              {servicosFiltrados.map(servico => {
-                const id = servico.id || servico.Id;
-                const nome = servico.nome || servico.Nome;
-                const desc = servico.descricao || servico.Descricao;
-                const duracao = servico.duracaoMinutos || servico.DuracaoMinutos;
-                const preco = servico.preco || servico.Preco;
-                const status = servico.status || servico.Status;
+          <div className="servicos-table-wrapper">
 
-                return (
-                  <tr key={id}>
-                    <td>
-                      <div style={{ fontWeight: 600 }}>{nome}</div>
-                      {desc && <div style={{ fontSize: '12px', color: 'var(--zlora-text-soft)' }}>{desc}</div>}
-                    </td>
-                    <td>
-                      <span style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--zlora-text-soft)' }}>
-                        <FiClock size={14} /> {formatarDuracao(duracao)}
-                      </span>
-                    </td>
-                    <td style={{ fontWeight: 600 }}>{formatarDinheiro(preco)}</td>
-                    <td>
-                      <span style={{ 
-                        padding: '4px 8px', borderRadius: '12px', fontSize: '12px', fontWeight: 600,
-                        background: status === 'ativo' ? '#DCFCE7' : '#FEE2E2',
-                        color: status === 'ativo' ? '#166534' : '#991B1B'
-                      }}>
-                        {status}
-                      </span>
-                    </td>
-                    <td style={{ textAlign: 'right' }}>
-                      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
-                        <button 
-                          className="btn-icon" 
-                          onClick={() => handleEditarServico(servico)}
-                          title="Editar"
-                          style={{ color: 'var(--zlora-primary)' }}
-                        >
-                          <FiEdit2 />
-                        </button>
-                        <button 
-                          className="btn-icon" 
-                          onClick={() => handleExcluir(id)}
-                          title="Excluir"
-                        >
-                          <FiTrash2 />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+            <table className="servicos-table">
+              <thead>
+                <tr>
+                  <th>Serviço</th>
+                  <th>Duração</th>
+                  <th>Preço</th>
+                  <th>Status</th>
+                  <th className="servicos-actions-heading">Ações</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {servicosFiltrados.map(servico => {
+                  const id = obterCampo(servico, 'id');
+                  const nome = obterCampo(servico, 'nome');
+                  const descricao = obterCampo(servico, 'descricao');
+                  const duracao = obterCampo(servico, 'duracaoMinutos');
+                  const preco = obterCampo(servico, 'preco');
+                  const status = obterCampo(servico, 'status') || 'ativo';
+
+                  return (
+                    <tr key={id}>
+
+                      <td>
+                        <div className="servicos-name">
+                          <div className="servicos-avatar">
+                            <FiScissors />
+                          </div>
+
+                          <div>
+                            <strong>{nome}</strong>
+
+                            {descricao && (
+                              <small>{descricao}</small>
+                            )}
+                          </div>
+                        </div>
+                      </td>
+
+                      <td>
+                        <span className="servicos-contact">
+                          <FiClock />
+                          {formatarDuracao(duracao)}
+                        </span>
+                      </td>
+
+                      <td className="servicos-price">
+                        {formatarDinheiro(preco)}
+                      </td>
+
+                      <td>
+                        <span className={`servicos-status servicos-status--${status}`}>
+                          <span className="servicos-status-dot" />
+                          {status === 'ativo' ? 'Ativo' : 'Inativo'}
+                        </span>
+                      </td>
+
+                      <td>
+                        <div className="servicos-row-actions">
+
+                          <button
+                            className="servicos-icon-btn servicos-icon-btn--edit"
+                            onClick={() => abrirEdicao(servico)}
+                            title="Editar serviço"
+                            type="button"
+                          >
+                            <FiEdit2 />
+                          </button>
+
+                          <button
+                            className="servicos-icon-btn servicos-icon-btn--delete"
+                            onClick={() => handleExcluir(servico)}
+                            title="Excluir serviço"
+                            type="button"
+                            disabled={excluindo === id}
+                          >
+                            {excluindo === id
+                              ? <FiLoader className="servicos-spin" />
+                              : <FiTrash2 />
+                            }
+                          </button>
+
+                        </div>
+                      </td>
+
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+
+          </div>
         )}
+
       </div>
 
-      {/* MODAL DE CADASTRO / EDIÇÃO */}
       {isModalOpen && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h3 className="modal-title">{isEditing ? 'Editar Serviço' : 'Novo Serviço'}</h3>
-              <button className="btn-close" onClick={() => setIsModalOpen(false)}><FiX /></button>
-            </div>
-            
-            <form onSubmit={handleSalvar}>
-              <div className="form-group">
-                <label>Nome do Serviço *</label>
-                <input 
-                  type="text" 
-                  className="form-control" 
-                  required
-                  placeholder="Ex: Corte Degradê"
-                  value={formData.nome}
-                  onChange={e => setFormData({...formData, nome: e.target.value})}
-                />
+        <div
+          className="servicos-modal-overlay"
+          onMouseDown={event => {
+            if (event.target === event.currentTarget) {
+              fecharModal();
+            }
+          }}
+        >
+          <div className="servicos-modal">
+
+            <div className="servicos-modal-header">
+              <div>
+                <h2>
+                  {isEditing ? 'Editar serviço' : 'Novo serviço'}
+                </h2>
+
+                <p>
+                  Preencha as informações do serviço.
+                </p>
               </div>
 
-              <div className="form-group">
-                <label>Descrição (Opcional)</label>
-                <input 
-                  type="text" 
-                  className="form-control" 
-                  placeholder="Ex: Corte na tesoura e máquina"
-                  value={formData.descricao}
-                  onChange={e => setFormData({...formData, descricao: e.target.value})}
+              <button
+                className="servicos-modal-close"
+                type="button"
+                onClick={fecharModal}
+                disabled={salvando}
+              >
+                <FiX />
+              </button>
+            </div>
+
+            <form className="servicos-form" onSubmit={handleSalvar}>
+
+              {mensagem.texto && (
+                <div className={`servicos-alert servicos-alert--${mensagem.tipo}`}>
+                  {mensagem.tipo === 'sucesso'
+                    ? <FiCheckCircle size={18} />
+                    : <FiAlertCircle size={18} />
+                  }
+
+                  <span>{mensagem.texto}</span>
+                </div>
+              )}
+
+              <label className="servicos-form-field">
+                Nome do serviço <b>*</b>
+
+                <input
+                  type="text"
+                  placeholder="Ex.: Corte de cabelo"
+                  value={formData.nome}
+                  onChange={event => atualizarCampo('nome', event.target.value)}
+                  maxLength={100}
+                  required
                 />
-              </div>
-              
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-                <div className="form-group">
-                  <label>Duração (min) *</label>
-                  <input 
-                    type="number" 
-                    className="form-control" 
-                    required
+              </label>
+
+              <label className="servicos-form-field">
+                Descrição
+
+                <input
+                  type="text"
+                  placeholder="Descreva brevemente o serviço"
+                  value={formData.descricao}
+                  onChange={event => atualizarCampo('descricao', event.target.value)}
+                  maxLength={250}
+                />
+              </label>
+
+              <div className="servicos-form-grid">
+
+                <label className="servicos-form-field">
+                  Duração (minutos) <b>*</b>
+
+                  <input
+                    type="number"
                     min="5"
                     max="1440"
                     value={formData.duracaoMinutos}
-                    onChange={e => setFormData({...formData, duracaoMinutos: e.target.value})}
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Preço (R$) *</label>
-                  <input 
-                    type="number" 
-                    className="form-control" 
+                    onChange={event => atualizarCampo('duracaoMinutos', event.target.value)}
                     required
-                    step="0.01"
-                    min="0"
-                    value={formData.preco}
-                    onChange={e => setFormData({...formData, preco: e.target.value})}
                   />
-                </div>
+                </label>
+
+                <label className="servicos-form-field">
+                  Preço (R$) <b>*</b>
+
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={formData.preco}
+                    onChange={event => atualizarCampo('preco', event.target.value)}
+                    required
+                  />
+                </label>
+
               </div>
 
-              <div className="form-group">
-                <label>Status do Serviço</label>
-                <select 
-                  className="form-control"
+              <label className="servicos-form-field">
+                Status do serviço
+
+                <select
                   value={formData.status}
-                  onChange={e => setFormData({...formData, status: e.target.value})}
+                  onChange={event => atualizarCampo('status', event.target.value)}
                 >
-                  <option value="ativo">Ativo (Aparece no agendamento)</option>
-                  <option value="inativo">Inativo (Oculto para clientes)</option>
+                  <option value="ativo">Ativo</option>
+                  <option value="inativo">Inativo</option>
                 </select>
-              </div>
 
-              <div style={{ display: 'flex', gap: '12px', marginTop: '32px' }}>
-                <button type="button" className="btn btn-ghost" style={{ flex: 1 }} onClick={() => setIsModalOpen(false)}>
+                <small>
+                  Serviços inativos não aparecem para os clientes na página de agendamento.
+                </small>
+              </label>
+
+              <div className="servicos-modal-footer">
+
+                <button
+                  type="button"
+                  className="servicos-btn servicos-btn--secondary"
+                  onClick={fecharModal}
+                  disabled={salvando}
+                >
                   Cancelar
                 </button>
-                <button type="submit" className="btn btn-primary" style={{ flex: 1 }} disabled={salvando}>
-                  {salvando ? 'Salvando...' : 'Salvar Serviço'}
+
+                <button
+                  type="submit"
+                  className="servicos-btn servicos-btn--primary"
+                  disabled={salvando}
+                >
+                  {salvando
+                    ? <FiLoader className="servicos-spin" />
+                    : <FiCheckCircle />
+                  }
+
+                  {salvando ? 'Salvando...' : 'Salvar serviço'}
                 </button>
+
               </div>
+
             </form>
           </div>
         </div>
       )}
+
     </div>
   );
 }

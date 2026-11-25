@@ -1,4 +1,3 @@
-
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
@@ -10,8 +9,6 @@ using Zlora.Models;
 
 namespace Zlora.Controllers
 {
-    // Aqui só o administrador pode gerenciar os profissionais da empresa.
-    // Mas calma que vai ter uma rota pra cada profissional ver e editar o próprio perfil.
     [Authorize(Roles = "administrador")]
     [Route("api/profissionais")]
     public class ProfissionaisController : ControllerBase
@@ -34,8 +31,11 @@ namespace Zlora.Controllers
         {
             if (string.IsNullOrWhiteSpace(EmpresaId)) return Forbid();
 
+            // AQUI ESTÁ A CORREÇÃO: Ignorar o campo JornadaTrabalho para não quebrar 
+            // caso existam dados antigos no banco.
             var profissionais = await _context.Profissionais
                 .Find(p => p.EmpresaId == EmpresaId)
+                .Project<Profissional>(Builders<Profissional>.Projection.Exclude(p => p.JornadaTrabalho))
                 .SortBy(p => p.Nome).ToListAsync();
 
             return Ok(profissionais);
@@ -84,34 +84,66 @@ namespace Zlora.Controllers
             return resultado.DeletedCount == 0 ? NotFound() : NoContent();
         }
 
-        // Dados que o administrador informa para liberar o login do profissional.
+        // ==========================================
+        // NOVAS ROTAS DE HORÁRIOS
+        // ==========================================
+
+        [HttpGet("{id}/horarios")]
+        public async Task<IActionResult> GetHorarios(string id)
+        {
+            if (!ObjectId.TryParse(id, out _) || string.IsNullOrWhiteSpace(EmpresaId))
+                return NotFound();
+
+            var profissional = await _context.Profissionais
+                .Find(p => p.Id == id && p.EmpresaId == EmpresaId)
+                .FirstOrDefaultAsync();
+
+            if (profissional == null)
+                return NotFound(new { mensagem = "Profissional não encontrado." });
+
+            // Retorna a JornadaTrabalho ou um dicionário vazio
+            return Ok(profissional.JornadaTrabalho ?? new Dictionary<string, HorarioDia>());
+        }
+
+        [HttpPut("{id}/horarios")]
+        public async Task<IActionResult> UpdateHorarios(string id, [FromBody] Dictionary<string, HorarioDia> jornada)
+        {
+            if (!ObjectId.TryParse(id, out _) || string.IsNullOrWhiteSpace(EmpresaId))
+                return NotFound();
+
+            var atualizacao = await _context.Profissionais.UpdateOneAsync(
+                p => p.Id == id && p.EmpresaId == EmpresaId,
+                Builders<Profissional>.Update
+                    .Set(p => p.JornadaTrabalho, jornada) // SALVA NA NOVA PROPRIEDADE
+                    .Set(p => p.AlteradoEm, DateTime.UtcNow)
+            );
+
+            if (atualizacao.MatchedCount == 0)
+                return NotFound(new { mensagem = "Profissional não encontrado." });
+
+            return NoContent();
+        }
+
+        // ==========================================
+        // CRIAÇÃO DE ACESSO
+        // ==========================================
         public class CriarAcessoDto
         {
             public string Email { get; set; } = "";
             public string Senha { get; set; } = "";
         }
 
-        // Aqui eu crio a conta e faço o vínculo com a empresa e o profissional.
         [HttpPost("{id}/acesso")]
-        public async Task<IActionResult> CriarAcesso(
-            string id, [FromBody] CriarAcessoDto dados)
+        public async Task<IActionResult> CriarAcesso(string id, [FromBody] CriarAcessoDto dados)
         {
-            if (!ObjectId.TryParse(id, out _) ||
-                string.IsNullOrWhiteSpace(EmpresaId))
+            if (!ObjectId.TryParse(id, out _) || string.IsNullOrWhiteSpace(EmpresaId))
                 return NotFound();
 
             var email = dados.Email.Trim().ToLowerInvariant();
 
-            if (string.IsNullOrWhiteSpace(email) ||
-                dados.Senha.Length < 8)
-            {
-                return BadRequest(new
-                {
-                    mensagem = "Informe um e-mail e uma senha com pelo menos 8 caracteres."
-                });
-            }
+            if (string.IsNullOrWhiteSpace(email) || dados.Senha.Length < 8)
+                return BadRequest(new { mensagem = "Informe um e-mail e uma senha com pelo menos 8 caracteres." });
 
-            // Confiro se esse profissional pertence ao salão do administrador logado.
             var profissional = await _context.Profissionais
                 .Find(p => p.Id == id && p.EmpresaId == EmpresaId)
                 .FirstOrDefaultAsync();
@@ -122,10 +154,7 @@ namespace Zlora.Controllers
             if (!string.IsNullOrWhiteSpace(profissional.UsuarioId))
                 return Conflict(new { mensagem = "Esse profissional já possui acesso." });
 
-            // Não deixo criar outra conta usando um e-mail já cadastrado.
-            var emailExiste = await _context.Usuarios
-                .Find(u => u.Email == email)
-                .AnyAsync();
+            var emailExiste = await _context.Usuarios.Find(u => u.Email == email).AnyAsync();
 
             if (emailExiste)
                 return Conflict(new { mensagem = "Esse e-mail já está cadastrado." });
@@ -141,7 +170,6 @@ namespace Zlora.Controllers
                 AlteradoEm = DateTime.UtcNow
             };
 
-            // A senha fica protegida pelo mesmo mecanismo usado no login.
             usuario.SenhaHash = _passwordHasher.HashPassword(usuario, dados.Senha);
 
             var membro = new MembroEmpresa
@@ -150,15 +178,11 @@ namespace Zlora.Controllers
                 EmpresaId = EmpresaId,
                 UsuarioId = usuario.Id!,
                 Papel = "profissional",
-                Permissoes = new List<string>
-                {
-                    "agenda.visualizar"
-                },
+                Permissoes = new List<string> { "agenda.visualizar" },
                 Status = "ativo",
                 CriadoEm = DateTime.UtcNow
             };
 
-            // Salvo a conta, o vínculo e a ligação com o cadastro profissional.
             try
             {
                 await _context.Usuarios.InsertOneAsync(usuario);
@@ -167,30 +191,20 @@ namespace Zlora.Controllers
                 profissional.UsuarioId = usuario.Id;
                 profissional.AlteradoEm = DateTime.UtcNow;
 
-               // Atualizo somente os campos necessários, sem substituir o cadastro inteiro.
-var atualizacao = await _context.Profissionais.UpdateOneAsync(
-    p => p.Id == id &&
-         p.EmpresaId == EmpresaId &&
-         p.UsuarioId == null,
-    Builders<Profissional>.Update
-        .Set(p => p.UsuarioId, usuario.Id)
-        .Set(p => p.AlteradoEm, DateTime.UtcNow)
-);
+                var atualizacao = await _context.Profissionais.UpdateOneAsync(
+                    p => p.Id == id && p.EmpresaId == EmpresaId && p.UsuarioId == null,
+                    Builders<Profissional>.Update
+                        .Set(p => p.UsuarioId, usuario.Id)
+                        .Set(p => p.AlteradoEm, DateTime.UtcNow)
+                );
 
-// Confiro se o profissional realmente foi atualizado.
-if (atualizacao.MatchedCount != 1)
-    throw new InvalidOperationException(
-        "Não foi possível vincular a conta ao profissional.");
+                if (atualizacao.MatchedCount != 1)
+                    throw new InvalidOperationException("Não foi possível vincular a conta ao profissional.");
             }
             catch
             {
-                // Se alguma etapa falhar, tento limpar os registros criados.
-                await _context.MembrosEmpresa.DeleteOneAsync(
-                    m => m.Id == membro.Id);
-
-                await _context.Usuarios.DeleteOneAsync(
-                    u => u.Id == usuario.Id);
-
+                await _context.MembrosEmpresa.DeleteOneAsync(m => m.Id == membro.Id);
+                await _context.Usuarios.DeleteOneAsync(u => u.Id == usuario.Id);
                 throw;
             }
 

@@ -1,0 +1,40 @@
+/* MeusAgendamentos.css */
+.meus-agendamentos-page {
+  padding-bottom: 40px;
+}
+
+.meus-agendamentos-tabs {
+  display: flex;
+  gap: 8px;
+  border-bottom: 1px solid var(--zlora-border);
+  padding-bottom: 8px;
+  margin-bottom: 20px;
+}
+
+.meus-agendamentos-tabs button {
+  background: transparent;
+  border: none;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--zlora-text-soft);
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.meus-agendamentos-tabs button:hover {
+  background: #f1f5f9;
+}
+
+.meus-agendamentos-tabs button.active {
+  background: var(--zlora-primary-soft);
+  color: var(--zlora-primary);
+}
+
+/* Ajuste para o painel não ter borda dupla caso o Agenda.css já tenha */
+.meus-agendamentos-page .agenda-panel {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  border-top: 0;
+}

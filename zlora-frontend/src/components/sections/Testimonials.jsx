@@ -29,7 +29,7 @@ export default function Testimonials() {
         <SectionTitle
           title="Quem usa,"
           highlight="recomenda"
-          subtitle="Histórias de quem já transformou a gestão com a Zlora"
+          subtitle="Histórias de quem já transformou a gestão com a Zilora"
         />
 
         <div className="testimonials-grid">
